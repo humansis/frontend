@@ -27,6 +27,7 @@
 import InstitutionService from "@/services/InstitutionService";
 import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
 import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -55,16 +56,19 @@ export default {
 
 		async onRemoveInstitution(id) {
 			try {
-				const { status } = await InstitutionService.deleteInstitution(id);
+				const {
+					status,
+					message,
+				} = await InstitutionService.deleteInstitution(id);
 
-				if (status === 204) {
-					Notification(this.$t("Institution Successfully Deleted"), "success");
+				checkResponseStatus(status, message, 204);
 
-					this.$refs.institutionsList.removeFromList(id);
-					this.$refs.institutionsList.table.total -= 1;
-				}
+				Notification(this.$t("Institution Successfully Deleted"), "success");
+
+				this.$refs.institutionsList.removeFromList(id);
+				this.$refs.institutionsList.table.total -= 1;
 			} catch (e) {
-				Notification(`${this.$t("Institution")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Institution")}: ${e.message || e}`, "error");
 			}
 		},
 	},

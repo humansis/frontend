@@ -318,10 +318,14 @@ export default {
 					this.exportControl.loading = true;
 
 					const filename = `Vulnerability scores ${normalizeExportDate()}`;
-					const { data, status, message } = await AssistancesService.exportVulnerabilityScores(
+					const {
+						data,
+						status,
+						message,
+					} = await AssistancesService.exportVulnerabilityScores({
+						body: this.assistanceBody,
 						format,
-						this.assistanceBody,
-					);
+					});
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
@@ -437,8 +441,8 @@ export default {
 				this.getCountOfBeneficiariesInGroup(key);
 			});
 
-			await this.getCountOfBeneficiaries({ totalCount: true });
-			await this.getCountOfBeneficiaries({ totalCount: false });
+			await this.getCountOfBeneficiaries({ isTotalCount: true });
+			await this.getCountOfBeneficiaries({ isTotalCount: false });
 
 			this.vulnerabilityScoreTouched = false;
 
@@ -477,12 +481,12 @@ export default {
 
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({
-					assistanceBody, totalCount: false, groupKey,
+					assistanceBody, isTotalCount: false, groupKey,
 				});
 			}
 		},
 
-		async getCountOfBeneficiaries({ totalCount = false }) {
+		async getCountOfBeneficiaries({ isTotalCount = false }) {
 			const threshold = this.minimumSelectionScore ?? null;
 			const assistanceBody = { ...this.assistanceBody };
 
@@ -491,17 +495,17 @@ export default {
 			if (typeof threshold === "string") {
 				assistanceBody.threshold = null;
 			} else {
-				assistanceBody.threshold = totalCount ? null : threshold;
+				assistanceBody.threshold = isTotalCount ? null : threshold;
 			}
 
-			if (totalCount) {
+			if (isTotalCount) {
 				assistanceBody.scoringBlueprintId = null;
 			}
 
 			if (assistanceBody.selectionCriteria?.length) {
 				await this.calculationOfAssistanceBeneficiaries({
 					assistanceBody,
-					totalCount,
+					isTotalCount,
 				});
 				await this.calculationOfAssistanceBeneficiariesScores({
 					assistanceBody,
@@ -511,36 +515,41 @@ export default {
 			this.$emit("deliveredCommodityValue");
 		},
 
-		async calculationOfAssistanceBeneficiaries({ assistanceBody, totalCount, groupKey = null }) {
+		async calculationOfAssistanceBeneficiaries({ assistanceBody, isTotalCount, groupKey = null }) {
 			const { dateExpiration, ...beneficiariesBody } = assistanceBody;
 
 			if (this.assistanceBodyIsValid(assistanceBody)) {
-				await AssistancesService.calculationOfBeneficiaries(beneficiariesBody)
-					.then(({ data, status }) => {
-						if (status === 200) {
-							if (groupKey === null && this.groups.length) {
-								if (totalCount) {
-									this.totalCount = data.totalCount;
-								} else {
-									this.countOf = data.totalCount;
-								}
-							}
+				try {
+					const {
+						data: { data, totalCount },
+						status,
+						message,
+					} = await AssistancesService.calculationOfBeneficiaries(beneficiariesBody);
 
-							if (groupKey !== null) {
-								const newGroups = [...this.groups];
+					checkResponseStatus(status, message);
 
-								if (newGroups[groupKey]?.tableData) {
-									newGroups[groupKey].tableData = data.data;
-								}
-
-								this.groups = newGroups;
-							} else {
-								this.totalBeneficiariesData = data.data;
-							}
+					if (groupKey === null && this.groups.length) {
+						if (isTotalCount) {
+							this.totalCount = totalCount;
+						} else {
+							this.countOf = totalCount;
 						}
-					}).catch((e) => {
-						Notification(`${this.$t("Calculation")} ${e.message || e}`, "error");
-					});
+					}
+
+					if (groupKey !== null) {
+						const newGroups = [...this.groups];
+
+						if (newGroups[groupKey]?.tableData) {
+							newGroups[groupKey].tableData = data;
+						}
+
+						this.groups = newGroups;
+					} else {
+						this.totalBeneficiariesData = data;
+					}
+				} catch (e) {
+					Notification(`${this.$t("Calculation")}: ${e.message || e}`, "error");
+				}
 			}
 		},
 
@@ -557,16 +566,21 @@ export default {
 			};
 
 			if (beneficiaryIds.length) {
-				await AssistancesService.calculationOfBeneficiariesScores(body)
-					.then(({ data, status }) => {
-						if (status === 200) {
-							this.beneficiariesScores = data.data;
-						}
-					}).catch((e) => {
-						Notification(`${this.$t("Calculation")} ${e.message || e}`, "error");
-					}).finally(() => {
-						this.minimumSelectionScoreValid = null;
-					});
+				try {
+					const {
+						data: { data },
+						status,
+						message,
+					} = await AssistancesService.calculationOfBeneficiariesScores(body);
+
+					checkResponseStatus(status, message);
+
+					this.beneficiariesScores = data;
+				} catch (e) {
+					Notification(`${this.$t("Calculation")}: ${e.message || e}`, "error");
+				} finally {
+					this.minimumSelectionScoreValid = null;
+				}
 			}
 		},
 

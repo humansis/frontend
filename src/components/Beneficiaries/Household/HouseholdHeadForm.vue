@@ -441,6 +441,7 @@ import idHelper from "@/mixins/idHelper";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
 
@@ -710,11 +711,22 @@ export default {
 				if (this.beneficiary) {
 					await this.mapDetailOfHouseholdToFormModel(this.beneficiary);
 				} else if (this.detailOfHousehold.householdHeadId) {
-					const data = await BeneficiariesService
-						.getBeneficiary(this.detailOfHousehold.householdHeadId);
+					try {
+						const {
+							data,
+							status,
+							message,
+						} = await BeneficiariesService.getBeneficiary(
+							this.detailOfHousehold.householdHeadId,
+						);
 
-					this.detailOfHouseholdHead = data;
-					await this.mapDetailOfHouseholdToFormModel(data);
+						checkResponseStatus(status, message);
+
+						this.detailOfHouseholdHead = data;
+						await this.mapDetailOfHouseholdToFormModel(data);
+					} catch (e) {
+						Notification(`${this.$t("Household ")}: ${e.message || e}`, "error");
+					}
 				}
 			}
 			this.$emit("loaded");
@@ -835,51 +847,91 @@ export default {
 		},
 
 		async fetchNationalCardTypes() {
-			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then(({ data }) => { this.options.idType = data; })
-				.catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfTypesOfNationalIds();
 
-			this.idTypeLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.idType = data;
+			} catch (e) {
+				Notification(`${this.$t("National IDs")}: ${e.message || e}`, "error");
+			} finally {
+				this.idTypeLoading = false;
+			}
 		},
 
 		async fetchPhoneTypes() {
-			await BeneficiariesService.getListOfTypesOfPhones()
-				.then(({ data }) => { this.options.phoneType = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Phone Types")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfTypesOfPhones();
 
-			this.phoneTypesLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.phoneType = data;
+			} catch (e) {
+				Notification(`${this.$t("Phone Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.phoneTypesLoading = false;
+			}
 		},
 
 		async fetchVulnerabilities() {
-			await BeneficiariesService.getListOfVulnerabilities()
-				.then(({ data }) => { this.options.vulnerabilities = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Vulnerabilities")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfVulnerabilities();
+
+				checkResponseStatus(status, message);
+
+				this.options.vulnerabilities = data;
+			} catch (e) {
+				Notification(`${this.$t("Vulnerabilities")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async fetchResidenceStatus() {
-			await BeneficiariesService.getListOfResidenceStatuses()
-				.then(({ data }) => { this.options.residencyStatus = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Residency Statuses")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfResidenceStatuses();
 
-			this.residenceStatusesLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.residencyStatus = data;
+			} catch (e) {
+				Notification(`${this.$t("Residency Statuses")}: ${e.message || e}`, "error");
+			} finally {
+				this.residenceStatusesLoading = false;
+			}
 		},
 
 		async fetchReferralTypes() {
-			await BeneficiariesService.getListOfReferralTypes()
-				.then(({ data }) => { this.options.referralType = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Referral Types")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await BeneficiariesService.getListOfReferralTypes();
 
-			this.referralTypeLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.referralType = data;
+			} catch (e) {
+				Notification(`${this.$t("Referral Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.referralTypeLoading = false;
+			}
 		},
 
 		submit() {

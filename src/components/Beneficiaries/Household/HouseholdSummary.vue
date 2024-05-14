@@ -118,6 +118,7 @@ import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -218,13 +219,19 @@ export default {
 
 	methods: {
 		async fetchProjects() {
-			await ProjectService.getListOfProjects()
-				.then((response) => {
-					this.options.projects = response.data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({});
+
+				checkResponseStatus(status, message);
+
+				this.options.projects = data;
+			} catch (e) {
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			}
 
 			if (this.isEditing) {
 				this.formModel.selectedProjects = getArrayOfCodeListByKey(this.detailOfHousehold.projectIds, this.options.projects, "id");

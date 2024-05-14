@@ -176,6 +176,7 @@ import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { getUniqueObjectsInArray, isDateBeforeOrEqual } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
@@ -508,14 +509,21 @@ export default {
 		async fetchSectors() {
 			const { projectId } = this.$route.params;
 
-			await SectorsService.getListOfProjectSectors(projectId)
-				.then(({ data }) => {
-					this.options.sectors = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Sectors")} ${e.message || e}`, "error");
-				});
-			this.loading.sectors = false;
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await SectorsService.getListOfProjectSectors(projectId);
+
+				checkResponseStatus(status, message);
+
+				this.options.sectors = data;
+			} catch (e) {
+				Notification(`${this.$t("Sectors")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.sectors = false;
+			}
 		},
 
 		async fetchSubsectors(code) {
@@ -523,41 +531,71 @@ export default {
 
 			try {
 				this.loading.subsectors = true;
-				const { data: { data } } = await SectorsService.getListOfProjectSubSectors(projectId, code);
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await SectorsService.getListOfProjectSubSectors({
+					projectId,
+					code,
+				});
+
+				checkResponseStatus(status, message);
 
 				this.options.subsectors = data;
 			} catch (e) {
-				Notification(`${this.$t("Subsectors")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Subsectors")}: ${e.message || e}`, "error");
 			} finally {
 				this.loading.subsectors = false;
 			}
 		},
 
 		async fetchAssistanceTypes(code) {
-			this.loading.assistanceTypes = true;
-			await AssistancesService.getAssistanceTypes(code)
-				.then(({ data }) => {
-					this.options.assistanceTypes = data.map((type) => ({
-						...type,
-						value: type.value.replace(/^\w/, (value) => value.toUpperCase()),
-					}));
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Assistance Types")} ${e.message || e}`, "error");
+			try {
+				this.loading.assistanceTypes = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistanceTypes({
+					subsector: code,
 				});
-			this.loading.assistanceTypes = false;
+
+				checkResponseStatus(status, message);
+
+				this.options.assistanceTypes = data.map((type) => ({
+					...type,
+					value: type.value.replace(/^\w/, (value) => value.toUpperCase()),
+				}));
+			} catch (e) {
+				Notification(`${this.$t("Assistance Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.assistanceTypes = false;
+			}
 		},
 
 		async fetchTargetTypes(code) {
-			this.loading.targetTypes = true;
-			await AssistancesService.getTargetTypes(code)
-				.then(({ data }) => {
-					this.options.targetTypes = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Target Types")} ${e.message || e}`, "error");
+			try {
+				this.loading.targetTypes = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getTargetTypes({
+					type: code,
 				});
-			this.loading.targetTypes = false;
+
+				checkResponseStatus(status, message);
+
+				this.options.targetTypes = data;
+			} catch (e) {
+				Notification(`${this.$t("Target Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.targetTypes = false;
+			}
 		},
 
 		onValuesForAssistanceName() {

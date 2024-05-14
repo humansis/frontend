@@ -56,6 +56,7 @@
 <script>
 import ImportService from "@/services/ImportService";
 import FileUpload from "@/components/Inputs/FileUpload";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
@@ -158,20 +159,26 @@ export default {
 			this.startLoading = true;
 
 			if (this.dropFiles.length) {
-				await ImportService.uploadFilesIntoImport(importId, this.dropFiles)
-					.then(({ status, message }) => {
-						if (status === 200) {
-							Notification(this.$t("Uploaded Successfully"), "success");
-							this.dropFiles = [];
-							this.startLoading = false;
-							this.$emit("fetchStatistics");
-						} else {
-							Notification(message, "warning");
-						}
-					}).catch((e) => {
-						this.startLoading = false;
-						Notification(`${this.$t("Upload")} ${e.message || e}`, "error");
+				try {
+					const {
+						status,
+						message,
+					} = await ImportService.uploadFilesIntoImport({
+						files: this.dropFiles,
+						importId,
 					});
+
+					checkResponseStatus(status, message);
+
+					Notification(this.$t("Uploaded Successfully"), "success");
+					this.dropFiles = [];
+					this.startLoading = false;
+					this.$emit("fetchStatistics");
+				} catch (e) {
+					Notification(`${this.$t("Upload")}: ${e.message || e}`, "error");
+				} finally {
+					this.startLoading = false;
+				}
 			} else if (this.importFiles.length) {
 				this.$emit("changeImportState", {
 					state: IMPORT.STATUS.INTEGRITY_CHECK,

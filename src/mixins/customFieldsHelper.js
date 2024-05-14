@@ -10,19 +10,16 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await CustomFieldsService.getListOfCustomFields(
-					null,
-					null,
-					"label.asc",
-					null,
-					this.customFieldsTarget,
-				);
+				} = await CustomFieldsService.getListOfCustomFields({
+					sort: "label.asc",
+					filters: this.customFieldsTarget,
+				});
 
 				checkResponseStatus(status, message);
 
 				this.customFieldsList = data;
 			} catch (e) {
-				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Custom Fields")}: ${e.message || e}`, "error");
 			}
 		},
 

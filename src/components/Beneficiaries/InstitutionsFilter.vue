@@ -11,6 +11,7 @@
 import ProjectService from "@/services/ProjectService";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { copyObject } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { FILTER } from "@/consts";
@@ -65,15 +66,21 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.filtersOptions.projects.data = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({});
 
-			this.filtersOptions.projects.loading = false;
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.projects.data = data;
+			} catch (e) {
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.projects.loading = false;
+			}
 		},
 	},
 };

@@ -99,6 +99,7 @@
 import ProjectService from "@/services/ProjectService";
 import SvgIcon from "@/components/SvgIcon";
 import { normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -118,17 +119,25 @@ export default {
 
 	methods: {
 		async fetchData() {
-			await ProjectService.getDetailOfProject(
-				this.$route.params.projectId,
-			).then(({ data }) => {
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await ProjectService.getDetailOfProject(
+					this.$route.params.projectId,
+				);
+
+				checkResponseStatus(status, message);
+
 				const dataCopy = data;
 				dataCopy.sectors = data.sectors?.map((sector) => ({ code: sector, value: sector }));
 				this.projectSummary = dataCopy;
 
 				this.$emit("projectLoaded", dataCopy);
-			}).catch((e) => {
-				Notification(`${this.$t("Detail of Project")} ${e.message || e}`, "error");
-			});
+			} catch (e) {
+				Notification(`${this.$t("Detail of Project")}: ${e.message || e}`, "error");
+			}
 		},
 
 		normalizeText(value) {

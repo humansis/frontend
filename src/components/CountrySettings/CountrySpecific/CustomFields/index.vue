@@ -208,7 +208,10 @@ export default {
 			try {
 				this.customFieldModal.isWaiting = true;
 
-				const { status, message } = await CustomFieldsService.createCustomField(customFieldBody);
+				const {
+					status,
+					message,
+				} = await CustomFieldsService.createCustomField(customFieldBody);
 
 				checkResponseStatus(status, message);
 
@@ -216,7 +219,7 @@ export default {
 				await this.$refs.customFieldsList.fetchData();
 				this.onCloseCustomFieldModal();
 			} catch (e) {
-				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Custom Fields")}: ${e.message || e}`, "error");
 			} finally {
 				this.customFieldModal.isWaiting = false;
 			}
@@ -226,10 +229,13 @@ export default {
 			try {
 				this.customFieldModal.isWaiting = true;
 
-				const { status, message } = await CustomFieldsService.updateCustomField(
+				const {
+					status,
+					message,
+				} = await CustomFieldsService.updateCustomField({
+					body: customFieldBody,
 					id,
-					customFieldBody,
-				);
+				});
 
 				checkResponseStatus(status, message);
 
@@ -237,7 +243,7 @@ export default {
 				await this.$refs.customFieldsList.fetchData();
 				this.onCloseCustomFieldModal();
 			} catch (e) {
-				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Custom Fields")}: ${e.message || e}`, "error");
 			} finally {
 				this.customFieldModal.isWaiting = false;
 			}
@@ -245,14 +251,17 @@ export default {
 
 		async onRemoveCustomField(id) {
 			try {
-				const { status, message } = await CustomFieldsService.deleteCustomField(id);
+				const {
+					status,
+					message,
+				} = await CustomFieldsService.deleteCustomField(id);
 
 				checkResponseStatus(status, message, 204);
 
 				Notification(this.$t("Custom Field Successfully Removed"), "success");
 				this.$refs.customFieldsList.removeFromList(id);
 			} catch (e) {
-				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Custom Fields")}: ${e.message || e}`, "error");
 			}
 		},
 	},

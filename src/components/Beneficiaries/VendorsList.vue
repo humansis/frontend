@@ -111,6 +111,7 @@ import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { getUniqueIds } from "@/utils/customValidators";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { EXPORT, TABLE } from "@/consts";
@@ -181,30 +182,43 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
-			this.table.progress = null;
+			try {
+				this.isLoadingList = true;
+				this.table.progress = null;
 
-			this.setGridFiltersToUrl("vendors");
-			await VendorService.getListOfVendors(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+				this.setGridFiltersToUrl("vendors");
+
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.filters,
-				this.table.searchPhrase,
-			).then(({ data, totalCount }) => {
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await VendorService.getListOfVendors({
+					page: this.table.currentPage,
+					size: this.perPage,
+					filters: this.filters,
+					search: this.table.searchPhrase,
+					sort,
+				});
+
 				this.table.data = [];
+
+				checkResponseStatus(status, message);
+
 				this.table.total = totalCount;
 				this.table.dataUpdated = true;
+
 				if (totalCount > 0) {
-					this.prepareDataForTable(data);
+					await this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
-				Notification(`${this.$t("Vendors")} ${e.message || e}`, "error");
-			});
-			this.isLoadingList = false;
-			this.table.progress = 100;
+			} catch (e) {
+				Notification(`${this.$t("Vendors")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+				this.table.progress = 100;
+			}
 		},
 
 		onAdvancedSearchToggle() {
@@ -271,18 +285,45 @@ export default {
 
 		async getLocations(locationIds) {
 			if (!locationIds?.length) return [];
-			return LocationsService.getLocations(locationIds)
-				.then(({ data }) => data).catch((e) => {
-					Notification(`${this.$t("Locations")} ${e.message || e}`, "error");
-				});
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getLocations({ ids: locationIds });
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Locations")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getUsers(userIds) {
 			if (!userIds?.length) return [];
-			return UsersService.getListOfUsers(null, null, null, null, userIds)
-				.then(({ data }) => data).catch((e) => {
-					Notification(`${this.$t("Users")} ${e.message || e}`, "error");
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await UsersService.getListOfUsers({
+					ids: userIds,
+					filters: { showVendors: true },
 				});
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Users")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async onExportVendors(exportType, format) {
@@ -295,7 +336,14 @@ export default {
 						...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
 					};
 					const filename = `BNF Vendors ${normalizeExportDate()}`;
-					const { data, status, message } = await VendorService.exportVendors(format, filters);
+					const {
+						data,
+						status,
+						message,
+					} = await VendorService.exportVendors({
+						format,
+						filters,
+					});
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {

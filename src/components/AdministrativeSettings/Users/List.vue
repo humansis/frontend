@@ -67,6 +67,7 @@ import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { EXPORT, TABLE } from "@/consts";
@@ -123,26 +124,33 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await UsersService.getListOfUsers(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-				null,
-				null,
-				false,
-			).then(({ data, totalCount }) => {
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await UsersService.getListOfUsers({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					filters: { showVendors: false },
+					sort,
+				});
+
+				checkResponseStatus(status, message);
+
 				this.table.total = totalCount;
 				this.table.data = this.prepareDataForTable(data);
-			}).catch((e) => {
-				Notification(`${this.$t("Users")} ${e.message || e}`, "error");
-			});
-
-			this.isLoadingList = false;
+			} catch (e) {
+				Notification(`${this.$t("Users")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		prepareDataForTable(data) {
@@ -164,12 +172,19 @@ export default {
 		},
 
 		async fetchRoles() {
-			await SystemService.getRoles()
-				.then(({ data }) => {
-					this.roles = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Roles")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await SystemService.getRoles();
+
+				checkResponseStatus(status, message);
+
+				this.roles = data;
+			} catch (e) {
+				Notification(`${this.$t("Roles")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async onExportUsers(exportType, format) {
@@ -178,7 +193,11 @@ export default {
 					this.exportControl.loading = true;
 
 					const filename = `Users ${normalizeExportDate()}`;
-					const { data, status, message } = await UsersService.exportUsers(format);
+					const {
+						data,
+						status,
+						message,
+					} = await UsersService.exportUsers(format);
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {

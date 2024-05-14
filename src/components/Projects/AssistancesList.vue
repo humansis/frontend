@@ -200,6 +200,7 @@ import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
@@ -369,47 +370,66 @@ export default {
 		},
 
 		async fetchProjectAssistances() {
-			await AssistancesService.getListOfProjectAssistances(
-				this.$route.params.projectId,
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+			try {
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(async ({ data, totalCount }) => {
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await AssistancesService.getListOfProjectAssistances({
+					id: this.$route.params.projectId,
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					filters: this.filters,
+					sort,
+				});
+
+				checkResponseStatus(status, message);
+
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
+
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-			});
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async fetchUpcomingAssistances() {
-			await AssistancesService.getListOfAssistances(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+			try {
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				true,
-				null,
-				this.filters,
-			).then(({ data, totalCount }) => {
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await AssistancesService.getListOfAssistances({
+					page: this.table.currentPage,
+					size: this.perPage,
+					upcoming: true,
+					filters: this.filters,
+					sort,
+				});
+
+				checkResponseStatus(status, message);
+
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
+
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
-				Notification(`${this.$t("Upcoming Assistances")} ${e.message || e}`, "error");
-			});
+			} catch (e) {
+				Notification(`${this.$t("Upcoming Assistances")}: ${e.message || e}`, "error");
+			}
 		},
 
 		prepareDataForTable(data) {
@@ -587,11 +607,15 @@ export default {
 						...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
 					};
 					const filename = `Assistance overview ${normalizeExportDate()}`;
-					const { data, status, message } = await AssistancesService.exportAssistances(
+					const {
+						data,
+						status,
+						message,
+					} = await AssistancesService.exportAssistances({
+						projectId: this.$route.params.projectId,
 						format,
-						this.$route.params.projectId,
 						filters,
-					);
+					});
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {

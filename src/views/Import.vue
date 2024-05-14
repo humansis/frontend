@@ -125,6 +125,7 @@ import IdentityStep from "@/components/Imports/IdentityStep";
 import IntegrityStep from "@/components/Imports/IntegrityStep";
 import StartStep from "@/components/Imports/StartStep";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
@@ -372,17 +373,24 @@ export default {
 			}
 		},
 
-		fetchImportFiles() {
+		async fetchImportFiles() {
 			const { importId } = this.$route.params;
 
 			if (importId) {
-				ImportService.getFilesInImport(importId)
-					.then(({ data: { data } }) => {
-						this.importFiles = data;
-						this.checkImportFiles(data);
-					}).catch((e) => {
-						Notification(`${this.$t("Import Files")} ${e.message || e}`, "error");
-					});
+				try {
+					const {
+						data: { data },
+						status,
+						message,
+					} = await ImportService.getFilesInImport(importId);
+
+					checkResponseStatus(status, message);
+
+					this.importFiles = data;
+					this.checkImportFiles(data);
+				} catch (e) {
+					Notification(`${this.$t("Import Files")}: ${e.message || e}`, "error");
+				}
 			}
 		},
 
@@ -398,22 +406,40 @@ export default {
 			this.columnsError = columnsError;
 		},
 
-		fetchImport(importId) {
-			ImportService.getDetailOfImport(importId).then(({ data }) => {
+		async fetchImport(importId) {
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await ImportService.getDetailOfImport(importId);
+
+				checkResponseStatus(status, message);
+
 				this.importDetail = data;
 				this.stepsRedirect(data.status);
-			}).catch((e) => {
-				Notification(`${this.$t("Import")} ${e.message || e}`, "error");
-			});
+			} catch (e) {
+				Notification(`${this.$t("Import")}: ${e.message || e}`, "error");
+			}
 		},
 
-		onFetchImportStatistics() {
+		async onFetchImportStatistics() {
 			const { importId } = this.$route.params;
 
 			if (importId) {
-				ImportService.getStatisticsInImport(importId).then(({ data }) => {
+				try {
+					const {
+						data,
+						status,
+						message,
+					} = await ImportService.getStatisticsInImport(importId);
+
+					checkResponseStatus(status, message);
+
 					this.statistics = data;
-				});
+				} catch (e) {
+					Notification(`${this.$t("Import statistics")}: ${e.message || e}`, "error");
+				}
 			}
 		},
 
@@ -498,38 +524,46 @@ export default {
 			this.columnsError = 0;
 		},
 
-		changeImportState(state, successMessage, goNext) {
+		async changeImportState(state, successMessage, goNext) {
 			const { importId } = this.$route.params;
-			this.loadingChangeStateButton = true;
 
-			ImportService.changeImportState(importId, { status: state })
-				.then(({ status, message }) => {
-					if (status === 202) {
-						if (state === IMPORT.STATUS.CANCEL) {
-							Notification(this.$t("Import Canceled"), "success");
-							this.onChangeTab(4);
-						}
+			try {
+				this.loadingChangeStateButton = true;
 
-						if (this.$route.name === "Import") {
-							Notification(this.$t(successMessage), "success");
-
-							if (state !== IMPORT.STATUS.FINISH
-								&& state !== IMPORT.STATUS.IMPORTING
-								&& state !== IMPORT.STATUS.CANCEL) {
-								if (goNext) this.onChangeTab(this.activeStep + 1);
-							}
-						}
-					} else if (status >= 400 && status <= 500) {
-						Notification(message, "warning");
-					}
-				}).catch((e) => {
-					const type = state === IMPORT.STATUS.IMPORTING ? "warning" : "error";
-					Notification(`${this.$t("Import")} ${e.message || e}`, type);
-				}).finally(() => {
-					this.loadingChangeStateButton = false;
-					this.onFetchImportStatistics();
-					this.fetchImportFiles();
+				const {
+					status,
+					message,
+				} = await ImportService.changeImportState({
+					body: { status: state },
+					importId,
 				});
+
+				if (status === 202) {
+					if (state === IMPORT.STATUS.CANCEL) {
+						Notification(this.$t("Import Canceled"), "success");
+						this.onChangeTab(4);
+					}
+
+					if (this.$route.name === "Import") {
+						Notification(this.$t(successMessage), "success");
+
+						if (state !== IMPORT.STATUS.FINISH
+							&& state !== IMPORT.STATUS.IMPORTING
+							&& state !== IMPORT.STATUS.CANCEL) {
+							if (goNext) this.onChangeTab(this.activeStep + 1);
+						}
+					}
+				} else if (status >= 400 && status <= 500) {
+					Notification(message, "warning");
+				}
+			} catch (e) {
+				const type = state === IMPORT.STATUS.IMPORTING ? "warning" : "error";
+				Notification(`${this.$t("Import")}: ${e.message || e}`, type);
+			} finally {
+				this.loadingChangeStateButton = false;
+				this.onFetchImportStatistics();
+				this.fetchImportFiles();
+			}
 		},
 
 		onGoToFinalStep() {

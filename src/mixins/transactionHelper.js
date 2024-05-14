@@ -6,11 +6,12 @@ import ProductService from "@/services/ProductService";
 import ProjectService from "@/services/ProjectService";
 import VendorService from "@/services/VendorService";
 import baseHelper from "@/mixins/baseHelper";
+import institutionHelper from "@/mixins/institutionHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
-	mixins: [baseHelper],
+	mixins: [baseHelper, institutionHelper],
 
 	computed: {
 		...mapState(["admNames"]),
@@ -66,14 +67,14 @@ export default {
 
 			if (beneficiaryIds.length) {
 				beneficiaries = isInstitution
-					? await BeneficiariesService.getInstitutions(beneficiaryIds, { isArchived: true })
+					? await this.fetchInstitutions(beneficiaryIds, { isArchived: true })
 					: await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
 			}
 
 			this.table.data.forEach((item, key) => {
 				const { beneficiaryId } = item;
 				const beneficiary = item.type === "Institution"
-					? this.prepareEntityForTable(beneficiaryId, beneficiaries.data)
+					? this.prepareEntityForTable(beneficiaryId, beneficiaries)
 					: this.prepareEntityForTable(beneficiaryId, beneficiaries);
 
 				if (beneficiary) {
@@ -153,133 +154,276 @@ export default {
 
 		async getProducts(ids) {
 			if (!ids.length) return [];
-			return ProductService.getProducts(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Products")} ${e.message || e}`, "error");
-				});
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProductService.getProducts(ids);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Products")}: ${e.message || e}`, "error");
+			}
+			return [];
 		},
 
 		async getCommodities(ids) {
 			if (!ids.length) return [];
-			return AssistancesService.getCommodities(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Commodities")} ${e.message || e}`, "error");
-				});
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getCommodities(ids);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Commodities")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getVendors(ids) {
 			if (!ids.length) return [];
 
-			/*
-			*	TODO In future we probably need to refactor sending arguments
-			*   in functions and make it like one object with properties, because these nulls are horrible
-			*/
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await VendorService.getListOfVendors({ ids });
 
-			return VendorService.getListOfVendors(null, null, null, null, null, ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Vendors")} ${e.message || e}`, "error");
-				});
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Vendors")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getAdm1s(ids) {
 			if (!ids.length) return [];
-			return LocationsService.getAdm1s(ids)
-				.then(({ data }) => data);
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getAdm1s(ids);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Adm1")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getAdm2s(ids) {
 			if (!ids.length) return [];
-			return LocationsService.getAdm2s(ids)
-				.then(({ data }) => data);
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getAdm2s(ids);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Adm2")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getAdm3s(ids) {
 			if (!ids.length) return [];
-			return LocationsService.getAdm3s(ids)
-				.then(({ data }) => data);
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getAdm3s(ids);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Adm3")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getAdm4s(ids) {
 			if (!ids.length) return [];
-			return LocationsService.getAdm4s(ids)
-				.then(({ data }) => data);
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getAdm4s(ids);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Adm4")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getAssistances(ids) {
 			if (!ids.length) return [];
-			return AssistancesService.getAssistances(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
-				});
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistances(ids);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Assistances")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getBeneficiaries(ids, filters) {
-			return BeneficiariesService.getBeneficiaries(ids, filters)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getBeneficiaries({
+					ids,
+					filters,
 				});
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getProjects(ids) {
-			return ProjectService.getListOfProjects(null, null, null, ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({ ids });
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
-		// Methods for Filters
 		async fetchProjects() {
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.filtersOptions.project.data = data;
-					this.filtersOptions.project.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({});
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.project.data = data;
+			} catch (e) {
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.project.loading = false;
+			}
 		},
 
 		async fetchModalityTypes() {
-			await AssistancesService.getListOfAllModalityTypes()
-				.then(({ data }) => {
-					this.filtersOptions.commodity.data = data;
-					this.filtersOptions.commodity.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Modality")}${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getListOfAllModalityTypes();
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.commodity.data = data;
+			} catch (e) {
+				Notification(`${this.$t("Modality")}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.commodity.loading = false;
+			}
 		},
 
 		async fetchVendors() {
-			await VendorService.getListOfVendors()
-				.then(({ data }) => {
-					this.filtersOptions.vendor.data = data.map((item) => {
-						const vendor = { ...item };
-						vendor.vendorName = `${item.name} ${item.shop ? `(${item.shop})` : ""}`;
-						return vendor;
-					});
-					this.filtersOptions.vendor.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Vendor")}${e.message || e}`, "error");
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await VendorService.getListOfVendors({});
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.vendor.data = data.map((item) => {
+					const vendor = { ...item };
+					vendor.vendorName = `${item.name} ${item.shop ? `(${item.shop})` : ""}`;
+					return vendor;
 				});
+			} catch (e) {
+				Notification(`${this.$t("Vendor")}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.vendor.loading = false;
+			}
 		},
 
 		async fetchBeneficiaryTypes() {
-			await BeneficiariesService.getBeneficiaryTypes()
-				.then(({ data }) => {
-					this.filtersOptions.beneficiaryType.data = data;
-					this.filtersOptions.beneficiaryType.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Beneficiary Types")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getBeneficiaryTypes();
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.beneficiaryType.data = data;
+			} catch (e) {
+				Notification(`${this.$t("Beneficiary Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.beneficiaryType.loading = false;
+			}
 		},
 
 		async fetchAssistanceForAdvancedSearch() {

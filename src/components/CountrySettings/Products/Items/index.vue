@@ -43,6 +43,7 @@ import ProductForm from "@/components/CountrySettings/Products/Items/ProductForm
 import ProductsList from "@/components/CountrySettings/Products/Items/ProductsList";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { CURRENCIES } from "@/consts";
 
@@ -104,14 +105,20 @@ export default {
 	methods: {
 		async fetchCategories() {
 			try {
-				const { data: { data } } = await ProductService.getListOfCategories(
-					1,
-					1000,
-				);
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProductService.getListOfCategories({
+					page: 1,
+					size: 1000,
+				});
+
+				checkResponseStatus(status, message);
 
 				this.categories = data;
 			} catch (e) {
-				Notification(`${this.$t("Categories")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Categories")}: ${e.message || e}`, "error");
 			}
 		},
 
@@ -223,52 +230,83 @@ export default {
 		},
 
 		async createProduct(productBody) {
-			this.productModal.isWaiting = true;
+			try {
+				this.productModal.isWaiting = true;
 
-			await ProductService.createProduct(productBody).then(({ status }) => {
-				if (status === 200) {
-					Notification(this.$t("Product Successfully Created"), "success");
-					this.$refs.productsList.fetchData();
-					this.onCloseProductModal();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Product")} ${e.message || e}`, "error");
+				const {
+					status,
+					message,
+				} = await ProductService.createProduct(productBody);
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Product Successfully Created"), "success");
+				await this.$refs.productsList.fetchData();
+				this.onCloseProductModal();
+			} catch (e) {
+				Notification(`${this.$t("Product")}: ${e.message || e}`, "error");
+			} finally {
 				this.productModal.isWaiting = false;
-			});
+			}
 		},
 
 		async updateProduct(id, productBody) {
-			this.productModal.isWaiting = true;
+			try {
+				this.productModal.isWaiting = true;
 
-			await ProductService.updateProduct(id, productBody).then(({ status }) => {
-				if (status === 200) {
-					Notification(this.$t("Product Successfully Updated"), "success");
-					this.$refs.productsList.fetchData();
-					this.onCloseProductModal();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Product")} ${e.message || e}`, "error");
+				const {
+					status,
+					message,
+				} = await ProductService.updateProduct({
+					id,
+					productBody,
+				});
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Product Successfully Updated"), "success");
+				await this.$refs.productsList.fetchData();
+				this.onCloseProductModal();
+			} catch (e) {
+				Notification(`${this.$t("Product")}: ${e.message || e}`, "error");
+			} finally {
 				this.productModal.isWaiting = false;
-			});
+			}
 		},
 
 		async uploadProductImage(image) {
 			if (image) {
-				const { data: { url } } = await ProductService.uploadProductImage(image);
-				return url;
+				try {
+					const {
+						data: { url },
+						status,
+						message,
+					} = await ProductService.uploadProductImage(image);
+
+					checkResponseStatus(status, message);
+
+					return url;
+				} catch (e) {
+					Notification(`${this.$t("Image upload")}: ${e.message || e}`, "error");
+				}
 			}
 			return null;
 		},
 
 		async onRemoveProduct(id) {
-			await ProductService.removeProduct(id).then(({ status }) => {
-				if (status === 204) {
-					Notification(this.$t("Product Successfully Removed"), "success");
-					this.$refs.productsList.removeFromList(id);
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Product")} ${e.message || e}`, "error");
-			});
+			try {
+				const {
+					status,
+					message,
+				} = await ProductService.removeProduct(id);
+
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("Product Successfully Removed"), "success");
+				this.$refs.productsList.removeFromList(id);
+			} catch (e) {
+				Notification(`${this.$t("Product")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

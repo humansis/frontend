@@ -16,6 +16,7 @@ import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
 import locationHelper from "@/mixins/locationHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { copyObject } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { FILTER } from "@/consts";
@@ -230,57 +231,92 @@ export default {
 
 		async fetchProjects() {
 			try {
-				const { data: { data } } = await ProjectService.getShortListOfProjects();
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getShortListOfProjects();
+
+				checkResponseStatus(status, message);
 
 				this.filtersOptions.projects.data = data;
-				this.filtersOptions.projects.loading = false;
 			} catch (e) {
 				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.projects.loading = false;
 			}
 		},
 
 		async fetchLivelihoods() {
-			await BeneficiariesService.getListOfLivelihoods()
-				.then(({ data }) => {
-					this.filtersOptions.livelihoods.data = data;
-					this.filtersOptions.livelihoods.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Livelihoods")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfLivelihoods();
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.livelihoods.data = data;
+			} catch (e) {
+				Notification(`${this.$t("Livelihoods")}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.livelihoods.loading = false;
+			}
 		},
 
 		async fetchVulnerabilities() {
-			await BeneficiariesService.getListOfVulnerabilities()
-				.then(({ data }) => {
-					this.filtersOptions.vulnerabilities.data = data;
-					this.filtersOptions.vulnerabilities.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Vulnerabilities")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfVulnerabilities();
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.vulnerabilities.data = data;
+			} catch (e) {
+				Notification(`${this.$t("Vulnerabilities")}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.vulnerabilities.loading = false;
+			}
 		},
 
 		async fetchResidenceStatuses() {
-			await BeneficiariesService.getListOfResidenceStatuses()
-				.then(({ data }) => {
-					this.filtersOptions.residencyStatuses.data = data;
-					this.filtersOptions.residencyStatuses.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Residency Statuses")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfResidenceStatuses();
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.residencyStatuses.data = data;
+			} catch (e) {
+				Notification(`${this.$t("Residency Statuses")}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.residencyStatuses.loading = false;
+			}
 		},
 
 		async fetchReferralTypes() {
-			await BeneficiariesService.getListOfReferralTypes()
-				.then(({ data }) => {
-					this.filtersOptions.referralTypes.loading = false;
-					this.filtersOptions.referralTypes.data = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Referral Types")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await BeneficiariesService.getListOfReferralTypes();
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.referralTypes.data = data;
+			} catch (e) {
+				Notification(`${this.$t("Referral Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.referralTypes.loading = false;
+			}
 		},
 	},
 };

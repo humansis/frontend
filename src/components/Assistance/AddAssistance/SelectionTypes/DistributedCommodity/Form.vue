@@ -939,11 +939,17 @@ export default {
 			try {
 				this.loading.modalities = true;
 
-				const { data } = await AssistancesService.getListOfModalities();
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getListOfModalities();
+
+				checkResponseStatus(status, message);
 
 				this.options.modalities = data;
 			} catch (e) {
-				Notification(`${this.$t("Modalities")} ${e.message || e}}`, "error");
+				Notification(`${this.$t("Modalities")}: ${e.message || e}}`, "error");
 			} finally {
 				this.loading.modalities = false;
 			}
@@ -953,11 +959,17 @@ export default {
 			try {
 				this.loading.modalities = true;
 
-				const { data } = await AssistancesService.getListOfModalitiesWithTypes();
+				const {
+					data,
+					status,
+					message,
+				} = await AssistancesService.getListOfModalitiesWithTypes();
+
+				checkResponseStatus(status, message);
 
 				this.prepareModalitiesOptions(data);
 			} catch (e) {
-				Notification(`${this.$t("Modalities")} ${e.message || e}}`, "error");
+				Notification(`${this.$t("Modalities")}: ${e.message || e}}`, "error");
 			} finally {
 				this.loading.modalities = false;
 			}
@@ -967,11 +979,17 @@ export default {
 			try {
 				this.loading.types = true;
 
-				const { data } = await AssistancesService.getListOfModalityTypes(code);
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getListOfModalityTypes(code);
+
+				checkResponseStatus(status, message);
 
 				this.prepareModalityTypesOptions(data);
 			} catch (e) {
-				Notification(`${this.$t("Modality Types")}${e.message || e}`, "error");
+				Notification(`${this.$t("Modality Types")}: ${e.message || e}`, "error");
 			} finally {
 				this.loading.types = false;
 			}
@@ -985,13 +1003,10 @@ export default {
 					data: { data, totalCount },
 					status,
 					message,
-				} = await CustomFieldsService.getListOfCustomFields(
-					null,
-					null,
-					"label.asc",
-					null,
-					{ type: "number" },
-				);
+				} = await CustomFieldsService.getListOfCustomFields({
+					sort: "label.asc",
+					filters: { type: "number" },
+				});
 
 				this.options.customFields = [];
 

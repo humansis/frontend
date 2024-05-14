@@ -124,6 +124,7 @@ import { mapActions, mapState } from "vuex";
 import LocationsService from "@/services/LocationsService";
 import TranslationService from "@/services/TranslationService";
 import identifierBuilder from "@/mixins/identifierBuilder";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -207,18 +208,24 @@ export default {
 		},
 
 		async handleChangeLanguage(language) {
-			await TranslationService.getTranslations(language.key).then(async (response) => {
-				if (response.status === 200) {
-					this.$i18n.locale = language.key.toLowerCase();
-					this.$i18n.fallbackLocale = language.key.toLowerCase();
-					this.$root.$i18n.setLocaleMessage(language.key, response.data);
-					await this.storeLanguage(language);
-					await this.storeTranslations(response.data);
-					await this.fetchAdmNames();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Translations")} ${e.message || e}`, "error");
-			});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await TranslationService.getTranslations(language.key);
+
+				checkResponseStatus(status, message);
+
+				this.$i18n.locale = language.key.toLowerCase();
+				this.$i18n.fallbackLocale = language.key.toLowerCase();
+				this.$root.$i18n.setLocaleMessage(language.key, data);
+				await this.storeLanguage(language);
+				await this.storeTranslations(data);
+				await this.fetchAdmNames();
+			} catch (e) {
+				Notification(`${this.$t("Translations")}: ${e.message || e}`, "error");
+			}
 
 			this.$router.go();
 		},
@@ -229,12 +236,19 @@ export default {
 		},
 
 		async fetchAdmNames() {
-			await LocationsService.getAdmNames()
-				.then(({ data }) => {
-					this.storeAdmNames(data);
-				}).catch((e) => {
-					Notification(`${this.$t("Location Names")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await LocationsService.getAdmNames();
+
+				checkResponseStatus(status, message);
+
+				this.storeAdmNames(data);
+			} catch (e) {
+				Notification(`${this.$t("Location Names")}: ${e.message || e}`, "error");
+			}
 		},
 
 		logout() {

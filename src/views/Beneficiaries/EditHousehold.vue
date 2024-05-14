@@ -28,6 +28,7 @@
 <script>
 import BeneficiariesService from "@/services/BeneficiariesService";
 import HouseholdTabs from "@/components/Beneficiaries/Household/HouseholdTabs";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -52,9 +53,16 @@ export default {
 	methods: {
 		async fetchHouseholdDetail(id) {
 			try {
-				this.detailOfHousehold = await BeneficiariesService.getDetailOfHousehold(id);
+				const {
+					data,
+					status,
+					message,
+				} = await BeneficiariesService.getDetailOfHousehold(id);
+
+				checkResponseStatus(status, message);
+				this.detailOfHousehold = data;
 			} catch (e) {
-				Notification(`${this.$t("Household")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Household")}: ${e.message || e}`, "error");
 			} finally {
 				this.isDetailOfHouseholdLoaded = true;
 			}

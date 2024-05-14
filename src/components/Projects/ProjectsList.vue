@@ -71,6 +71,7 @@ import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { EXPORT, TABLE } from "@/consts";
@@ -138,27 +139,37 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await ProjectService.getListOfProjects(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				null,
-				this.table.searchPhrase,
-			).then(async ({ data, totalCount }) => {
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					sort,
+				});
+
 				this.table.data = [];
+
+				checkResponseStatus(status, message);
+
 				this.table.total = totalCount;
+
 				if (data.length > 0) {
 					this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
-				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-			});
-
-			this.isLoadingList = false;
+			} catch (e) {
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		prepareDataForTable(data) {
@@ -189,10 +200,14 @@ export default {
 
 					const filters = { ...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }) };
 					const filename = `Projects ${normalizeExportDate()}`;
-					const { data, status, message } = await ProjectService.exportProjects(
+					const {
+						data,
+						status,
+						message,
+					} = await ProjectService.exportProjects({
 						format,
 						filters,
-					);
+					});
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {

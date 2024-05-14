@@ -103,6 +103,7 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 
@@ -198,30 +199,45 @@ export default {
 		},
 
 		async fetchLocationsTypes() {
-			this.locationTypesLoading = true;
-			await BeneficiariesService.getListOfLocationsTypes()
-				.then((result) => {
-					this.options.typeOfLocation = result.data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Location Types")} ${e.message || e}`, "error");
-				});
-			this.locationTypesLoading = false;
+			try {
+				this.locationTypesLoading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfLocationsTypes();
+
+				checkResponseStatus(status, message);
+
+				this.options.typeOfLocation = data;
+			} catch (e) {
+				Notification(`${this.$t("Location Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.locationTypesLoading = false;
+			}
 		},
 
 		async fetchCamps() {
-			this.campsLoading = true;
+			try {
+				this.campsLoading = true;
 
-			await AddressService.getCampsByLocation(this.formModel.locationId)
-				.then(({ data }) => {
-					this.options.camps = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Camps")} ${e.message || e}`, "error");
-				})
-				.finally(() => {
-					this.campsLoading = false;
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AddressService.getCampsByLocation(
+					this.formModel.locationId,
+				);
+
+				checkResponseStatus(status, message);
+
+				this.options.camps = data;
+			} catch (e) {
+				Notification(`${this.$t("Camps")}: ${e.message || e}`, "error");
+			} finally {
+				this.campsLoading = false;
+			}
 		},
 
 		async mapLocations() {

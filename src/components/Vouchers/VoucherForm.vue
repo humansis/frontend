@@ -146,6 +146,7 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import TagInput from "@/components/Inputs/TagInput";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { BookletStatusArray } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { CURRENCIES } from "@/consts";
@@ -238,12 +239,19 @@ export default {
 		},
 
 		async fetchProjects() {
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.options.projects = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({});
+
+				checkResponseStatus(status, message);
+
+				this.options.projects = data;
+			} catch (e) {
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

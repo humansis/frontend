@@ -45,6 +45,7 @@ import Modal from "@/components/Inputs/Modal";
 import VoucherForm from "@/components/Vouchers/VoucherForm";
 import VouchersList from "@/components/Vouchers/VouchersList";
 import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -205,62 +206,80 @@ export default {
 		},
 
 		async createVoucher(voucherBody) {
-			this.voucherModal.isWaiting = true;
+			try {
+				this.voucherModal.isWaiting = true;
 
-			await BookletsService.createBooklet(voucherBody)
-				.then((response) => {
-					if (response.status === 204) {
-						Notification(this.$t("Booklet Successfully Created"), "success");
+				const {
+					status,
+					message,
+				} = await BookletsService.createBooklet(voucherBody);
 
-						if (this.$refs.vouchersList) {
-							this.$refs.vouchersList.fetchData();
-						} else if (this.$refs.batchesList) {
-							this.$refs.batchesList.fetchData();
-						} else {
-							this.$router.go();
-						}
-						this.onCloseVoucherModal();
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Booklet")} ${e.message || e}`, "error");
-				});
-			this.voucherModal.isWaiting = false;
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("Booklet Successfully Created"), "success");
+
+				if (this.$refs.vouchersList) {
+					await this.$refs.vouchersList.fetchData();
+				} else if (this.$refs.batchesList) {
+					this.$refs.batchesList.fetchData();
+				} else {
+					this.$router.go();
+				}
+
+				this.onCloseVoucherModal();
+			} catch (e) {
+				Notification(`${this.$t("Booklet")}: ${e.message || e}`, "error");
+			} finally {
+				this.voucherModal.isWaiting = false;
+			}
 		},
 
 		async updateVoucher({ currency, values, quantityOfVouchers, password }, id) {
-			this.voucherModal.isWaiting = true;
+			try {
+				this.voucherModal.isWaiting = true;
 
-			await BookletsService.updateBooklet(
-				{ currency, values, quantityOfVouchers, password },
-				id,
-			).then((response) => {
-				if (response.status === 200) {
-					Notification(this.$t("Booklet Successfully Updated"), "success");
+				const {
+					status,
+					message,
+				} = await BookletsService.updateBooklet({
+					body: { currency, values, quantityOfVouchers, password },
+					id,
+				});
 
-					if (this.$refs.vouchersList) {
-						this.$refs.vouchersList.fetchData();
-					} else if (this.$refs.batchesList) {
-						this.$refs.batchesList.fetchData();
-					} else {
-						this.$router.go();
-					}
-					this.onCloseVoucherModal();
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Booklet Successfully Updated"), "success");
+
+				if (this.$refs.vouchersList) {
+					await this.$refs.vouchersList.fetchData();
+				} else if (this.$refs.batchesList) {
+					this.$refs.batchesList.fetchData();
+				} else {
+					this.$router.go();
 				}
-			}).catch((e) => {
-				Notification(`${this.$t("Booklet")} ${e.message || e}`, "error");
-			});
-			this.voucherModal.isWaiting = false;
+
+				this.onCloseVoucherModal();
+			} catch (e) {
+				Notification(`${this.$t("Booklet")}: ${e.message || e}`, "error");
+			} finally {
+				this.voucherModal.isWaiting = false;
+			}
 		},
 
 		async onRemoveVoucher(id) {
-			await BookletsService.removeBooklet(id).then((response) => {
-				if (response.status === 204) {
-					Notification(this.$t("Booklet successfully removed"), "success");
-					this.$refs.vouchersList.removeFromList(id);
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Booklet")} ${e.message || e}`, "error");
-			});
+			try {
+				const {
+					status,
+					message,
+				} = await BookletsService.removeBooklet(id);
+
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("Booklet successfully removed"), "success");
+				this.$refs.vouchersList.removeFromList(id);
+			} catch (e) {
+				Notification(`${this.$t("Booklet")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

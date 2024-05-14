@@ -1,79 +1,29 @@
-import { download, fetcher, filtersToUri } from "@/utils/fetcher";
+import { download, fetcher } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	async getListOfDistributedItems(page, size, sort, search, filters) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const filtersText = filters ? filtersToUri(filters) : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `distributed-items?${pageText + sizeText + sortText + fulltext + filtersText}`,
+	getListOfDistributedItems({ page, size, sort, search, filters }) {
+		return fetcher({
+			uri: `distributed-items${queryBuilder({ page, size, sort, search, filters })}`,
 		});
-
-		return { data, totalCount };
 	},
 
-	async getListOfPurchasedItems(page, size, sort, search, filters) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const filtersText = filters ? filtersToUri(filters) : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `purchased-items?${pageText + sizeText + sortText + fulltext + filtersText}`,
+	getListOfSmartcardPurchasedItems({ page, size, sort, search, filters }) {
+		return fetcher({
+			uri: `smartcard-purchased-items${queryBuilder({ page, size, sort, search, filters })}`,
 		});
-
-		return { data, totalCount };
 	},
 
-	async getListOfSmartcardPurchasedItems(page, size, sort, search, filters) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const filtersText = filters ? filtersToUri(filters) : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `smartcard-purchased-items?${pageText + sizeText + sortText + fulltext + filtersText}`,
+	exportDistributions({ format, page, size, sort, search, filters }) {
+		return download({
+			uri: `distributed-items/exports${queryBuilder({ page, size, sort, search, filters, format })}`,
 		});
-
-		return { data, totalCount };
 	},
 
-	async exportDistributions(format, page, size, sort, search, filters) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const filtersText = filters ? filtersToUri(filters) : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const formatText = format ? `type=${format}` : "";
-
-		return download({ uri: `distributed-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
-	},
-
-	async exportPurchases(format, page, size, sort, search, filters) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const filtersText = filters ? filtersToUri(filters) : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const formatText = format ? `type=${format}` : "";
-
-		return download({ uri: `purchased-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
-	},
-
-	async exportSmartcardPurchasesItems(format, page, size, sort, search, filters) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const filtersText = filters ? filtersToUri(filters) : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const formatText = format ? `type=${format}` : "";
-
-		return download({ uri: `smartcard-purchased-items/exports?${formatText + pageText + sizeText + sortText + fulltext + filtersText}` });
+	exportSmartcardPurchasesItems({ format, page, size, sort, search, filters }) {
+		return download({
+			uri: `smartcard-purchased-items/exports${queryBuilder({ page, size, sort, search, filters, format })}`,
+		});
 	},
 
 };

@@ -41,6 +41,7 @@ import CategoriesList from "@/components/CountrySettings/Products/Categories/Cat
 import CategoryForm from "@/components/CountrySettings/Products/Categories/CategoryForm";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -175,52 +176,83 @@ export default {
 		},
 
 		async createCategory(categoryBody) {
-			this.categoryModal.isWaiting = true;
+			try {
+				this.categoryModal.isWaiting = true;
 
-			await ProductService.createCategory(categoryBody).then(({ status }) => {
-				if (status === 200) {
-					Notification(this.$t("Category Successfully Created"), "success");
-					this.$refs.categoriesList.fetchData();
-					this.onCloseCategoryModal();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Category")} ${e.message || e}`, "error");
+				const {
+					status,
+					message,
+				} = await ProductService.createCategory(categoryBody);
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Category Successfully Created"), "success");
+				await this.$refs.categoriesList.fetchData();
+				this.onCloseCategoryModal();
+			} catch (e) {
+				Notification(`${this.$t("Category")}: ${e.message || e}`, "error");
+			} finally {
 				this.categoryModal.isWaiting = false;
-			});
+			}
 		},
 
 		async updateCategory(id, categoryBody) {
-			this.categoryModal.isWaiting = true;
+			try {
+				this.categoryModal.isWaiting = true;
 
-			await ProductService.updateCategory(id, categoryBody).then(({ status }) => {
-				if (status === 200) {
-					Notification(this.$t("Category Successfully Updated"), "success");
-					this.$refs.categoriesList.fetchData();
-					this.onCloseCategoryModal();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Category")} ${e.message || e}`, "error");
+				const {
+					status,
+					message,
+				} = await ProductService.updateCategory({
+					body: categoryBody,
+					id,
+				});
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Category Successfully Updated"), "success");
+				await this.$refs.categoriesList.fetchData();
+				this.onCloseCategoryModal();
+			} catch (e) {
+				Notification(`${this.$t("Category")}: ${e.message || e}`, "error");
+			} finally {
 				this.categoryModal.isWaiting = false;
-			});
+			}
 		},
 
 		async uploadCategoryImage(image) {
 			if (image) {
-				const { data: { url } } = await ProductService.uploadCategoryImage(image);
-				return url;
+				try {
+					const {
+						data: { url },
+						status,
+						message,
+					} = await ProductService.uploadCategoryImage(image);
+
+					checkResponseStatus(status, message);
+
+					return url;
+				} catch (e) {
+					Notification(`${this.$t("Image upload")}: ${e.message || e}`, "error");
+				}
 			}
 			return null;
 		},
 
 		async onRemoveCategory(id) {
-			await ProductService.removeCategory(id).then(({ status }) => {
-				if (status === 204) {
-					Notification(this.$t("Category Successfully Removed"), "success");
-					this.$refs.categoriesList.removeFromList(id);
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Category")} ${e.message || e}`, "error");
-			});
+			try {
+				const {
+					status,
+					message,
+				} = await ProductService.removeCategory(id);
+
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("Category Successfully Removed"), "success");
+				this.$refs.categoriesList.removeFromList(id);
+			} catch (e) {
+				Notification(`${this.$t("Category")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

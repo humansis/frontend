@@ -119,18 +119,19 @@ export default {
 			try {
 				this.isLoadingList = true;
 
+				const sort = this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "";
 				const {
 					data: { data, totalCount },
 					status,
 					message,
-				} = await CustomFieldsService.getListOfCustomFields(
-					this.table.currentPage,
-					this.perPage,
-					this.table.sortColumn !== ""
-						? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-						: "",
-					this.table.searchPhrase,
-				);
+				} = await CustomFieldsService.getListOfCustomFields({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					sort,
+				});
 
 				checkResponseStatus(status, message);
 
@@ -139,7 +140,7 @@ export default {
 					this.table.total = totalCount;
 				}
 			} catch (e) {
-				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Custom Fields")}: ${e.message || e}`, "error");
 			} finally {
 				this.isLoadingList = false;
 			}
@@ -151,11 +152,15 @@ export default {
 					this.exportControl.loading = true;
 
 					const filename = `Custom Fields ${normalizeExportDate()}`;
-					const { data, status, message } = await CustomFieldsService.exportCustomFields(format);
+					const {
+						data,
+						status,
+						message,
+					} = await CustomFieldsService.exportCustomFields(format);
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Custom Fields:")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export Custom Fields")}: ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

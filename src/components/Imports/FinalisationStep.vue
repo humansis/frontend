@@ -285,6 +285,8 @@
 <script>
 import ImportService from "@/services/ImportService";
 import { normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
+import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
 export default {
@@ -404,13 +406,23 @@ export default {
 			});
 		},
 
-		fetchImportNotImportedRows() {
+		async fetchImportNotImportedRows() {
 			const { importId } = this.$route.params;
 
 			if (importId) {
-				ImportService.getNotImportedRowsInImport(importId).then(({ data }) => {
-					this.notImportedRows = data.data;
-				});
+				try {
+					const {
+						data: { data },
+						status,
+						message,
+					} = await ImportService.getNotImportedRowsInImport(importId);
+
+					checkResponseStatus(status, message);
+
+					this.notImportedRows = data;
+				} catch (e) {
+					Notification(`${this.$t("Not imported rows")}: ${e.message || e}`, "error");
+				}
 			}
 		},
 
