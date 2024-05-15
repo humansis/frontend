@@ -337,8 +337,10 @@ export default {
 		prepareDataForCriteria(selectionCriteria) {
 			let modifiedSelectionCriteria = selectionCriteria;
 
-			if (this.targetType === ASSISTANCE.TARGET.INDIVIDUAL
-				&& this.formModel.criteriaTarget?.code === ASSISTANCE.CRITERIA_TARGET.HEAD) {
+			if ((this.targetType === ASSISTANCE.TARGET.INDIVIDUAL
+				&& this.formModel.criteriaTarget?.code === ASSISTANCE.CRITERIA_TARGET.HEAD)
+			|| (this.targetType === ASSISTANCE.TARGET.HOUSEHOLD
+					&& this.formModel.criteriaTarget?.code === ASSISTANCE.CRITERIA_TARGET.BENEFICIARY)) {
 				modifiedSelectionCriteria = modifiedSelectionCriteria.filter(
 					(criteria) => criteria.code !== ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD,
 				);
