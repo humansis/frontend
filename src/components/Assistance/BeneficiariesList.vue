@@ -1175,9 +1175,9 @@ export default {
 							const status = reliefPackages.map((rp) => rp.state);
 							const toDistribute = reliefPackages.map((rp) => `${rp.toDistribute} ${rp.unit}`);
 							const distributed = reliefPackages.map((rp) => `${rp.distributed} ${rp.unit}`);
-							const lastModified = reliefPackages.map((rp) => this.$moment(
+							const lastModified = reliefPackages.map((rp) => this.$moment.utc(
 								rp.lastModified || rp.lastModified,
-							).format("YYYY-MM-DD hh:mm"));
+							).format("YYYY-MM-DD HH:mm"));
 							const isDistributed = reliefPackages.length && reliefPackages.every(
 								(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED,
 							);
@@ -1234,9 +1234,9 @@ export default {
 							(rp) => `${rp.spent ?? 0} ${rp.unit}`,
 						);
 						const lastModified = reliefPackages.map(
-							(rp) => (this.$moment(
+							(rp) => (this.$moment.utc(
 								rp.lastModified || rp.lastModified,
-							).format("YYYY-MM-DD hh:mm")),
+							).format("YYYY-MM-DD HH:mm")),
 						);
 						const phone = beneficiary.phones.length
 							? this.preparePhoneForTable(beneficiary.phones)
@@ -1322,7 +1322,7 @@ export default {
 				const updatedRow = {
 					status: [data.state],
 					distributed: [`${data.distributed} ${data.unit}`],
-					lastModified: [this.$moment(data.lastModified).format("YYYY-MM-DD hh:mm")],
+					lastModified: [this.$moment.utc(data.lastModified).format("YYYY-MM-DD HH:mm")],
 					selectable: true,
 				};
 

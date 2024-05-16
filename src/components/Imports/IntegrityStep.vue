@@ -202,7 +202,7 @@
 									</h2>
 
 									<small>Upload date:
-										{{ $moment(uploadedDate).format("YYYY-MM-DD hh:mm") }}
+										{{ $moment.utc(uploadedDate).format("YYYY-MM-DD HH:mm") }}
 									</small>
 								</div>
 							</td>
@@ -572,7 +572,7 @@ export default {
 		},
 
 		getDateAndTime(date) {
-			return this.$moment(date).format("YYYY-MM-DD hh:mm");
+			return this.$moment.utc(date).format("YYYY-MM-DD HH:mm");
 		},
 
 		getParsedArray(violations) {
