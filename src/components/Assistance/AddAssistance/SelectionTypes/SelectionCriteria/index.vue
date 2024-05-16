@@ -41,6 +41,7 @@
 		<SelectionCriteriaForm
 			ref="criteriaForm"
 			:form-model="criteriaModel"
+			:target-type="assistanceBody.target"
 			submit-button-label="Create"
 			close-button
 			@formSubmitted="onSubmitCriteriaForm"

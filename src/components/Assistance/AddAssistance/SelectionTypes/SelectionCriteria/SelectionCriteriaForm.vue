@@ -167,6 +167,11 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		targetType: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {
@@ -330,7 +335,18 @@ export default {
 		},
 
 		prepareDataForCriteria(selectionCriteria) {
-			this.options.criteria = selectionCriteria.sort((a, b) => {
+			let modifiedSelectionCriteria = selectionCriteria;
+
+			if ((this.targetType === ASSISTANCE.TARGET.INDIVIDUAL
+				&& this.formModel.criteriaTarget?.code === ASSISTANCE.CRITERIA_TARGET.HEAD)
+			|| (this.targetType === ASSISTANCE.TARGET.HOUSEHOLD
+					&& this.formModel.criteriaTarget?.code === ASSISTANCE.CRITERIA_TARGET.BENEFICIARY)) {
+				modifiedSelectionCriteria = modifiedSelectionCriteria.filter(
+					(criteria) => criteria.code !== ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD,
+				);
+			}
+
+			modifiedSelectionCriteria = modifiedSelectionCriteria.sort((a, b) => {
 				const alphaNumericOrder = a.value.localeCompare(b.value, undefined, {
 					numeric: true,
 					sensitivity: "base",
@@ -349,7 +365,7 @@ export default {
 				return alphaNumericOrder;
 			});
 
-			this.options.criteria = this.options.criteria.map((criteria) => {
+			modifiedSelectionCriteria = modifiedSelectionCriteria.map((criteria) => {
 				const value = criteria.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CUSTOM
 					? `${criteria.value} (${this.$t("Custom Field")})`
 					: criteria.value;
@@ -359,6 +375,8 @@ export default {
 					value,
 				};
 			});
+
+			this.options.criteria = modifiedSelectionCriteria;
 		},
 
 		presetValueBasedOnCriteria(criteria) {

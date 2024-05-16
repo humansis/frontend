@@ -236,7 +236,7 @@ export default {
 			assistanceSelectionCriteria: [],
 			calculatedCommodityValue: [],
 			createAssistanceButtonDisabled: false,
-			unValidCardMessage: `Please add "Has valid card = true" criterion for each group`,
+			unValidCardMessage: "",
 		};
 	},
 
@@ -436,12 +436,40 @@ export default {
 		},
 
 		isRemoteAndValid() {
-			const { remoteDistributionAllowed } = this.assistanceBody;
+			const { remoteDistributionAllowed, target } = this.assistanceBody;
 
 			if (remoteDistributionAllowed) {
-				const allCriteriaHasValidCard = this.$refs.selectionCriteria.groups
-					.every(({ data }) => data.some(({ criteria, value }) => criteria.code === "hasValidSmartcard"
-						&& (value.code || value === true)));
+				let allCriteriaHasValidCard = true;
+
+				if (target === ASSISTANCE.TARGET.HOUSEHOLD) {
+					allCriteriaHasValidCard = this.$refs.selectionCriteria.groups
+						.every(({ data }) => data.some((
+							{
+								criteria,
+								criteriaTarget,
+								value,
+							},
+						) => criteria.code === ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD
+								&& (value.code || value === true)
+								&& criteriaTarget.code === ASSISTANCE.CRITERIA_TARGET.HEAD));
+
+					this.unValidCardMessage = 'Please add "Head: Has valid card = true" criterion for each group';
+				}
+
+				if (target === ASSISTANCE.TARGET.INDIVIDUAL) {
+					allCriteriaHasValidCard = this.$refs.selectionCriteria.groups
+						.every(({ data }) => data.some((
+							{
+								criteria,
+								criteriaTarget,
+								value,
+							},
+						) => criteria.code === ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD
+							&& (value.code || value === true)
+							&& criteriaTarget.code === ASSISTANCE.CRITERIA_TARGET.BENEFICIARY));
+
+					this.unValidCardMessage = 'Please add "Beneficiary: Has valid card = true" criterion for each group';
+				}
 
 				if (allCriteriaHasValidCard) {
 					return true;
@@ -651,7 +679,7 @@ export default {
 					preparedSelectionCriteria[item.group].data.push({
 						criteriaTarget: { value: item.target, code: item.target },
 						target: item.target,
-						criteria: { code: item.field },
+						criteria: { code: item.field, value: this.prepareCriteriaName(item.field) },
 						condition: { code: item.condition },
 						value: item.value,
 						scoreWeight: item.weight,
@@ -663,7 +691,7 @@ export default {
 					preparedSelectionCriteria[item.group].data.push({
 						criteriaTarget: { value: item.target, code: item.target },
 						target: item.target,
-						criteria: { code: item.field },
+						criteria: { code: item.field, value: this.prepareCriteriaName(item.field) },
 						condition: { code: item.condition },
 						value: item.value,
 						scoreWeight: item.weight,
@@ -672,6 +700,12 @@ export default {
 			});
 
 			return preparedSelectionCriteria;
+		},
+
+		prepareCriteriaName(field) {
+			return field === ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD
+				? "Has valid card"
+				: field;
 		},
 
 		onTargetSelected(targetType) {
