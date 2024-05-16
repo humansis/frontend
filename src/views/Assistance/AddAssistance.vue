@@ -679,7 +679,7 @@ export default {
 					preparedSelectionCriteria[item.group].data.push({
 						criteriaTarget: { value: item.target, code: item.target },
 						target: item.target,
-						criteria: { code: item.field },
+						criteria: { code: item.field, value: this.prepareCriteriaName(item.field) },
 						condition: { code: item.condition },
 						value: item.value,
 						scoreWeight: item.weight,
@@ -691,7 +691,7 @@ export default {
 					preparedSelectionCriteria[item.group].data.push({
 						criteriaTarget: { value: item.target, code: item.target },
 						target: item.target,
-						criteria: { code: item.field },
+						criteria: { code: item.field, value: this.prepareCriteriaName(item.field) },
 						condition: { code: item.condition },
 						value: item.value,
 						scoreWeight: item.weight,
@@ -700,6 +700,12 @@ export default {
 			});
 
 			return preparedSelectionCriteria;
+		},
+
+		prepareCriteriaName(field) {
+			return field === ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD
+				? "Has valid card"
+				: field;
 		},
 
 		onTargetSelected(targetType) {
