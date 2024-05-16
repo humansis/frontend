@@ -713,9 +713,10 @@ export default {
 				nationalIds: [],
 			};
 			const beneficiary = beneficiaries.find((item) => item.id === householdHeadId);
-			const { nationalIds } = beneficiary;
 
 			if (beneficiary) {
+				const { nationalIds } = beneficiary;
+
 				this.table.data[tableIndex].givenName = this.prepareName(
 					beneficiary.localGivenName,
 					beneficiary.enGivenName,
