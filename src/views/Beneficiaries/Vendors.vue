@@ -389,7 +389,7 @@ export default {
 					message,
 				} = await VendorService.deleteVendor(id);
 
-				checkResponseStatus(status, message);
+				checkResponseStatus(status, message, 204);
 
 				Notification(this.$t("Vendor Successfully Deleted"), "success");
 				this.$refs.vendorsList.removeFromList(id);

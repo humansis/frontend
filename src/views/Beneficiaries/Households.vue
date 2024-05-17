@@ -585,7 +585,7 @@ export default {
 						ids: householdsIds,
 					});
 
-					checkResponseStatus(status, message);
+					checkResponseStatus(status, message, 204);
 
 					this.table.checkedRows = [];
 					this.isActionsButtonVisible = false;

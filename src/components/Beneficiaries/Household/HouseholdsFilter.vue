@@ -304,7 +304,7 @@ export default {
 		async fetchReferralTypes() {
 			try {
 				const {
-					data,
+					data: { data },
 					status,
 					message,
 				} = await BeneficiariesService.getListOfReferralTypes();
