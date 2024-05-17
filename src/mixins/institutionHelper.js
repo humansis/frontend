@@ -259,7 +259,7 @@ export default {
 				this.externalSupportReceivedLoading = true;
 
 				const {
-					data,
+					data: { data },
 					status,
 					message,
 				} = await BeneficiariesService.getSupportReceivedTypes();
@@ -268,7 +268,7 @@ export default {
 
 				this.options.externalReceivedTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("Support Received Types")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Support Received Types")}: ${e.message || e}`, "error");
 			} finally {
 				this.externalSupportReceivedLoading = false;
 			}
@@ -287,7 +287,7 @@ export default {
 
 				this.options.nationalCardTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
+				Notification(`${this.$t("National IDs")}: ${e.message || e}`, "error");
 			} finally {
 				this.nationalCardTypesLoading = false;
 			}
@@ -347,7 +347,7 @@ export default {
 					this.storeInstitutionIdNames(data);
 				}
 			} catch (e) {
-				Notification(`${this.$t("Institution Id Names")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Institution Id Names")}: ${e.message || e}`, "error");
 			}
 		},
 	},

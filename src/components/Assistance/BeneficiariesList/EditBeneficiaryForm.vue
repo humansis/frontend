@@ -161,7 +161,7 @@ export default {
 				this.referralTypeLoading = true;
 
 				const {
-					data,
+					data: { data },
 					status,
 					message,
 				} = await BeneficiariesService.getListOfReferralTypes();

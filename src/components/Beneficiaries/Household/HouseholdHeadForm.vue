@@ -252,7 +252,7 @@
 						{{ $t('Smartcard number') }}
 					</h5>
 
-					<ul>
+					<ul class="ml-4">
 						<li
 							v-for="smartCardNumber in smartCardNumbersList"
 							:key="smartCardNumber.serialNumber"
@@ -938,7 +938,7 @@ export default {
 		async fetchReferralTypes() {
 			try {
 				const {
-					data,
+					data: { data },
 					status,
 					message,
 				} = await BeneficiariesService.getListOfReferralTypes();

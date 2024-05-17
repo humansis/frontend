@@ -132,6 +132,7 @@
 							type="number"
 							min="0"
 							label="Go to page"
+							name="go-to-page"
 							append-inner-icon="arrow-right"
 							class="go-to-page"
 							hide-spin-buttons

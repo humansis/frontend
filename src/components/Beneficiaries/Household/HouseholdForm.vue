@@ -428,7 +428,7 @@ export default {
 		async fetchSupportReceivedTypes() {
 			try {
 				const {
-					data,
+					data: { data },
 					status,
 					message,
 				} = await BeneficiariesService.getSupportReceivedTypes();
