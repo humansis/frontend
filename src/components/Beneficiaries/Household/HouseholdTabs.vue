@@ -516,16 +516,21 @@ export default {
 			const beneficiariesData = [];
 
 			if (beneficiaries.length) {
-				beneficiaries.forEach((beneficiary) => {
+				beneficiaries.forEach((beneficiary, index) => {
 					const customFieldValues = this.prepareCustomFieldValuesForHousehold(
 						beneficiary.customFieldValues,
 					);
 
+					const { familyName, firstName } = beneficiary.nameLocal;
+
+					const localFamilyName = familyName || this.householdHead.nameLocal.familyName;
+					const localGivenName = firstName || `Member${index}`;
+
 					const preparedBeneficiary = {
 						id: beneficiary.beneficiaryId,
 						dateOfBirth: beneficiary.personalInformation.dateOfBirth.toISOString(),
-						localFamilyName: beneficiary.nameLocal.familyName,
-						localGivenName: beneficiary.nameLocal.firstName,
+						localFamilyName,
+						localGivenName,
 						localParentsName: beneficiary.nameLocal.parentsName,
 						enFamilyName: beneficiary.nameEnglish.familyName,
 						enGivenName: beneficiary.nameEnglish.firstName,
