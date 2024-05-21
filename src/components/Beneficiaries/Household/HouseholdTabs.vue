@@ -577,7 +577,6 @@ export default {
 							prefix: beneficiary.phone1.ext.code,
 							number: beneficiary.phone1.phoneNo,
 							type: beneficiary.phone1.type.code,
-							proxy: beneficiary.phone1.proxy,
 						});
 					}
 					if (beneficiary.phone2.phoneNo !== "") {
@@ -585,7 +584,6 @@ export default {
 							prefix: beneficiary.phone2.ext.code,
 							number: beneficiary.phone2.phoneNo,
 							type: beneficiary.phone2.type.code,
-							proxy: beneficiary.phone2.proxy,
 						};
 						preparedBeneficiary.phones.push(phone2);
 					}

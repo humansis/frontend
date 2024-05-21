@@ -317,27 +317,15 @@
 					</i>
 				</h4>
 
-				<div class="d-flex align-end">
-					<DataSelect
-						v-model="formModel.phone1.type"
-						:items="options.phoneType"
-						:loading="phoneTypesLoading"
-						:data-cy="prepareComponentIdentifier()"
-						label="Type phone 1"
-						name="phone1-type"
-						class="mb-4"
-					/>
-
-					<v-checkbox
-						v-model="formModel.phone1.proxy"
-						:label="$t('Proxy')"
-						:data-cy="identifierBuilder('proxy-phone-1-checkbox')"
-						name="phone1-proxy"
-						density="compact"
-						class="ml-2 mb-4"
-						hide-details
-					/>
-				</div>
+				<DataSelect
+					v-model="formModel.phone1.type"
+					:items="options.phoneType"
+					:loading="phoneTypesLoading"
+					:data-cy="prepareComponentIdentifier()"
+					label="Type phone 1"
+					name="phone1-type"
+					class="mb-4"
+				/>
 
 				<DataSelect
 					v-model="formModel.phone1.ext"
@@ -371,27 +359,15 @@
 					</i>
 				</h4>
 
-				<div class="d-flex align-end">
-					<DataSelect
-						v-model="formModel.phone2.type"
-						:items="options.phoneType"
-						:loading="phoneTypesLoading"
-						:data-cy="prepareComponentIdentifier()"
-						label="Type phone 2"
-						name="phone2-type"
-						class="mb-4"
-					/>
-
-					<v-checkbox
-						v-model="formModel.phone2.proxy"
-						:label="$t('Proxy')"
-						:data-cy="identifierBuilder('proxy-phone-2-checkbox')"
-						name="phone2-proxy"
-						density="compact"
-						class="ml-2 mb-4"
-						hide-details
-					/>
-				</div>
+				<DataSelect
+					v-model="formModel.phone2.type"
+					:items="options.phoneType"
+					:loading="phoneTypesLoading"
+					:data-cy="prepareComponentIdentifier()"
+					label="Type phone 2"
+					name="phone2-type"
+					class="mb-4"
+				/>
 
 				<DataSelect
 					v-model="formModel.phone2.ext"
@@ -646,13 +622,11 @@ export default {
 				},
 				phone1: {
 					type: null,
-					proxy: false,
 					ext: null,
 					phoneNo: "",
 				},
 				phone2: {
 					type: null,
-					proxy: false,
 					ext: null,
 					phoneNo: "",
 				},
@@ -826,7 +800,6 @@ export default {
 			phones.forEach((phone, index) => {
 				preparedPhones[`phone${index + 1}`] = {
 					type: getArrayOfCodeListByKey([phone.type], this.options.phoneType, "code"),
-					proxy: phone.proxy,
 					ext: getArrayOfCodeListByKey([phone.prefix], this.options.phonePrefixes, "code"),
 					phoneNo: phone.number,
 				};
