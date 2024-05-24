@@ -166,6 +166,7 @@
 							:cell-data="item[column.key]"
 							:column-key="column.key"
 							:dataIndex="index"
+							:table-identifier="dataCy"
 						/>
 					</slot>
 				</template>

@@ -36,7 +36,7 @@
 				<v-btn
 					v-if="isCloseButtonVisible"
 					:color="closeButtonColor"
-					:data-cy="identifierBuilder(`${closeButtonName}--confirm-button`, false)"
+					:data-cy="identifierBuilder(`${closeButtonName}-confirm-button`, false)"
 					variant="elevated"
 					class="text-none"
 					@click="isOpened = false"

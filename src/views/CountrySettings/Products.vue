@@ -8,13 +8,21 @@
 			align-tabs="start"
 			class="mt-5 mb-5"
 		>
-			<v-tab value="items" class="text-none">
+			<v-tab
+				:data-cy="identifierBuilder('items-tab-button')"
+				value="items"
+				class="text-none"
+			>
 				<v-icon icon="list" class="mr-2" />
 
 				{{ $t('Items') }}
 			</v-tab>
 
-			<v-tab value="categories" class="text-none">
+			<v-tab
+				:data-cy="identifierBuilder('categories-tab-button')"
+				value="categories"
+				class="text-none"
+			>
 				<v-icon icon="list" class="mr-2" />
 
 				{{ $t('Categories') }}
@@ -36,6 +44,7 @@
 <script>
 import Categories from "@/components/CountrySettings/Products/Categories";
 import Items from "@/components/CountrySettings/Products/Items";
+import identifierBuilder from "@/mixins/identifierBuilder";
 
 export default {
 	name: "Products",
@@ -44,6 +53,8 @@ export default {
 		Items,
 		Categories,
 	},
+
+	mixins: [identifierBuilder],
 
 	data() {
 		return {

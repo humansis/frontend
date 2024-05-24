@@ -4,6 +4,7 @@
 			v-for="(icon, key) in filteredIcons"
 			:key="key"
 			:text="$t(icon.value || '')"
+			:data-cy="identifierBuilder('tooltip')"
 			location="top"
 			color="red"
 			content-class="tooltip-top"

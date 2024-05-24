@@ -17,6 +17,7 @@
 	<div class="d-flex justify-end">
 		<v-btn
 			v-if="userCan.addEditProducts"
+			:data-cy="identifierBuilder('categories-new-button')"
 			class="text-none ml-0 mb-3"
 			color="primary"
 			prepend-icon="plus"
@@ -40,6 +41,7 @@ import ProductService from "@/services/ProductService";
 import CategoriesList from "@/components/CountrySettings/Products/Categories/CategoriesList";
 import CategoryForm from "@/components/CountrySettings/Products/Categories/CategoryForm";
 import Modal from "@/components/Inputs/Modal";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -53,7 +55,7 @@ export default {
 		Modal,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, identifierBuilder],
 
 	data() {
 		return {

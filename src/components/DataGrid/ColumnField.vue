@@ -276,6 +276,11 @@ export default {
 			type: Number,
 			required: true,
 		},
+
+		tableIdentifier: {
+			type: String,
+			default: "",
+		},
 	},
 
 	computed: {
@@ -312,7 +317,9 @@ export default {
 		},
 
 		dataCy() {
-			return `table-column-${this.columnKey}-row-${this.dataIndex + 1}`;
+			return this.tableIdentifier.length
+				? `${this.tableIdentifier}-column-${this.columnKey}-row-${this.dataIndex + 1}`
+				: `column-${this.columnKey}-row-${this.dataIndex + 1}`;
 		},
 	},
 
