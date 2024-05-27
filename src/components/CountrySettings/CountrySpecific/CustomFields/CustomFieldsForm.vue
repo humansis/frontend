@@ -2,6 +2,7 @@
 	<v-card-text>
 		<DataInput
 			v-model="formModel.key"
+			:data-cy="prepareComponentIdentifier()"
 			label="Key"
 			name="key"
 			class="mb-4"
@@ -12,6 +13,7 @@
 			v-model="formModel.label"
 			:disabled="isDetail"
 			:error-messages="validationMsg('label')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Label"
 			name="label"
 			class="mb-4"
@@ -23,6 +25,7 @@
 			:items="options.types"
 			:disabled="isDetail || isEditing"
 			:error-messages="validationMsg('type')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Type"
 			name="type"
 			class="mb-4"
@@ -34,6 +37,7 @@
 			:items="options.targetTypes"
 			:disabled="isDetail || isEditing"
 			:error-messages="validationMsg('targetType')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Target"
 			name="target"
 			class="mb-4"
@@ -45,6 +49,7 @@
 			:disabled="isDetail"
 			:error-messages="validationMsg('note')"
 			:rows="2"
+			:data-cy="prepareComponentIdentifier()"
 			label="Note"
 			name="note"
 			class="mb-4"
@@ -59,6 +64,7 @@
 				:items="options.selectionTypes"
 				:disabled="isDetail || formModel.isUsed"
 				:error-messages="validationMsg('selectionType')"
+				:data-cy="prepareComponentIdentifier()"
 				label="Selection"
 				name="selection"
 				class="mb-4"
@@ -76,12 +82,14 @@
 					:error-messages="validationMsg('listOfValues', 'formModel', index)"
 					:label="`Value ${index + 1}`"
 					:name="`value-${index + 1}`"
+					:data-cy="prepareComponentIdentifier()"
 					class="mb-4"
 					@update:modelValue="onValidate('listOfValues')"
 				/>
 
 				<ButtonAction
 					v-if="index !== 0 && !isDetail"
+					:data-cy="identifierBuilder('remove-input-button')"
 					icon="trash"
 					icon-color="red"
 					tooltip-text="Remove input"
@@ -90,7 +98,11 @@
 				/>
 			</div>
 
-			<p v-if="isDuplicityInValues" class="text-error">
+			<p
+				v-if="isDuplicityInValues"
+				:data-cy="identifierBuilder('value-must-be-unique-text')"
+				class="text-error"
+			>
 				{{ $t("Each value must be unique") }}
 			</p>
 
@@ -99,6 +111,7 @@
 				v-model="formModel.isPropagatedToSelectionCriteria"
 				:disabled="isDetail || formModel.isUsed"
 				:label="$t('Propagate to selection criteria')"
+				:data-cy="identifierBuilder('propagate-to-criteria-checkbox')"
 				name="propagate-to-selection-criteria"
 				class="checkbox"
 				hide-details
@@ -107,6 +120,7 @@
 			<div class="d-flex justify-end">
 				<v-btn
 					v-if="!isDetail"
+					:data-cy="identifierBuilder('add-new-value-button')"
 					color="primary"
 					class="text-none mb-8"
 					variant="elevated"
@@ -122,6 +136,7 @@
 		<v-spacer />
 
 		<v-btn
+			:data-cy="identifierBuilder('close-button')"
 			class="text-none"
 			color="blue-grey-lighten-4"
 			variant="elevated"
@@ -133,6 +148,7 @@
 		<v-btn
 			v-if="!isDetail"
 			:loading="loading"
+			:data-cy="identifierBuilder(`${(submitButtonLabel)}-button`)"
 			color="primary"
 			class="text-none ml-3 mr-4"
 			variant="elevated"
@@ -149,6 +165,7 @@ import ButtonAction from "@/components/ButtonAction";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DataTextarea from "@/components/Inputs/DataTextarea";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { isCustomFieldLabelValid } from "@/utils/customValidators";
 import { COUNTRY_SETTINGS } from "@/consts";
@@ -165,7 +182,7 @@ export default {
 		DataTextarea,
 	},
 
-	mixins: [validation],
+	mixins: [validation, identifierBuilder],
 
 	validations() {
 		return {
@@ -228,6 +245,7 @@ export default {
 	data() {
 		return {
 			isValuesForListDuplicated: false,
+			dataCy: "custom-fields-form",
 			options: {
 				types: COUNTRY_SETTINGS.CUSTOM_FIELDS.TYPES,
 				selectionTypes: COUNTRY_SETTINGS.CUSTOM_FIELDS.SELECTION_TYPES,

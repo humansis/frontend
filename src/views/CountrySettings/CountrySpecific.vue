@@ -8,13 +8,21 @@
 			align-tabs="start"
 			class="mt-5 mb-5"
 		>
-			<v-tab value="customFields" class="text-none">
+			<v-tab
+				:data-cy="identifierBuilder('custom-fields-tab-button')"
+				value="customFields"
+				class="text-none"
+			>
 				<v-icon icon="user-edit" class="mr-2" />
 
 				{{ $t('Custom Fields') }}
 			</v-tab>
 
-			<v-tab value="scoring" class="text-none">
+			<v-tab
+				:data-cy="identifierBuilder('scoring-tab-button')"
+				value="scoring"
+				class="text-none"
+			>
 				<v-icon icon="sort-amount-down" class="mr-2" />
 
 				{{ $t('Scoring') }}
@@ -36,6 +44,7 @@
 <script>
 import CustomField from "@/components/CountrySettings/CountrySpecific/CustomFields";
 import Scoring from "@/components/CountrySettings/CountrySpecific/Scoring";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 
 export default {
@@ -46,7 +55,7 @@ export default {
 		Scoring,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, identifierBuilder],
 
 	data() {
 		return {

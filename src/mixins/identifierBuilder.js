@@ -8,6 +8,8 @@ export default {
 					return "products";
 				case "Project":
 					return "project-assistance";
+				case "CountrySpecific":
+					return "country-specifics";
 				case "Projects":
 				case "AddProject":
 				case "ProjectDetail":
