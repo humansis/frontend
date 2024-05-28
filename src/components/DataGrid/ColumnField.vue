@@ -138,7 +138,7 @@
 	</v-tooltip>
 
 	<template v-if="column.type === 'svgIcon'">
-		<span v-if="cellData.length">
+		<span v-if="cellData?.length">
 			<SvgIcon
 				:items="cellData"
 			/>
@@ -146,7 +146,7 @@
 			<span v-if="isAssistanceRemote(cellData)" class="remote-distribution-flag">R</span>
 		</span>
 
-		<p v-else>
+		<p v-else-if="cellData !== null">
 			<span>
 				{{ $t('None') }}
 			</span>

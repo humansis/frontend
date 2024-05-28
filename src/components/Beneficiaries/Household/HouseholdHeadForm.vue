@@ -681,7 +681,7 @@ export default {
 
 	async mounted() {
 		if (this.isEditing) {
-			if (this.isHouseholdHead) {
+			if (this.isHouseholdHead && this.detailOfHousehold.householdHeadId) {
 				await this.fetchSmartCard(this.detailOfHousehold.householdHeadId);
 			}
 		}
@@ -701,7 +701,7 @@ export default {
 			if (this.isEditing) {
 				if (this.beneficiary) {
 					await this.mapDetailOfHouseholdToFormModel(this.beneficiary);
-				} else {
+				} else if (this.detailOfHousehold.householdHeadId) {
 					const data = await BeneficiariesService
 						.getBeneficiary(this.detailOfHousehold.householdHeadId);
 

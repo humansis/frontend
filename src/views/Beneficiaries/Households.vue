@@ -592,6 +592,9 @@ export default {
 
 				this.table.data[key] = {
 					...item,
+					vulnerabilities: item.householdHeadId
+						? item.vulnerabilities
+						: null,
 					householdId: id,
 					address,
 					members: item.beneficiaryIds.length,
@@ -621,7 +624,8 @@ export default {
 			const vulnerabilitiesList = await this.getVulnerabilities();
 
 			this.table.progress += 10;
-			await this.table.data.forEach(async (item, key) => {
+
+			const modifiedTable = await Promise.all(this.table.data.map(async (item, key) => {
 				const {
 					nationalIds,
 				} = await this.prepareBeneficiaries(
@@ -630,17 +634,25 @@ export default {
 					beneficiaries,
 					key,
 				);
-				const vulnerabilities = this.table.data[key].vulnerabilities || [];
-				this.table.data[key].vulnerabilities = vulnerabilitiesList?.filter(
-					({ code }) => code === vulnerabilities.find(
-						(vulnerability) => vulnerability === code,
-					),
-				);
-				this.table.data[key].nationalIds = nationalIds;
-				this.table.data[key].supportDateReceived = item.supportDateReceived
-					? new Date(item.supportDateReceived)
+
+				const preparedVulnerabilities = item.vulnerabilities
+					? vulnerabilitiesList?.filter(
+						({ code }) => item.vulnerabilities.includes(code),
+					)
 					: null;
-			});
+
+				return {
+					...item,
+					vulnerabilities: preparedVulnerabilities,
+					nationalIds,
+					supportDateReceived: item.supportDateReceived
+						? new Date(item.supportDateReceived)
+						: null,
+				};
+			}));
+
+			this.table.data = [...modifiedTable];
+
 			this.table.progress += 5;
 			this.table.data.forEach((item, key) => {
 				let idsText = "";
@@ -713,9 +725,10 @@ export default {
 				nationalIds: [],
 			};
 			const beneficiary = beneficiaries.find((item) => item.id === householdHeadId);
-			const { nationalIds } = beneficiary;
 
 			if (beneficiary) {
+				const { nationalIds } = beneficiary;
+
 				this.table.data[tableIndex].givenName = this.prepareName(
 					beneficiary.localGivenName,
 					beneficiary.enGivenName,
