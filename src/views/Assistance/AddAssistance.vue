@@ -1,147 +1,153 @@
 <template>
 	<v-container fluid>
-		<ConfirmAction
-			:is-dialog-opened="isConfirmModalOpen"
-			confirm-title="Date of Assistance"
-			confirm-message="You picked date from the past. Is it ok?"
-			prepend-icon="circle-exclamation"
-			prepend-icon-color="warning"
-			close-button-name="Cancel"
-			confirm-button-name="Yes and Continue"
-			confirm-button-color="warning"
-			@modalClosed="isConfirmModalOpen = false"
-			@actionConfirmed="onSubmitAddingAssistance"
+		<assistance-creation-progress
+			:progress="50"
 		/>
 
-		<ConfirmAction
-			:is-dialog-opened="isUnValidCardModalOpen"
-			:confirm-message="unValidCardMessage"
-			:is-close-button-visible="false"
-			confirm-title="Warning"
-			prepend-icon="circle-exclamation"
-			prepend-icon-color="warning"
-			confirm-button-name="OK"
-			confirm-button-color="warning"
-			@actionConfirmed="isUnValidCardModalOpen = false"
-		/>
+		<template v-if="false">
+			<ConfirmAction
+				:is-dialog-opened="isConfirmModalOpen"
+				confirm-title="Date of Assistance"
+				confirm-message="You picked date from the past. Is it ok?"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="warning"
+				close-button-name="Cancel"
+				confirm-button-name="Yes and Continue"
+				confirm-button-color="warning"
+				@modalClosed="isConfirmModalOpen = false"
+				@actionConfirmed="onSubmitAddingAssistance"
+			/>
 
-		<div class="new-assistance-title">
-			<h1 class="text-h5 font-weight-bold" data-cy="page-title-text">
-				{{ $t('New Assistance') }}
-			</h1>
+			<ConfirmAction
+				:is-dialog-opened="isUnValidCardModalOpen"
+				:confirm-message="unValidCardMessage"
+				:is-close-button-visible="false"
+				confirm-title="Warning"
+				prepend-icon="circle-exclamation"
+				prepend-icon-color="warning"
+				confirm-button-name="OK"
+				confirm-button-color="warning"
+				@actionConfirmed="isUnValidCardModalOpen = false"
+			/>
 
-			<span v-if="householdWithoutHead" class="integrity-issues">
-				<v-icon icon="exclamation-triangle" class="pr-2" />
+			<div class="new-assistance-title">
+				<h1 class="text-h5 font-weight-bold" data-cy="page-title-text">
+					{{ $t('New Assistance') }}
+				</h1>
 
-				{{ $t('Some of households in project have integrity issues') }}:
+				<span v-if="householdWithoutHead" class="integrity-issues">
+					<v-icon icon="exclamation-triangle" class="pr-2" />
 
-				<span class="pl-2">
-					<v-tooltip
-						:text="$t('No household head')"
-						location="top"
-						content-class="tooltip-top"
-					>
-						<template v-slot:activator="{ props }">
-							<v-icon v-bind=props icon="users" />
-						</template>
-					</v-tooltip>
+					{{ $t('Some of households in project have integrity issues') }}:
+
+					<span class="pl-2">
+						<v-tooltip
+							:text="$t('No household head')"
+							location="top"
+							content-class="tooltip-top"
+						>
+							<template v-slot:activator="{ props }">
+								<v-icon v-bind=props icon="users" />
+							</template>
+						</v-tooltip>
+					</span>
 				</span>
-			</span>
-		</div>
+			</div>
 
-		<v-row class="new-assistance">
-			<v-col cols="5">
-				<NewAssistanceForm
-					ref="newAssistanceForm"
-					:project="project"
-					:new-assistance-form="componentsData.newAssistanceForm"
-					:data-before-duplicated="componentsData.dataBeforeDuplicated"
-					:date-expiration="assistanceBody.dateExpiration"
-					:validation-messages="validationMessages"
-					@updatedData="onFetchNewAssistanceForm"
-					@targetSelect="onTargetSelected"
-					@showComponent="onShowComponent"
-				/>
-			</v-col>
-
-			<v-col cols="7">
-				<div v-show="visibleComponents.selectionCriteria">
-					<SelectionCriteria
-						ref="selectionCriteria"
-						:target-type="targetType"
-						:data="componentsData.selectionCriteria"
-						:assistance-body="assistanceBody"
-						:is-assistance-duplicated="isDuplicated"
-						:custom-fields="customFields"
-						@updatedData="onFetchSelectionCriteria"
-						@beneficiariesCounted="selectedBeneficiariesCount = $event"
-						@deliveredCommodityValue="onGetDeliveredCommodityValue"
-					/>
-				</div>
-
-				<div v-show="visibleComponents.communities || visibleComponents.institutions">
-					<TargetTypeSelect
-						ref="targetTypeSelect"
-						:project-id="assistanceBody.projectId"
-						:visible="targetTypeSelectVisible"
-						:is-assistance-duplicated="isDuplicated"
-						@updatedData="onFetchTargetType"
-					/>
-				</div>
-
-				<div v-show="visibleComponents.distributedCommodity">
-					<DistributedCommodity
-						v-if="isProjectReady"
-						ref="distributedCommodity"
+			<v-row class="new-assistance">
+				<v-col cols="5">
+					<NewAssistanceForm
+						ref="newAssistanceForm"
 						:project="project"
-						:commodity="componentsData.distributedCommodity"
-						:selected-beneficiaries="selectedBeneficiariesCount"
-						:calculated-commodity-value="calculatedCommodityValue"
-						:is-assistance-duplicated="isDuplicated"
-						:target-type="targetType"
-						:date-of-assistance="assistanceBody.dateDistribution"
+						:new-assistance-form="componentsData.newAssistanceForm"
+						:data-before-duplicated="componentsData.dataBeforeDuplicated"
+						:date-expiration="assistanceBody.dateExpiration"
 						:validation-messages="validationMessages"
-						@updatedData="onFetchDistributedCommodity"
-						@deliveredCommodityValue="onGetDeliveredCommodityValue"
+						@updatedData="onFetchNewAssistanceForm"
+						@targetSelect="onTargetSelected"
+						@showComponent="onShowComponent"
 					/>
-				</div>
+				</v-col>
 
-				<div
-					v-show="visibleComponents.activityDescription
-						|| visibleComponents.householdsTargeted
-						|| visibleComponents.individualsTargeted"
+				<v-col cols="7">
+					<div v-show="visibleComponents.selectionCriteria">
+						<SelectionCriteria
+							ref="selectionCriteria"
+							:target-type="targetType"
+							:data="componentsData.selectionCriteria"
+							:assistance-body="assistanceBody"
+							:is-assistance-duplicated="isDuplicated"
+							:custom-fields="customFields"
+							@updatedData="onFetchSelectionCriteria"
+							@beneficiariesCounted="selectedBeneficiariesCount = $event"
+							@deliveredCommodityValue="onGetDeliveredCommodityValue"
+						/>
+					</div>
+
+					<div v-show="visibleComponents.communities || visibleComponents.institutions">
+						<TargetTypeSelect
+							ref="targetTypeSelect"
+							:project-id="assistanceBody.projectId"
+							:visible="targetTypeSelectVisible"
+							:is-assistance-duplicated="isDuplicated"
+							@updatedData="onFetchTargetType"
+						/>
+					</div>
+
+					<div v-show="visibleComponents.distributedCommodity">
+						<DistributedCommodity
+							v-if="isProjectReady"
+							ref="distributedCommodity"
+							:project="project"
+							:commodity="componentsData.distributedCommodity"
+							:selected-beneficiaries="selectedBeneficiariesCount"
+							:calculated-commodity-value="calculatedCommodityValue"
+							:is-assistance-duplicated="isDuplicated"
+							:target-type="targetType"
+							:date-of-assistance="assistanceBody.dateDistribution"
+							:validation-messages="validationMessages"
+							@updatedData="onFetchDistributedCommodity"
+							@deliveredCommodityValue="onGetDeliveredCommodityValue"
+						/>
+					</div>
+
+					<div
+						v-show="visibleComponents.activityDescription
+							|| visibleComponents.householdsTargeted
+							|| visibleComponents.individualsTargeted"
+					>
+						<ActivityDetails
+							ref="activityDetails"
+							:visible="visibleActivityDetails"
+							:data="componentsData.activityDetails"
+							@updatedData="onFetchActivityDetails"
+						/>
+					</div>
+
+				</v-col>
+			</v-row>
+
+			<div class="d-flex justify-end mt-5">
+				<v-btn
+					:to="{ name: 'Project', params: { projectId: this.$route.params.projectId } }"
+					color="blue-grey-lighten-4"
+					variant="elevated"
+					class="text-none mr-3"
 				>
-					<ActivityDetails
-						ref="activityDetails"
-						:visible="visibleActivityDetails"
-						:data="componentsData.activityDetails"
-						@updatedData="onFetchActivityDetails"
-					/>
-				</div>
+					{{ $t('Back') }}
+				</v-btn>
 
-			</v-col>
-		</v-row>
-
-		<div class="d-flex justify-end mt-5">
-			<v-btn
-				:to="{ name: 'Project', params: { projectId: this.$route.params.projectId } }"
-				color="blue-grey-lighten-4"
-				variant="elevated"
-				class="text-none mr-3"
-			>
-				{{ $t('Back') }}
-			</v-btn>
-
-			<v-btn
-				:disabled="createAssistanceButtonDisabled"
-				:loading="loading"
-				color="primary"
-				class="text-none"
-				@click="onValidateNewAssistance"
-			>
-				{{ $t('Create') }}
-			</v-btn>
-		</div>
+				<v-btn
+					:disabled="createAssistanceButtonDisabled"
+					:loading="loading"
+					color="primary"
+					class="text-none"
+					@click="onValidateNewAssistance"
+				>
+					{{ $t('Create') }}
+				</v-btn>
+			</div>
+		</template>
 	</v-container>
 </template>
 
@@ -154,6 +160,7 @@ import ActivityDetails from "@/components/Assistance/AddAssistance/SelectionType
 import DistributedCommodity from "@/components/Assistance/AddAssistance/SelectionTypes/DistributedCommodity";
 import SelectionCriteria from "@/components/Assistance/AddAssistance/SelectionTypes/SelectionCriteria";
 import TargetTypeSelect from "@/components/Assistance/AddAssistance/SelectionTypes/TargetTypeSelect";
+import AssistanceCreationProgress from "@/components/AssistanceCreationProgress";
 import ConfirmAction from "@/components/ConfirmAction";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -169,6 +176,7 @@ export default {
 		SelectionCriteria,
 		DistributedCommodity,
 		ConfirmAction,
+		AssistanceCreationProgress,
 	},
 
 	data() {
