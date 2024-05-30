@@ -7,7 +7,9 @@
 						<img src="@/assets/images/bms_logo_with_title.png" alt="logo Humansis">
 					</div>
 
-					<h1 class="text-subtitle-1 text-center text-white mt-5 mb-5">Beneficiary Management System</h1>
+					<h1 class="text-subtitle-1 text-center text-white my-5">
+						{{ $t("Distribution Management System") }}
+					</h1>
 
 					<div
 						v-if="gitInfo.appVersion !== '__APP_VERSION__'"
