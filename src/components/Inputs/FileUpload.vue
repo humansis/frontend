@@ -2,7 +2,7 @@
 	<v-file-input
 		:name="name"
 		:data-cy="identifierBuilder(`${name}-upload`)"
-		show-size
+		show-size="1024"
 		class="file-upload"
 	>
 		<template v-slot:prepend-inner>
