@@ -279,7 +279,7 @@ export default {
 			exportLoading: false,
 			selectedFilters: [...ASSISTANCE.DEFAULT_SELECTED_STATUS],
 			statusActive: { ...ASSISTANCE.DEFAULT_SELECTED_STATUS_BUTTONS },
-			filters: { states: ["new", "validated"] },
+			filters: { states: [...ASSISTANCE.DEFAULT_SELECTED_STATUS] },
 			isLoadingList: false,
 			table: {
 				data: [],
@@ -537,10 +537,15 @@ export default {
 		},
 
 		getRouteNameToAssistance({ state: { code } }) {
-			return code === ASSISTANCE.STATUS.CLOSED
-			|| code === ASSISTANCE.STATUS.VALIDATED
-				? "AssistanceDetail"
-				: "AssistanceEdit";
+			switch (code) {
+				case ASSISTANCE.STATUS.CLOSED:
+				case ASSISTANCE.STATUS.VALIDATED:
+					return "AssistanceDetail";
+				case ASSISTANCE.STATUS.CREATING:
+					return "AssistanceCreationProgress";
+				default:
+					return "AssistanceEdit";
+			}
 		},
 
 		assistanceProgress(data) {
@@ -568,7 +573,6 @@ export default {
 				this.$router.push({
 					name: "AssistanceCreationProgress",
 					params: {
-						projectId: this.$route.params.projectId,
 						assistanceId: assistance.id,
 					},
 				});

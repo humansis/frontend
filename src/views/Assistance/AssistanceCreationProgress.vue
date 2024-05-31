@@ -37,7 +37,7 @@
 				prepend-icon="clipboard-list"
 				class="text-none mt-10"
 			>
-				{{ $t('Go to Project') }}
+				{{ $t('Go to Project Assistances') }}
 			</v-btn>
 		</div>
 	</div>
@@ -130,6 +130,8 @@ export default {
 
 		tryToNavigateToAssistanceEdit() {
 			if (this.isAssistanceCreated) {
+				Notification(this.$t("Assistance Successfully Created"), "success");
+
 				this.$router.push({
 					name: "AssistanceEdit",
 					params: {

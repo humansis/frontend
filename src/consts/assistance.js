@@ -5,9 +5,9 @@ export default {
 		VALIDATED: "validated",
 		CLOSED: "closed",
 	},
-	DEFAULT_SELECTED_STATUS: ["new", "validated"],
+	DEFAULT_SELECTED_STATUS: ["creating", "new", "validated"],
 	DEFAULT_SELECTED_STATUS_BUTTONS: {
-		creating: false,
+		creating: true,
 		new: true,
 		validated: true,
 		closed: false,

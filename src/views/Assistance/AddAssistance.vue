@@ -415,8 +415,6 @@ export default {
 
 				checkResponseStatus(status, message);
 
-				Notification(this.$t("Assistance Successfully Created"), "success");
-
 				if (id) {
 					this.$router.push({
 						name: "AssistanceCreationProgress",

@@ -622,7 +622,9 @@ export default {
 		},
 
 		onShowTotalBeneficiaries() {
-			this.beneficiariesData = this.totalBeneficiariesData;
+			this.beneficiariesData = this.groups.flatMap(
+				(group) => group.beneficiaries?.data || [],
+			);
 			this.detailModal.isOpened = true;
 		},
 
