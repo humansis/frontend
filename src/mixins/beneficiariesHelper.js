@@ -109,9 +109,6 @@ export default {
 			let target = "";
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					target = "communities";
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					target = "institutions";
 					break;
@@ -338,13 +335,6 @@ export default {
 		closeInstitutionModal() {
 			this.institutionModal = {
 				isOpened: false,
-			};
-		},
-
-		closeCommunityModal() {
-			this.communityModal = {
-				isOpened: false,
-				isEditing: false,
 			};
 		},
 

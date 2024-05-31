@@ -26,11 +26,6 @@ export default {
 			type: Array,
 			required: true,
 		},
-
-		scores: {
-			type: Array,
-			required: true,
-		},
 	},
 
 	data() {
@@ -39,9 +34,9 @@ export default {
 				data: [],
 				columns: generateColumns([
 					{ key: "id", sortable: false },
-					{ key: "localFamilyName", title: "Local family name" },
-					{ key: "localGivenName", title: "Local given name" },
-					{ key: "vulnerability" },
+					{ key: "lastName", title: "Local family name" },
+					{ key: "firstName", title: "Local given name" },
+					{ key: "totalScore", title: "Vulnerability" },
 				]),
 				total: 0,
 			},
@@ -57,9 +52,8 @@ export default {
 			const preparedData = [...this.data];
 
 			preparedData.forEach((item, key) => {
-				const criteria = this.scores.find(({ beneficiaryId }) => item.id === beneficiaryId) || {};
-				preparedData[key].vulnerability = typeof criteria.totalScore === "number"
-					? Math.round((criteria.totalScore + Number.EPSILON) * 100) / 100
+				preparedData[key].vulnerability = typeof item.totalScore === "number"
+					? Math.round((item.totalScore + Number.EPSILON) * 100) / 100
 					: "";
 			});
 

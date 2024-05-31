@@ -50,6 +50,7 @@
 				v-if="isPerHouseholdMembers(row.division) && isModalityCash"
 				v-html-secure="mapDivisionFields(row.divisionFields)"
 			/>
+
 			<template v-else>
 				{{ row.value }}
 			</template>
@@ -60,6 +61,7 @@
 				v-if="isPerHouseholdMembers(row.division) && isModalityInKind"
 				v-html-secure="mapDivisionFields(row.divisionFields)"
 			/>
+
 			<template v-else>
 				{{ row.quantity }}
 			</template>
@@ -121,10 +123,7 @@ export default {
 
 	mixins: [countryHelper],
 
-	emits: [
-		"deliveredCommodityValue",
-		"updatedData",
-	],
+	emits: ["updatedData"],
 
 	props: {
 		commodity: {
@@ -356,34 +355,31 @@ export default {
 	},
 
 	watch: {
-		table: {
-			deep: true,
-			handler() {
-				this.$emit("deliveredCommodityValue");
-			},
-		},
-
 		commodity(data) {
 			if (data.length) {
-				this.table.data = data;
-				this.dateExpiration = data[0]?.dateExpiration;
-
-				if (this.isAssistanceDuplicated) {
-					this.toggleColumnsVisibility();
-				}
+				this.prepareDataForTable(data);
 			}
 		},
 	},
 
-	updated() {
-		if (this.table.data.length) {
-			this.$emit("updatedData", this.preparedCommodities);
+	mounted() {
+		if (this.isAssistanceDuplicated) {
+			this.prepareDataForTable(this.commodity);
 		}
 	},
 
 	methods: {
-		submit() {
+		isCommodityDataAvailable() {
 			return !!this.table.data.length;
+		},
+
+		prepareDataForTable(data) {
+			this.table.data = data;
+			this.dateExpiration = data[0]?.dateExpiration;
+
+			if (this.isAssistanceDuplicated) {
+				this.toggleColumnsVisibility();
+			}
 		},
 
 		getDivision(divisionString) {
@@ -455,12 +451,12 @@ export default {
 
 			this.toggleColumnsVisibility();
 
-			this.$emit("deliveredCommodityValue", this.preparedCommodities);
+			this.$emit("updatedData", this.preparedCommodities);
 		},
 
 		onRemoveCommodity(index) {
 			this.table.data.splice(index, 1);
-			this.$emit("deliveredCommodityValue", this.preparedCommodities);
+			this.$emit("updatedData", this.preparedCommodities);
 		},
 
 		mapDivisionFields(divisionFields) {
@@ -499,7 +495,7 @@ export default {
 		clearComponent() {
 			this.table.data = [];
 			this.formModel = { ...ASSISTANCE.DEFAULT_FORM_MODEL };
-			this.$emit("deliveredCommodityValue", this.preparedCommodities);
+			this.$emit("updatedData", this.preparedCommodities);
 		},
 	},
 };

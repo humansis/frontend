@@ -106,12 +106,6 @@ export default {
 		});
 	},
 
-	getCommunities(ids) {
-		return fetcher({
-			uri: `communities${queryBuilder({ ids })}`,
-		});
-	},
-
 	getInstitutions({ ids, filters }) {
 		return fetcher({
 			uri: `institutions${queryBuilder({ ids, filters })}`,

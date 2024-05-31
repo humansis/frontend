@@ -31,11 +31,11 @@
 
 					<v-col>
 						<v-btn
-							v-if="countOfCriteriaBeneficiaries"
+							v-if="beneficiariesCount"
 							class="text-none"
 							@click="onShowDetail"
 						>
-							{{ countOfCriteriaBeneficiaries }} {{ $t(targetType) }}
+							{{ beneficiariesCount }} {{ $t(targetType) }}
 						</v-btn>
 					</v-col>
 
@@ -80,7 +80,7 @@ export default {
 			required: true,
 		},
 
-		count: {
+		beneficiariesCount: {
 			type: Number,
 			default: 0,
 		},
@@ -126,10 +126,6 @@ export default {
 	computed: {
 		groupName() {
 			return `${this.$t("Group")} ${(this.groupId + 1)}`;
-		},
-
-		countOfCriteriaBeneficiaries() {
-			return this.count;
 		},
 
 		criteriaGroups() {
@@ -216,7 +212,7 @@ export default {
 		},
 
 		onShowDetail() {
-			if (this.countOfCriteriaBeneficiaries) {
+			if (this.beneficiariesCount) {
 				this.$emit("showDetail", this.data);
 			}
 		},

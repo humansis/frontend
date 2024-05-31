@@ -50,7 +50,7 @@ export default {
 			required: true,
 		},
 
-		duplicateAssistance: {
+		isAssistanceDuplicated: {
 			type: Boolean,
 			default: false,
 		},
@@ -60,7 +60,7 @@ export default {
 			default: false,
 		},
 
-		assistanceDetail: {
+		isAssistanceDetail: {
 			type: Boolean,
 			default: false,
 		},
@@ -80,19 +80,17 @@ export default {
 		return {
 			isCustom: false,
 			isCopyAdded: false,
+			isFirstLoad: false,
 			customName: "",
-			firstLoad: false,
 		};
 	},
 
 	computed: {
 		assistanceName: {
 			get() {
-				if (this.setupAssistanceName(this.dataForAssistanceName) !== this.modelValue) {
-					if (this.isCustomNameLoaded) {
-						return this.setCopyIntoAssistanceName();
-					}
-					return this.modelValue;
+				if (this.setupAssistanceName(this.dataForAssistanceName) !== this.modelValue
+					&& this.isCustomNameLoaded) {
+					return this.setCopyIntoAssistanceName();
 				}
 				return this.modelValue;
 			},
@@ -103,8 +101,8 @@ export default {
 		},
 
 		isCustomNameLoaded() {
-			return this.duplicateAssistance && this.isCustom
-				&& !this.firstLoad && !this.isCopyAdded;
+			return this.isAssistanceDuplicated && this.isCustom
+				&& !this.isFirstLoad && !this.isCopyAdded;
 		},
 	},
 
@@ -115,22 +113,23 @@ export default {
 					this.assistanceName = this.setupAssistanceName(value);
 				}
 
-				if (this.duplicateAssistance) {
+				if (this.isAssistanceDuplicated) {
+					const roundBeforeDuplicated = this.dataBeforeDuplicated?.round;
 					const assistanceBeforeDuplicated = {
 						...value,
 						dateOfAssistance: new Date(this.dataBeforeDuplicated?.dateDistribution),
 						round: {
-							value: this.dataBeforeDuplicated?.round,
-							code: this.dataBeforeDuplicated?.round,
+							value: roundBeforeDuplicated,
+							code: roundBeforeDuplicated,
 						},
 					};
 
 					if (!this.customName
 						&& this.setupAssistanceName(assistanceBeforeDuplicated) === this.modelValue) {
-						this.firstLoad = true;
+						this.isFirstLoad = true;
 					}
 
-					if (assistanceBeforeDuplicated && !this.firstLoad
+					if (assistanceBeforeDuplicated && !this.isFirstLoad
 						&& this.setupAssistanceName(assistanceBeforeDuplicated) !== this.modelValue) {
 						this.setDefaultValuesForCustomName();
 					}
@@ -155,7 +154,7 @@ export default {
 	},
 
 	mounted() {
-		if (this.assistanceDetail) {
+		if (this.isAssistanceDetail) {
 			if (this.setupAssistanceName(this.dataForAssistanceName) !== this.modelValue) {
 				this.setDefaultValuesForCustomName();
 			}

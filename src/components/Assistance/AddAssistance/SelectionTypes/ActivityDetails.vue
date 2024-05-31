@@ -1,12 +1,10 @@
 <template>
 	<h2 class="text-h6 mt-5 font-weight-bold">{{ $t('Activity Details') }}</h2>
 
-	<v-card
-		class="mx-auto mt-5"
-	>
+	<v-card class="mx-auto mt-5">
 		<v-card-text>
 			<DataInput
-				v-if="visible.activityDescription"
+				v-if="visible.isActivityDescription"
 				v-model="formModel.activityDescription"
 				:error-messages="validationMsg('activityDescription')"
 				label="Activity Description"
@@ -16,7 +14,7 @@
 			/>
 
 			<DataInput
-				v-if="visible.householdsTargeted"
+				v-if="visible.isHouseholdsTargeted"
 				v-model.number="formModel.householdsTargeted"
 				:error-messages="validationMsg('householdsTargeted')"
 				label="Households Targeted"
@@ -29,7 +27,7 @@
 			/>
 
 			<DataInput
-				v-if="visible.individualsTargeted"
+				v-if="visible.isIndividualsTargeted"
 				v-model.number="formModel.individualsTargeted"
 				:error-messages="validationMsg('individualsTargeted')"
 				label="Individuals Targeted"
@@ -63,14 +61,14 @@ export default {
 	validations() {
 		return {
 			formModel: {
-				activityDescription: { required: requiredIf(this.visible.activityDescription) },
+				activityDescription: { required: requiredIf(this.visible.isActivityDescription) },
 				householdsTargeted: {
-					required: requiredIf(this.visible.householdsTargeted),
+					required: requiredIf(this.visible.isHouseholdsTargeted),
 					minValue: minValue(0),
 					integer,
 				},
 				individualsTargeted: {
-					required: requiredIf(this.visible.individualsTargeted),
+					required: requiredIf(this.visible.isIndividualsTargeted),
 					minValue: minValue(0),
 					integer,
 				},
@@ -115,8 +113,9 @@ export default {
 			this.$emit("updatedData", this.formModel);
 		},
 
-		submit() {
+		isFormValid() {
 			this.v$.$touch();
+
 			return !this.v$.$invalid;
 		},
 	},

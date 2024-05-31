@@ -143,6 +143,16 @@
 			</v-btn>
 
 			<v-btn
+				:class="filterButtonCreating"
+				icon-left="sticky-note"
+				variant="tonal"
+				prepend-icon="sticky-note"
+				@click="onStatusFilter('creating')"
+			>
+				{{ $t('Creating') }}
+			</v-btn>
+
+			<v-btn
 				:class="filterButtonNew"
 				icon-left="sticky-note"
 				variant="tonal"
@@ -207,6 +217,7 @@ import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
 const customSort = { progress: () => {} };
 const statusTags = [
+	{ code: ASSISTANCE.STATUS.CREATING, class: "status creating" },
 	{ code: ASSISTANCE.STATUS.NEW, class: "status new" },
 	{ code: ASSISTANCE.STATUS.VALIDATED, class: "status validated" },
 	{ code: ASSISTANCE.STATUS.CLOSED, class: "status closed" },
@@ -303,6 +314,13 @@ export default {
 	},
 
 	computed: {
+		filterButtonCreating() {
+			return [
+				"text-none ml-3 status creating",
+				{ "is-selected": this.statusActive.creating },
+			];
+		},
+
 		filterButtonNew() {
 			return [
 				"text-none ml-3 status new",

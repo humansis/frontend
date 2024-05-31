@@ -7,7 +7,7 @@
 			ref="assistanceName"
 			:is-switch-disabled="isAssistanceValidated"
 			:data-for-assistance-name="dataForAssistanceName"
-			assistance-detail
+			is-assistance-detail
 		/>
 
 		<p

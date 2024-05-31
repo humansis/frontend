@@ -30,19 +30,19 @@
 				{{ $t('New Assistance') }}
 			</h1>
 
-			<span v-if="householdWithoutHead" class="integrity-issues">
-				<v-icon icon="exclamation-triangle" class="pr-2" />
+			<span v-if="isHouseholdWithoutHead" class="integrity-issues">
+				<v-icon icon="exclamation-triangle" class="pr-4" />
 
 				{{ $t('Some of households in project have integrity issues') }}:
 
-				<span class="pl-2">
+				<span class="pl-3">
 					<v-tooltip
 						:text="$t('No household head')"
 						location="top"
 						content-class="tooltip-top"
 					>
 						<template v-slot:activator="{ props }">
-							<v-icon v-bind=props icon="users" />
+							<v-icon v-bind="props" icon="users" />
 						</template>
 					</v-tooltip>
 				</span>
@@ -65,31 +65,31 @@
 			</v-col>
 
 			<v-col cols="7">
-				<div v-show="visibleComponents.selectionCriteria">
+				<div v-if="visibleComponents.selectionCriteria">
 					<SelectionCriteria
 						ref="selectionCriteria"
 						:target-type="targetType"
 						:data="componentsData.selectionCriteria"
 						:assistance-body="assistanceBody"
-						:is-assistance-duplicated="isDuplicated"
+						:is-assistance-duplicated="isAssistanceDuplicated"
+						:scoring="componentsData.scoring"
 						:custom-fields="customFields"
 						@updatedData="onFetchSelectionCriteria"
 						@beneficiariesCounted="selectedBeneficiariesCount = $event"
-						@deliveredCommodityValue="onGetDeliveredCommodityValue"
 					/>
 				</div>
 
-				<div v-show="visibleComponents.communities || visibleComponents.institutions">
+				<div v-if="visibleComponents.institutions">
 					<TargetTypeSelect
 						ref="targetTypeSelect"
 						:project-id="assistanceBody.projectId"
 						:visible="targetTypeSelectVisible"
-						:is-assistance-duplicated="isDuplicated"
+						:is-assistance-duplicated="isAssistanceDuplicated"
 						@updatedData="onFetchTargetType"
 					/>
 				</div>
 
-				<div v-show="visibleComponents.distributedCommodity">
+				<div v-if="visibleComponents.distributedCommodity">
 					<DistributedCommodity
 						v-if="isProjectReady"
 						ref="distributedCommodity"
@@ -97,24 +97,19 @@
 						:commodity="componentsData.distributedCommodity"
 						:selected-beneficiaries="selectedBeneficiariesCount"
 						:calculated-commodity-value="calculatedCommodityValue"
-						:is-assistance-duplicated="isDuplicated"
+						:is-assistance-duplicated="isAssistanceDuplicated"
 						:target-type="targetType"
 						:date-of-assistance="assistanceBody.dateDistribution"
 						:validation-messages="validationMessages"
 						@updatedData="onFetchDistributedCommodity"
-						@deliveredCommodityValue="onGetDeliveredCommodityValue"
 					/>
 				</div>
 
-				<div
-					v-show="visibleComponents.activityDescription
-						|| visibleComponents.householdsTargeted
-						|| visibleComponents.individualsTargeted"
-				>
+				<div v-if="isActivityDetailsVisible">
 					<ActivityDetails
 						ref="activityDetails"
 						:visible="visibleActivityDetails"
-						:data="componentsData.activityDetails"
+						:duplicatedData="componentsData.activityDetails"
 						@updatedData="onFetchActivityDetails"
 					/>
 				</div>
@@ -133,8 +128,8 @@
 			</v-btn>
 
 			<v-btn
-				:disabled="createAssistanceButtonDisabled"
-				:loading="loading"
+				:disabled="isAssistanceCreateButtonDisabled"
+				:loading="isAssistanceCreateLoading"
 				color="primary"
 				class="text-none"
 				@click="onValidateNewAssistance"
@@ -155,6 +150,7 @@ import DistributedCommodity from "@/components/Assistance/AddAssistance/Selectio
 import SelectionCriteria from "@/components/Assistance/AddAssistance/SelectionTypes/SelectionCriteria";
 import TargetTypeSelect from "@/components/Assistance/AddAssistance/SelectionTypes/TargetTypeSelect";
 import ConfirmAction from "@/components/ConfirmAction";
+import assistanceHelper from "@/mixins/assistanceHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
@@ -171,6 +167,8 @@ export default {
 		ConfirmAction,
 	},
 
+	mixins: [assistanceHelper],
+
 	data() {
 		return {
 			componentsData: {
@@ -179,6 +177,7 @@ export default {
 				distributedCommodity: null,
 				activityDetails: null,
 				selectionCriteria: null,
+				scoring: {},
 			},
 			project: {},
 			isProjectReady: false,
@@ -187,7 +186,6 @@ export default {
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
-				communities: false,
 				institutions: false,
 				activityDescription: false,
 				householdsTargeted: false,
@@ -210,7 +208,6 @@ export default {
 				locationId: null,
 				commodities: [],
 				selectionCriteria: [],
-				communities: [],
 				institutions: [],
 				threshold: null,
 				completed: false,
@@ -230,12 +227,11 @@ export default {
 			scoringTypes: [],
 			customFields: [],
 			selectedBeneficiariesCount: 0,
-			loading: false,
-			isDuplicated: false,
+			isAssistanceCreateLoading: false,
 			duplicateAssistance: null,
 			assistanceSelectionCriteria: [],
 			calculatedCommodityValue: [],
-			createAssistanceButtonDisabled: false,
+			isAssistanceCreateButtonDisabled: false,
 			unValidCardMessage: "",
 		};
 	},
@@ -243,92 +239,40 @@ export default {
 	computed: {
 		visibleActivityDetails() {
 			return {
-				activityDescription: this.visibleComponents.activityDescription,
-				householdsTargeted: this.visibleComponents.householdsTargeted,
-				individualsTargeted: this.visibleComponents.individualsTargeted,
+				isActivityDescription: this.visibleComponents.activityDescription,
+				isHouseholdsTargeted: this.visibleComponents.householdsTargeted,
+				isIndividualsTargeted: this.visibleComponents.individualsTargeted,
 			};
+		},
+
+		isActivityDetailsVisible() {
+			return this.visibleComponents.activityDescription
+				|| this.visibleComponents.householdsTargeted
+				|| this.visibleComponents.individualsTargeted;
 		},
 
 		targetTypeSelectVisible() {
 			return {
-				communities: this.visibleComponents.communities,
-				institutions: this.visibleComponents.institutions,
+				isInstitutions: this.visibleComponents.institutions,
 			};
 		},
 
-		householdWithoutHead() {
+		isHouseholdWithoutHead() {
 			return this.project.householdIntegrityIssues?.find(
 				(issue) => issue === ASSISTANCE.INTEGRITY_ISSUES.HOUSEHOLD_WITHOUT_HEAD,
 			);
-		},
-
-		visibleRightSidePanel() {
-			return this.visibleComponents.selectionCriteria
-				|| this.visibleComponents.communities
-				|| this.visibleComponents.institutions
-				|| this.visibleComponents.distributedCommodity
-				|| this.visibleComponents.activityDescription
-				|| this.visibleComponents.householdsTargeted
-				|| this.visibleComponents.individualsTargeted;
 		},
 	},
 
 	async created() {
 		await this.fetchProject();
 
-		this.isDuplicated = !!this.$route.query.duplicateAssistance;
-
-		if (this.isDuplicated) {
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance);
-
-				checkResponseStatus(status, message);
-
-				this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
-			} catch (e) {
-				Notification(`${this.$t("Assistance Selection Criteria")}: ${e.message || e}`, "error");
-			}
-
-			try {
-				const {
-					data,
-					status,
-					message,
-				} = await AssistancesService.getDetailOfAssistance(
-					this.$route.query.duplicateAssistance,
-				);
-
-				checkResponseStatus(status, message);
-
-				this.duplicateAssistance = data;
-			} catch (e) {
-				Notification(`${this.$t("Duplicate Assistance")}: ${e.message || e}`, "error");
-			}
-
-			try {
-				this.scoringTypesLoading = true;
-
-				const {
-					data: { data },
-					status,
-					message,
-				} = await AssistancesService.getScoringTypes(
-					null,
-					null,
-				);
-
-				checkResponseStatus(status, message);
-
-				this.scoringTypes = data;
-			} catch (e) {
-				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
-			} finally {
-				this.scoringTypesLoading = false;
-			}
+		if (this.isAssistanceDuplicated) {
+			await Promise.all([
+				this.fetchSelectionCriteria(),
+				this.fetchDetailOfAssistance(),
+				this.fetchScoringTypes(),
+			]);
 
 			await this.mapAssistance(this.duplicateAssistance);
 		}
@@ -358,76 +302,79 @@ export default {
 			}
 		},
 
-		async onGetDeliveredCommodityValue(updatedCommodities = null) {
-			if (this.assistanceBody.commodities[0]?.modalityType) {
-				this.validationMessages.modalityType = "";
-			}
-
-			await this.onFetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
-
-			const { dateExpiration, ...commoditiesBody } = this.assistanceBody;
-
+		async fetchSelectionCriteria() {
 			try {
 				const {
 					data: { data },
 					status,
 					message,
-				} = await AssistancesService.calculationCommodities(commoditiesBody);
+				} = await AssistancesService.getSelectionCriteria(this.duplicatedAssistanceId);
 
 				checkResponseStatus(status, message);
 
-				this.calculatedCommodityValue = data;
+				this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
+			} catch (e) {
+				Notification(`${this.$t("Assistance Selection Criteria")}: ${e.message || e}`, "error");
+			}
+		},
+
+		async fetchDetailOfAssistance() {
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await AssistancesService.getDetailOfAssistance(this.duplicatedAssistanceId);
+
+				checkResponseStatus(status, message);
+
+				this.duplicateAssistance = data;
+			} catch (e) {
+				Notification(`${this.$t("Duplicate Assistance")}: ${e.message || e}`, "error");
+			}
+		},
+
+		async fetchScoringTypes() {
+			try {
+				this.scoringTypesLoading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getScoringTypes(
+					null,
+					null,
+				);
+
+				checkResponseStatus(status, message);
+
+				this.scoringTypes = data;
+			} catch (e) {
+				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.scoringTypesLoading = false;
+			}
+		},
+
+		async fetchCommoditiesValue() {
+			try {
+				const {
+					data: { commodities },
+					status,
+					message,
+				} = await AssistancesService.assistancePrecalculate(this.assistanceBody);
+
+				checkResponseStatus(status, message);
+
+				this.calculatedCommodityValue = commodities;
 			} catch (e) {
 				Notification(`${this.$t("Commodities")}: ${e.message || e}`, "error");
 			}
 		},
 
-		onValidateNewAssistance() {
-			if (this.$refs.newAssistanceForm.submit()) {
-				const dateDistribution = this.$moment(this.assistanceBody.dateDistribution).format("YYYY-MM-DD");
-				const today = this.$moment().format("YYYY-MM-DD");
-				const isBeforeToday = this.$moment(dateDistribution).isBefore(today);
-
-				if (isBeforeToday) {
-					this.isConfirmModalOpen = true;
-				} else {
-					this.onSubmitAddingAssistance();
-				}
-			}
-		},
-
-		async onSubmitAddingAssistance() {
-			if (!this.$refs.newAssistanceForm.submit()) return;
-			this.assistanceBody.locationId = this.$refs.newAssistanceForm.getLocationId();
-
-			if (this.visibleComponents.communities || this.visibleComponents.institutions) {
-				if (!this.$refs.targetTypeSelect.submit()) return;
-			}
-
-			if (this.visibleComponents.activityDescription
-				|| this.visibleComponents.householdsTargeted
-				|| this.visibleComponents.individualsTargeted
-			) {
-				if (!this.$refs.activityDetails.submit()) return;
-			}
-
-			if (this.visibleComponents.selectionCriteria) {
-				if (!this.$refs.selectionCriteria.submit()) {
-					Notification(`${this.$t("Assistance cannot be created with no criteria.")}`, "warning");
-					return;
-				}
-			}
-
-			if (this.visibleComponents.distributedCommodity) {
-				if (!this.$refs.distributedCommodity.submit()) {
-					Notification(`${this.$t("Assistance cannot be created with no commodity.")}`, "warning");
-					return;
-				}
-			}
-
-			if (!this.isRemoteAndValid()) return;
-
-			this.loading = true;
+		async fetchNewAssistance() {
+			this.isAssistanceCreateLoading = true;
 
 			const { dateExpiration, ...assistanceBody } = this.assistanceBody;
 
@@ -457,48 +404,63 @@ export default {
 				Notification(`${this.$t("New Assistance")}: ${e.message || e}`, "error");
 			}
 
-			this.loading = false;
+			this.isAssistanceCreateLoading = false;
+		},
+
+		onValidateNewAssistance() {
+			if (this.$refs.newAssistanceForm.isFormValid()) {
+				const dateDistribution = this.$moment(this.assistanceBody.dateDistribution).format("YYYY-MM-DD");
+				const today = this.$moment().format("YYYY-MM-DD");
+				const isBeforeToday = this.$moment(dateDistribution).isBefore(today);
+
+				if (isBeforeToday) {
+					this.isConfirmModalOpen = true;
+				} else {
+					this.onSubmitAddingAssistance();
+				}
+			}
+		},
+
+		async onSubmitAddingAssistance() {
+			if (!this.$refs.newAssistanceForm.isFormValid()) return;
+
+			this.assistanceBody.locationId = this.$refs.newAssistanceForm.getLocationId();
+
+			if (this.visibleComponents.institutions) {
+				if (!this.$refs.targetTypeSelect.isFormValid()) return;
+			}
+
+			if (this.visibleComponents.activityDescription
+				|| this.visibleComponents.householdsTargeted
+				|| this.visibleComponents.individualsTargeted
+			) {
+				if (!this.$refs.activityDetails.isFormValid()) return;
+			}
+
+			if (this.visibleComponents.selectionCriteria) {
+				if (!this.$refs.selectionCriteria.isSelectionCriteriaDataAvailable()) {
+					Notification(`${this.$t("Assistance cannot be created with no criteria.")}`, "warning");
+					return;
+				}
+			}
+
+			if (this.visibleComponents.distributedCommodity) {
+				if (!this.$refs.distributedCommodity.isCommodityDataAvailable()) {
+					Notification(`${this.$t("Assistance cannot be created with no commodity.")}`, "warning");
+					return;
+				}
+			}
+
+			if (!this.isRemoteAndValid()) return;
+
+			await this.fetchNewAssistance();
 		},
 
 		isRemoteAndValid() {
 			const { remoteDistributionAllowed, target } = this.assistanceBody;
 
 			if (remoteDistributionAllowed) {
-				let allCriteriaHasValidCard = true;
-
-				if (target === ASSISTANCE.TARGET.HOUSEHOLD) {
-					allCriteriaHasValidCard = this.$refs.selectionCriteria.groups
-						.every(({ data }) => data.some((
-							{
-								criteria,
-								criteriaTarget,
-								value,
-							},
-						) => criteria.code === ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD
-								&& (value.code || value === true)
-								&& criteriaTarget.code === ASSISTANCE.CRITERIA_TARGET.HEAD));
-
-					this.unValidCardMessage = 'Please add "Head: Has valid card = true" criterion for each group';
-				}
-
-				if (target === ASSISTANCE.TARGET.INDIVIDUAL) {
-					allCriteriaHasValidCard = this.$refs.selectionCriteria.groups
-						.every(({ data }) => data.some((
-							{
-								criteria,
-								criteriaTarget,
-								value,
-							},
-						) => criteria.code === ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD
-							&& (value.code || value === true)
-							&& criteriaTarget.code === ASSISTANCE.CRITERIA_TARGET.BENEFICIARY));
-
-					this.unValidCardMessage = 'Please add "Beneficiary: Has valid card = true" criterion for each group';
-				}
-
-				if (allCriteriaHasValidCard) {
-					return true;
-				}
+				if (this.validateHasValidSmartCardCriterion(target)) return true;
 
 				this.isUnValidCardModalOpen = true;
 
@@ -508,168 +470,55 @@ export default {
 			return true;
 		},
 
-		// TODO Destructure this function in future for simplification and better readability
 		async mapAssistance(assistance) {
-			let round;
-			const { eloNumber, activity, budgetLine } = assistance;
-
-			if (assistance.round) {
-				if (assistance.round < 99) {
-					round = { code: assistance.round + 1, value: assistance.round + 1 };
-				} else {
-					round = { code: assistance.round, value: assistance.round };
-				}
-			}
+			const {
+				eloNumber,
+				activity,
+				budgetLine,
+				round,
+				dateDistribution,
+				name,
+				adm1,
+				adm2,
+				adm3,
+				adm4,
+				type,
+				sector,
+				subsector,
+				target,
+				note,
+			} = assistance;
 
 			this.componentsData.dataBeforeDuplicated = {
-				dateDistribution: assistance.dateDistribution,
-				round: assistance.round,
+				dateDistribution,
+				round,
 			};
 
 			this.componentsData.newAssistanceForm = {
-				name: assistance.name,
+				name,
 				adm1: null,
 				adm2: null,
 				adm3: null,
 				adm4: null,
-				adm1Id: assistance.adm1?.id,
-				adm2Id: assistance.adm2?.id,
-				adm3Id: assistance.adm3?.id,
-				adm4Id: assistance.adm4?.id,
-				dateOfAssistance: new Date(assistance.dateDistribution),
-				assistanceType: assistance.type,
-				sector: assistance.sector,
-				subsector: assistance.subsector,
-				targetType: assistance.target,
-				note: assistance.note,
-				round,
+				adm1Id: adm1?.id,
+				adm2Id: adm2?.id,
+				adm3Id: adm3?.id,
+				adm4Id: adm4?.id,
+				dateOfAssistance: new Date(dateDistribution),
+				assistanceType: type,
+				sector,
+				subsector,
+				targetType: target,
+				note,
+				round: this.prepareAssistanceRound(round),
 				eloNumber,
 				activity,
 				budgetLine,
 			};
 
-			if (this.project.targets.length) {
-				const selectableActivities = [];
-				const selectableBudgetLines = [];
-				const selectableModalityTypes = [];
-				const matchedModalityType = this.project.targets.some(
-					(target) => target.modalityType?.code === assistance.commodities[0]?.modalityType,
-				);
-				const isAllTargetsWithModality = this.project.targets.every(
-					(target) => target.modalityType,
-				);
-
-				this.project.targets.forEach((target) => {
-					if (target.activity) {
-						if (!this.componentsData.newAssistanceForm.activity?.code) {
-							this.componentsData.newAssistanceForm.activity = target.activity === activity
-								? { code: activity, value: activity }
-								: null;
-						}
-						selectableActivities.push(target.activity);
-					}
-
-					if (target.budgetLine) {
-						if (!this.componentsData.newAssistanceForm.budgetLine?.code) {
-							this.componentsData.newAssistanceForm.budgetLine = target.budgetLine === budgetLine
-								? { code: budgetLine, value: budgetLine }
-								: null;
-						}
-						selectableBudgetLines.push(target.budgetLine);
-					}
-
-					if (isAllTargetsWithModality && !matchedModalityType) {
-						selectableModalityTypes.push(target.modalityType.value);
-					}
-				});
-
-				if (activity && !this.componentsData.newAssistanceForm.activity) {
-					this.validationMessages.activity = `${this.$t("Activity was removed because:")} ${activity}
-						${this.$t("is not included in project targets. Allowed activities:")}
-						${selectableActivities.join(", ")}`;
-				}
-
-				if (budgetLine && !this.componentsData.newAssistanceForm.budgetLine) {
-					this.validationMessages.budgetLine = `${this.$t("Budget line was removed because:")} ${budgetLine}
-						${this.$t("is not included in project targets. Allowed budget lines:")}
-						${selectableBudgetLines.join(", ")}`;
-				}
-
-				if (!matchedModalityType && isAllTargetsWithModality) {
-					this.validationMessages.modalityType = `${this.$t("Modality was removed because:")}
-						${this.$t("modality type")} ${assistance.commodities[0]?.modalityType}
-						${this.$t("is not included in project targets. Allowed modality types:")}
-						${selectableModalityTypes.join(", ")}`;
-				}
-			}
-
-			const scoringType = assistance.scoringBlueprint === null
-				? AssistancesService.getDefaultScoringType()
-				: this.scoringTypes.filter(({ enabled }) => enabled)
-					.find(({ id }) => id === assistance.scoringBlueprint?.id);
-
-			if (assistance.scoringBlueprint && !scoringType) {
-				Notification(`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`, "warning");
-			}
-
-			if (assistance.scoringBlueprint && scoringType) {
-				this.$refs.selectionCriteria.scoringType = {
-					...scoringType,
-					identifier: `${scoringType.name} (ID: ${scoringType.id})`,
-				};
-				this.$refs.selectionCriteria.minimumSelectionScore = assistance.threshold;
-			} else {
-				this.$refs.selectionCriteria.scoringType = AssistancesService.getDefaultScoringType();
-				this.$refs.selectionCriteria.minimumSelectionScore = null;
-			}
-
-			const commodities = await this.fetchAssistanceCommodities();
-			const preparedCommodities = [];
-
-			if (this.isDuplicated) {
-				await this.fetchCustomFields();
-
-				commodities.forEach((item, index) => {
-					const commodity = item?.division?.customField?.key;
-					const isCommodityFound = this.customFields.find((field) => field.key === commodity);
-
-					if (commodity && !isCommodityFound) {
-						Notification(`${this.$t("Custom field")} ${commodity} ${this.$t("has been removed, Commodity must be added again.")}`, "warning");
-						commodities.splice(index, 1);
-					}
-				});
-			}
-
-			commodities.forEach((item) => {
-				const modality = this.getModalityByType(item.modalityType);
-
-				const {
-					unit,
-					quantity,
-					value,
-					currency,
-					secondUnit,
-					secondQuantity,
-				} = item.fields;
-
-				preparedCommodities.push({
-					modalityType: item.modalityType,
-					unit,
-					quantity,
-					value,
-					currency,
-					secondUnit,
-					secondQuantity,
-					description: item.description,
-					dateExpiration: assistance.dateExpiration
-						? this.$moment(assistance.dateExpiration).format("YYYY-MM-DD") : null,
-					division: item.division,
-					modality,
-					remoteDistributionAllowed: assistance.remoteDistributionAllowed,
-					allowedProductCategoryTypes: assistance.allowedProductCategoryTypes,
-					cashbackLimit: assistance.cashbackLimit,
-				});
-			});
+			this.validateSomeBasicPropertiesInputs(assistance);
+			this.prepareScoring(assistance);
+			const preparedCommodities = await this.prepareCommodities(assistance);
 
 			if (this.validationMessages.modalityType?.length) {
 				this.componentsData.distributedCommodity = null;
@@ -684,43 +533,49 @@ export default {
 				individualsTargeted: assistance.individualsTargeted || 0,
 			};
 
-			this.targetType = assistance.target;
-			this.assistanceBody.locationId = assistance.location?.locationId;
-			this.assistanceBody.target = assistance.target;
-			this.assistanceBody.type = assistance.type;
-			this.assistanceBody.sector = assistance.sector;
-			this.assistanceBody.subsector = assistance.subsector;
-			this.assistanceBody.note = assistance.note;
-			this.assistanceBody.round = this.componentsData.newAssistanceForm.round?.code || null;
+			this.targetType = target;
 
-			this.componentsData.selectionCriteria = await this.mapSelectionCriteria();
+			this.assistanceBody = {
+				...this.assistanceBody,
+				locationId: assistance.location?.locationId,
+				target,
+				sector,
+				subsector,
+				note,
+				round: this.componentsData.newAssistanceForm.round?.code || null,
+			};
+
+			this.componentsData.selectionCriteria = this.mapSelectionCriteria();
 		},
 
 		mapSelectionCriteria() {
 			const preparedSelectionCriteria = [];
 
 			this.assistanceSelectionCriteria.forEach((item) => {
-				if (preparedSelectionCriteria[item.group]) {
-					preparedSelectionCriteria[item.group].data.push({
-						criteriaTarget: { value: item.target, code: item.target },
-						target: item.target,
-						criteria: { code: item.field, value: this.prepareCriteriaName(item.field) },
-						condition: { code: item.condition },
-						value: item.value,
-						scoreWeight: item.weight,
-					});
+				const {
+					target,
+					field,
+					condition,
+					value,
+					weight,
+					group,
+				} = item;
+				const selectionCriteria = {
+					criteriaTarget: { value: target, code: target },
+					target,
+					criteria: { code: field, value: this.prepareCriteriaName(field) },
+					condition: { code: condition },
+					value,
+					scoreWeight: weight,
+				};
+
+				if (preparedSelectionCriteria[group]) {
+					preparedSelectionCriteria[group].data.push(selectionCriteria);
 				} else {
-					preparedSelectionCriteria[item.group] = {};
-					preparedSelectionCriteria[item.group].data = [];
-					preparedSelectionCriteria[item.group].tableData = [];
-					preparedSelectionCriteria[item.group].data.push({
-						criteriaTarget: { value: item.target, code: item.target },
-						target: item.target,
-						criteria: { code: item.field, value: this.prepareCriteriaName(item.field) },
-						condition: { code: item.condition },
-						value: item.value,
-						scoreWeight: item.weight,
-					});
+					preparedSelectionCriteria[group] = {};
+					preparedSelectionCriteria[group].data = [];
+					preparedSelectionCriteria[group].tableData = [];
+					preparedSelectionCriteria[group].data.push(selectionCriteria);
 				}
 			});
 
@@ -743,7 +598,6 @@ export default {
 			if (this.$refs.distributedCommodity) {
 				this.$refs.distributedCommodity.clearComponent();
 			}
-			// TODO Reset all components in AddAssistance on targetSelected change
 		},
 
 		onShowComponent(components) {
@@ -765,9 +619,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await AssistancesService.getAssistanceCommodities(
-					this.$route.query.duplicateAssistance,
-				);
+				} = await AssistancesService.getAssistanceCommodities(this.duplicatedAssistanceId);
 
 				checkResponseStatus(status, message);
 
@@ -811,7 +663,7 @@ export default {
 				budgetLine,
 			} = data;
 
-			this.createAssistanceButtonDisabled = !isDateOfAssistanceValid;
+			this.isAssistanceCreateButtonDisabled = !isDateOfAssistanceValid;
 
 			this.assistanceBody = {
 				...this.assistanceBody,
@@ -836,7 +688,7 @@ export default {
 					this.validationMessages.modalityType = "";
 				}
 
-				if (isFetchForced) {
+				if (isFetchForced && this.isAssistanceDuplicated) {
 					await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
 				}
 			}
@@ -848,7 +700,7 @@ export default {
 			vulnerabilityScoreTouched,
 			scoringType,
 		) {
-			this.createAssistanceButtonDisabled = vulnerabilityScoreTouched;
+			this.isAssistanceCreateButtonDisabled = vulnerabilityScoreTouched;
 
 			this.assistanceBody = {
 				...this.assistanceBody,
@@ -858,7 +710,7 @@ export default {
 			};
 		},
 
-		onFetchDistributedCommodity(commodities) {
+		async onFetchDistributedCommodity(commodities) {
 			const dateExpiration = new Date(commodities?.[0]?.dateExpiration);
 			const date = this.isDateValid(dateExpiration)
 				? dateExpiration
@@ -870,20 +722,22 @@ export default {
 				dateExpiration: this.$moment(date).format("YYYY-MM-DD"),
 				remoteDistributionAllowed: this.remoteAllowed(commodities[0]),
 				allowedProductCategoryTypes: commodities[0]?.allowedProductCategoryTypes || [],
-				cashbackLimit: commodities[0]?.allowedProductCategoryTypes?.includes("Cashback") ? Number(commodities[0]?.cashbackLimit) : 0,
+				cashbackLimit: commodities[0]?.allowedProductCategoryTypes?.includes(
+					ASSISTANCE.COMMODITY.CASHBACK,
+				)
+					? Number(commodities[0]?.cashbackLimit)
+					: 0,
 			};
+
+			await this.fetchCommoditiesValue();
 		},
 
 		remoteAllowed(commodity) {
-			let result = null;
-
 			if (commodity?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD) {
-				result = !!commodity?.remoteDistributionAllowed;
-			} else {
-				result = null;
+				return !!commodity?.remoteDistributionAllowed;
 			}
 
-			return result;
+			return null;
 		},
 
 		onFetchActivityDetails(data) {
@@ -901,6 +755,195 @@ export default {
 			};
 		},
 
+		validateHasValidSmartCardCriterion(target) {
+			let allCriteriaHasValidCard = true;
+
+			if (target === ASSISTANCE.TARGET.HOUSEHOLD) {
+				allCriteriaHasValidCard = this.$refs.selectionCriteria.groups
+					.every(({ data }) => data.some((
+						{
+							criteria,
+							criteriaTarget,
+							value,
+						},
+					) => criteria.code === ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD
+						&& (value.code || value === true)
+						&& criteriaTarget.code === ASSISTANCE.CRITERIA_TARGET.HEAD));
+
+				this.unValidCardMessage = 'Please add "Head: Has valid card = true" criterion for each group';
+			}
+
+			if (target === ASSISTANCE.TARGET.INDIVIDUAL) {
+				allCriteriaHasValidCard = this.$refs.selectionCriteria.groups
+					.every(({ data }) => data.some((
+						{
+							criteria,
+							criteriaTarget,
+							value,
+						},
+					) => criteria.code === ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD
+						&& (value.code || value === true)
+						&& criteriaTarget.code === ASSISTANCE.CRITERIA_TARGET.BENEFICIARY));
+
+				this.unValidCardMessage = 'Please add "Beneficiary: Has valid card = true" criterion for each group';
+			}
+
+			return allCriteriaHasValidCard;
+		},
+
+		validateSomeBasicPropertiesInputs(assistance) {
+			if (this.project.targets.length) {
+				const { activity, budgetLine } = assistance;
+				const selectableActivities = [];
+				const selectableBudgetLines = [];
+				const selectableModalityTypes = [];
+				const matchedModalityType = this.project.targets.some(
+					(target) => target.modalityType?.code === assistance.commodities[0]?.modalityType,
+				);
+				const isAllTargetsWithModality = this.project.targets.every(
+					(target) => target.modalityType,
+				);
+
+				this.project.targets.forEach((target) => {
+					if (target.activity) {
+						if (!this.componentsData.newAssistanceForm.activity?.code) {
+							this.componentsData.newAssistanceForm.activity = target.activity === activity
+								? { code: activity, value: activity }
+								: null;
+						}
+						selectableActivities.push(target.activity);
+					}
+
+					if (target.budgetLine) {
+						if (!this.componentsData.newAssistanceForm.budgetLine?.code) {
+							this.componentsData.newAssistanceForm.budgetLine = target.budgetLine === budgetLine
+								? { code: budgetLine, value: budgetLine }
+								: null;
+						}
+						selectableBudgetLines.push(target.budgetLine);
+					}
+
+					if (isAllTargetsWithModality && !matchedModalityType) {
+						selectableModalityTypes.push(target.modalityType.value);
+					}
+				});
+
+				if (activity && !this.componentsData.newAssistanceForm.activity) {
+					this.validationMessages.activity = `${this.$t("Activity was removed because: {activity} is not included in project targets. Allowed activities:", { activity })}
+						${selectableActivities.join(", ")}`;
+				}
+
+				if (budgetLine && !this.componentsData.newAssistanceForm.budgetLine) {
+					this.validationMessages.budgetLine = `${this.$t("Budget line was removed because: {budgetLine} is not included in project targets. Allowed budget lines:", { budgetLine })}
+						${selectableBudgetLines.join(", ")}`;
+				}
+
+				if (!matchedModalityType && isAllTargetsWithModality) {
+					this.validationMessages.modalityType = `${this.$t("Modality was removed because: modality type {modalityType} is not included in project targets. Allowed modality types:", { modalityType: assistance.commodities[0]?.modalityType })}
+						${selectableModalityTypes.join(", ")}`;
+				}
+			}
+		},
+
+		prepareScoring(assistance) {
+			const { scoringBlueprint, threshold } = assistance;
+			const scoringType = scoringBlueprint === null
+				? AssistancesService.getDefaultScoringType()
+				: this.scoringTypes.filter(({ enabled }) => enabled)
+					.find(({ id }) => id === scoringBlueprint?.id);
+
+			if (scoringBlueprint && !scoringType) {
+				Notification(
+					`${this.$t("Scoring type isn't available from duplicated assistance.")} ${this.$t("Select new one.")}`,
+					"warning",
+				);
+			}
+
+			if (scoringBlueprint && scoringType) {
+				this.componentsData.scoring = {
+					scoringType: {
+						...scoringType,
+						identifier: `${scoringType.name} (ID: ${scoringType.id})`,
+					},
+					minimumSelectionScore: threshold,
+				};
+			} else {
+				this.componentsData.scoring = {
+					scoringType: AssistancesService.getDefaultScoringType(),
+					minimumSelectionScore: null,
+				};
+			}
+		},
+
+		async prepareCommodities(assistance) {
+			const commodities = await this.fetchAssistanceCommodities();
+			const preparedCommodities = [];
+			const {
+				description,
+				remoteDistributionAllowed,
+				allowedProductCategoryTypes,
+				cashbackLimit,
+			} = assistance;
+
+			await this.fetchCustomFields();
+
+			commodities.forEach((item, index) => {
+				const commodity = item?.division?.customField?.key;
+				const isCommodityFound = this.customFields.find((field) => field.key === commodity);
+
+				if (commodity && !isCommodityFound) {
+					Notification(
+						`${this.$t("Custom field {commodity} has been removed, Commodity must be added again.", { commodity })}`,
+						"warning",
+					);
+					commodities.splice(index, 1);
+				}
+			});
+
+			commodities.forEach((item) => {
+				const modality = this.getModalityByType(item.modalityType);
+
+				const {
+					unit,
+					quantity,
+					value,
+					currency,
+					secondUnit,
+					secondQuantity,
+				} = item.fields;
+
+				preparedCommodities.push({
+					modalityType: item.modalityType,
+					unit,
+					quantity,
+					value,
+					currency,
+					secondUnit,
+					secondQuantity,
+					description,
+					dateExpiration: assistance.dateExpiration
+						? this.$moment(assistance.dateExpiration).format("YYYY-MM-DD") : null,
+					division: item.division,
+					modality,
+					remoteDistributionAllowed,
+					allowedProductCategoryTypes,
+					cashbackLimit,
+				});
+			});
+
+			return preparedCommodities;
+		},
+
+		prepareAssistanceRound(round) {
+			if (round) {
+				return round < 99
+					? { code: round + 1, value: round + 1 }
+					: { code: round, value: round };
+			}
+
+			return null;
+		},
+
 		getValidSelectionCriteria(criteria = []) {
 			const validCriteria = criteria.filter(({ deprecated }) => !deprecated);
 
@@ -915,11 +958,10 @@ export default {
 		},
 
 		onFetchTargetType(data) {
-			const { communities, institutions } = data;
+			const { institutions } = data;
 
 			this.assistanceBody = {
 				...this.assistanceBody,
-				communities,
 				institutions,
 			};
 		},
@@ -929,7 +971,7 @@ export default {
 				case ASSISTANCE.COMMODITY.CASH:
 				case ASSISTANCE.COMMODITY.SMARTCARD:
 				case ASSISTANCE.COMMODITY.MOBILE_MONEY:
-					return "Cash";
+					return ASSISTANCE.MODALITY.CASH;
 				case ASSISTANCE.COMMODITY.FOOD_RATIONS:
 				case ASSISTANCE.COMMODITY.READY_TO_EAT_RATIONS:
 				case ASSISTANCE.COMMODITY.BREAD:
@@ -940,13 +982,13 @@ export default {
 				case ASSISTANCE.COMMODITY.DIGNITY_KIT:
 				case ASSISTANCE.COMMODITY.NFI_KIT:
 				case ASSISTANCE.COMMODITY.WINTERIZATION_KIT:
-					return "In Kind";
+					return ASSISTANCE.MODALITY.IN_KIND;
 				case ASSISTANCE.COMMODITY.LOAN:
 				case ASSISTANCE.COMMODITY.BUSINESS_GRANT:
-					return "Other";
+					return ASSISTANCE.MODALITY.OTHER;
 				case ASSISTANCE.COMMODITY.QR_CODE_VOUCHER:
 				case ASSISTANCE.COMMODITY.PAPER_VOUCHER:
-					return "Other";
+					return ASSISTANCE.MODALITY.OTHER;
 				default:
 					return "";
 			}
@@ -958,14 +1000,39 @@ export default {
 <style lang="scss" scoped>
 .new-assistance-title {
 	display: flex;
+	align-items: center;
 
 	.title {
 		margin-bottom: 1.5rem;
 	}
 
 	.integrity-issues {
+		display: flex;
+		align-items: center;
 		font-weight: bold;
 		margin: 0 auto;
+	}
+}
+
+.new-assistance-title {
+	@media (max-width: 940px) {
+		flex-direction: column;
+		align-items: start;
+
+		> .integrity-issues {
+			margin: .75rem .5rem;
+		}
+	}
+
+	@media (max-width: 600px) {
+		> .integrity-issues {
+			flex-direction: column;
+			margin: .75rem 0;
+
+			> i, span {
+				padding: 0 !important;
+			}
+		}
 	}
 }
 

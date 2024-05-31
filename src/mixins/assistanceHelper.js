@@ -26,5 +26,14 @@ export default {
 		customFieldName() {
 			return this.commodities[0]?.division?.customField?.label;
 		},
+
+		duplicatedAssistanceId() {
+			return this.$route.query.duplicateAssistance;
+		},
+
+		isAssistanceDuplicated() {
+			return !!this.duplicatedAssistanceId;
+		},
+
 	},
 };
