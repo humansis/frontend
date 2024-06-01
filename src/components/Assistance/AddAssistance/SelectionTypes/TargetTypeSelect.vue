@@ -94,7 +94,7 @@ export default {
 	},
 
 	mounted() {
-		this.fetchData();
+		this.fetchInstitutions();
 	},
 
 	methods: {

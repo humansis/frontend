@@ -138,6 +138,12 @@ export default {
 		});
 	},
 
+	getAssistanceCreationProgress(id) {
+		return fetcher({
+			uri: `assistances/${id}/creation-progress`,
+		});
+	},
+
 	getAssistanceCommodities(id) {
 		return fetcher({
 			uri: `assistances/${id}/commodities`,

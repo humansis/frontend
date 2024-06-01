@@ -564,7 +564,15 @@ export default {
 		onGoToUpdate(id) {
 			const assistance = this.table.data.find((item) => item.id === id);
 
-			if (this.upcoming) {
+			if (assistance.state.code === ASSISTANCE.STATUS.CREATING) {
+				this.$router.push({
+					name: "AssistanceCreationProgress",
+					params: {
+						projectId: this.$route.params.projectId,
+						assistanceId: assistance.id,
+					},
+				});
+			} else if (this.upcoming) {
 				this.showDetail(assistance);
 			} else {
 				this.$router.push({
@@ -637,7 +645,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export Assistances")}: ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

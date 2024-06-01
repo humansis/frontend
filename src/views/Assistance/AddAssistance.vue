@@ -391,8 +391,11 @@ export default {
 
 				if (id) {
 					this.$router.push({
-						name: "AssistanceEdit",
-						params: { assistanceId: id },
+						name: "AssistanceCreationProgress",
+						params: {
+							projectId: this.$route.params.projectId,
+							assistanceId: id,
+						},
 					});
 				} else {
 					this.$router.push({
