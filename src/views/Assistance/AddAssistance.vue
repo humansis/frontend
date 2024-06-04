@@ -72,10 +72,15 @@
 						:data="componentsData.selectionCriteria"
 						:assistance-body="assistanceBody"
 						:is-assistance-duplicated="isAssistanceDuplicated"
+						:is-commodities-created="!!assistanceBody.commodities?.length"
+						:is-calculated-data-loading="isCalculatedDataLoading"
+						:calculated-beneficiaries="calculatedBeneficiaries"
 						:scoring="componentsData.scoring"
 						:custom-fields="customFields"
 						@updatedData="onFetchSelectionCriteria"
 						@beneficiariesCounted="selectedBeneficiariesCount = $event"
+						@calculatedCommodities="calculatedCommodityValue = $event"
+						@updateDataLoadingState="isCalculatedDataLoading = $event"
 					/>
 				</div>
 
@@ -95,9 +100,9 @@
 						ref="distributedCommodity"
 						:project="project"
 						:commodity="componentsData.distributedCommodity"
-						:selected-beneficiaries="selectedBeneficiariesCount"
 						:calculated-commodity-value="calculatedCommodityValue"
 						:is-assistance-duplicated="isAssistanceDuplicated"
+						:is-calculated-data-loading="isCalculatedDataLoading"
 						:target-type="targetType"
 						:date-of-assistance="assistanceBody.dateDistribution"
 						:validation-messages="validationMessages"
@@ -180,9 +185,12 @@ export default {
 				scoring: {},
 			},
 			project: {},
+			calculatedBeneficiaries: {},
 			isProjectReady: false,
 			isConfirmModalOpen: false,
+			isCalculatedDataLoading: false,
 			isUnValidCardModalOpen: false,
+			isCalculatedDataFetched: false,
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
@@ -261,6 +269,18 @@ export default {
 			return this.project.householdIntegrityIssues?.find(
 				(issue) => issue === ASSISTANCE.INTEGRITY_ISSUES.HOUSEHOLD_WITHOUT_HEAD,
 			);
+		},
+	},
+
+	watch: {
+		assistanceBody: {
+			deep: true,
+			async handler(value) {
+				if (this.checkDataInAssistanceBody(value) && !this.isCalculatedDataFetched) {
+					this.isCalculatedDataFetched = true;
+					await this.fetchCommoditiesValue();
+				}
+			},
 		},
 	},
 
@@ -359,8 +379,10 @@ export default {
 
 		async fetchCommoditiesValue() {
 			try {
+				this.isCalculatedDataLoading = true;
+
 				const {
-					data: { commodities },
+					data: { commodities, selectedCount, totalCount },
 					status,
 					message,
 				} = await AssistancesService.assistancePrecalculate(this.assistanceBody);
@@ -368,8 +390,14 @@ export default {
 				checkResponseStatus(status, message);
 
 				this.calculatedCommodityValue = commodities;
+				this.calculatedBeneficiaries = {
+					selectedCount,
+					totalCount,
+				};
 			} catch (e) {
 				Notification(`${this.$t("Commodities")}: ${e.message || e}`, "error");
+			} finally {
+				this.isCalculatedDataLoading = false;
 			}
 		},
 
@@ -490,6 +518,7 @@ export default {
 				subsector,
 				target,
 				note,
+				commodities,
 			} = assistance;
 
 			this.componentsData.dataBeforeDuplicated = {
@@ -521,13 +550,13 @@ export default {
 
 			this.validateSomeBasicPropertiesInputs(assistance);
 			this.prepareScoring(assistance);
-			const preparedCommodities = await this.prepareCommodities(assistance);
+
+			const preparedCommodities = await this.prepareCommodities(assistance, commodities);
 
 			if (this.validationMessages.modalityType?.length) {
 				this.componentsData.distributedCommodity = null;
 			} else {
 				this.componentsData.distributedCommodity = preparedCommodities;
-				await this.onGetDeliveredCommodityValue(preparedCommodities);
 			}
 
 			this.componentsData.activityDetails = {
@@ -601,6 +630,9 @@ export default {
 			if (this.$refs.distributedCommodity) {
 				this.$refs.distributedCommodity.clearComponent();
 			}
+
+			this.calculatedBeneficiaries = {};
+			this.calculatedCommodityValue = {};
 		},
 
 		onShowComponent(components) {
@@ -614,24 +646,6 @@ export default {
 			return inputDate instanceof Date && !Number.isNaN(inputDate)
 				&& inputDate >= new Date(this.project.startDate)
 				&& inputDate <= new Date(this.project.endDate);
-		},
-
-		async fetchAssistanceCommodities() {
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await AssistancesService.getAssistanceCommodities(this.duplicatedAssistanceId);
-
-				checkResponseStatus(status, message);
-
-				return data;
-			} catch (e) {
-				Notification(`${this.$t("Commodities")}: ${e.message || e}`, "error");
-			}
-
-			return [];
 		},
 
 		async fetchCustomFields() {
@@ -650,7 +664,7 @@ export default {
 			}
 		},
 
-		async onFetchNewAssistanceForm({ data, isFetchForced }) {
+		async onFetchNewAssistanceForm(data) {
 			const {
 				name,
 				assistanceType,
@@ -690,10 +704,6 @@ export default {
 				if (!sector?.code || !subsector?.code) {
 					this.validationMessages.modalityType = "";
 				}
-
-				if (isFetchForced && this.isAssistanceDuplicated) {
-					await this.$refs.selectionCriteria.fetchCriteriaInfo({ changeScoreInterval: true });
-				}
 			}
 		},
 
@@ -732,7 +742,10 @@ export default {
 					: 0,
 			};
 
-			await this.fetchCommoditiesValue();
+			if ((this.isCalculatedDataFetched && this.isAssistanceDuplicated)
+				|| !this.isAssistanceDuplicated) {
+				await this.fetchCommoditiesValue();
+			}
 		},
 
 		remoteAllowed(commodity) {
@@ -741,6 +754,12 @@ export default {
 			}
 
 			return null;
+		},
+
+		checkDataInAssistanceBody(data) {
+			return ((data.insitutions?.length && data.commodities?.length)
+				|| (data.commodities?.length && data.selectionCriteria?.length)
+				|| (data.selectionCriteria?.length && data.description?.length));
 		},
 
 		onFetchActivityDetails(data) {
@@ -878,8 +897,7 @@ export default {
 			}
 		},
 
-		async prepareCommodities(assistance) {
-			const commodities = await this.fetchAssistanceCommodities();
+		async prepareCommodities(assistance, commodities) {
 			const preparedCommodities = [];
 			const {
 				description,
@@ -960,13 +978,15 @@ export default {
 			return validCriteria;
 		},
 
-		onFetchTargetType(data) {
+		async onFetchTargetType(data) {
 			const { institutions } = data;
 
 			this.assistanceBody = {
 				...this.assistanceBody,
 				institutions,
 			};
+
+			await this.fetchCommoditiesValue();
 		},
 
 		getModalityByType(code) {

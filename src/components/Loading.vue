@@ -1,5 +1,5 @@
 <template>
-	<div class="text-center">
+	<div :class="customClass">
 		<v-progress-circular indeterminate :size="computeSize" :color="color" />
 	</div>
 </template>
@@ -28,6 +28,11 @@ export default {
 		color: {
 			type: String,
 			default: "primary",
+		},
+
+		customClass: {
+			type: String,
+			default: "text-center",
 		},
 	},
 

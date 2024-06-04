@@ -88,18 +88,24 @@
 		{{ $t('Please Add One Distributed Commodity') }}.
 	</v-alert>
 
-	<p
-		v-for="({ modalityType, unit, value }, key) of calculatedCommodityValue"
-		:key="`calculated-commodity-item${key}`"
-		class="text-h6 text-right mt-5"
-	>
-		<strong class="is-size-4">
-			{{ value }}
-		</strong>
-		{{ unit }}
-		({{ $t(modalityType) }})
-		{{ $t("To Be Delivered") }}
-	</p>
+	<template v-if="!isCalculatedDataLoading">
+		<p
+			v-for="({ modalityType, unit, value }, key) of calculatedCommodityValue"
+			:key="`calculated-commodity-item${key}`"
+			class="text-h6 text-right mt-5"
+		>
+			<strong class="is-size-4">
+				{{ value }}
+			</strong>
+			{{ unit }}
+			({{ $t(modalityType) }})
+			{{ $t("To Be Delivered") }}
+		</p>
+	</template>
+
+	<template v-else>
+		<Loading custom-class="text-right mt-5 mr-12" is-small />
+	</template>
 </template>
 
 <script>
@@ -107,6 +113,7 @@ import DistributedCommodityForm from "@/components/Assistance/AddAssistance/Sele
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import Modal from "@/components/Inputs/Modal";
+import Loading from "@/components/Loading";
 import countryHelper from "@/mixins/countryHelper";
 import { generateColumns } from "@/utils/datagrid";
 import { ASSISTANCE } from "@/consts";
@@ -119,6 +126,7 @@ export default {
 		DistributedCommodityForm,
 		ButtonAction,
 		DataGrid,
+		Loading,
 	},
 
 	mixins: [countryHelper],
@@ -129,12 +137,6 @@ export default {
 		commodity: {
 			type: Array,
 			default: () => [],
-		},
-
-		selectedBeneficiaries: {
-			type: Number,
-			required: true,
-			default: 0,
 		},
 
 		project: {
@@ -167,7 +169,7 @@ export default {
 			default: () => {},
 		},
 
-		isCommodityValueCalculating: {
+		isCalculatedDataLoading: {
 			type: Boolean,
 			default: false,
 		},
@@ -363,7 +365,7 @@ export default {
 	},
 
 	mounted() {
-		if (this.isAssistanceDuplicated) {
+		if (this.isAssistanceDuplicated && this.commodity?.length) {
 			this.prepareDataForTable(this.commodity);
 		}
 	},
@@ -379,6 +381,7 @@ export default {
 
 			if (this.isAssistanceDuplicated) {
 				this.toggleColumnsVisibility();
+				this.$emit("updatedData", this.preparedCommodities);
 			}
 		},
 

@@ -83,18 +83,14 @@ export default {
 		};
 	},
 
-	watch: {
-		isAssistanceDuplicated(value) {
-			if (value) {
-				const assistanceId = this.$route.query.duplicateAssistance;
+	async mounted() {
+		await this.fetchInstitutions();
 
-				this.fetchUsedInstitutions(assistanceId);
-			}
-		},
-	},
+		if (this.isAssistanceDuplicated) {
+			const assistanceId = this.$route.query.duplicateAssistance;
 
-	mounted() {
-		this.fetchInstitutions();
+			await this.fetchUsedInstitutions(assistanceId);
+		}
 	},
 
 	methods: {

@@ -123,13 +123,19 @@
 		</v-col>
 	</v-row>
 
-	<div class="text-h6 text-right mt-4">
-		<strong>
-			{{ countOf }}/{{ totalCount }}
-		</strong>
+	<template v-if="!isCalculatedDataLoading && !isBeneficiariesCountLoading">
+		<div class="text-h6 text-right mt-4">
+			<strong>
+				{{ countOf }}/{{ totalCount }}
+			</strong>
 
-		{{ $t(selectedTargetType) }}
-	</div>
+			{{ $t(selectedTargetType) }}
+		</div>
+	</template>
+
+	<template v-else>
+		<Loading custom-class="text-right mt-4 mr-12" is-small />
+	</template>
 </template>
 
 <script>
@@ -141,6 +147,7 @@ import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
+import Loading from "@/components/Loading";
 import { normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
@@ -158,9 +165,14 @@ export default {
 		DataSelect,
 		DataInput,
 		ExportControl,
+		Loading,
 	},
 
-	emits: ["updatedData", "beneficiariesCounted"],
+	emits: [
+		"updatedData",
+		"beneficiariesCounted",
+		"calculatedCommodities",
+	],
 
 	props: {
 		targetType: {
@@ -186,6 +198,21 @@ export default {
 		isAssistanceDuplicated: {
 			type: Boolean,
 			default: false,
+		},
+
+		isCommoditiesCreated: {
+			type: Boolean,
+			default: false,
+		},
+
+		isCalculatedDataLoading: {
+			type: Boolean,
+			default: false,
+		},
+
+		calculatedBeneficiaries: {
+			type: Object,
+			default: () => {},
 		},
 	},
 
@@ -219,6 +246,7 @@ export default {
 			minimumSelectionScore: null,
 			scoringType: AssistancesService.getDefaultScoringType(),
 			isScoringTypesLoading: false,
+			isBeneficiariesCountLoading: false,
 			beneficiariesData: [],
 			totalBeneficiariesData: [],
 			countOf: 0,
@@ -286,12 +314,20 @@ export default {
 			},
 		},
 
+		calculatedBeneficiaries: {
+			deep: true,
+			handler(value) {
+				this.totalCount = value.totalCount;
+				this.countOf = value.selectedCount;
+			},
+		},
+
 		data(data) {
 			if (data) {
 				this.groups = data;
 
 				if (this.isAssistanceDuplicated) {
-					this.fetchCriteriaInfo();
+					this.updateComponentsData();
 				}
 			}
 		},
@@ -305,17 +341,9 @@ export default {
 		async fetchCriteriaInfo() {
 			this.isCalculationLoading = true;
 
+			this.updateComponentsData();
+
 			await this.getCountOfBeneficiaries();
-
-			this.isVulnerabilityScoreTouched = false;
-
-			this.$emit(
-				"updatedData",
-				this.prepareCriteria(),
-				this.minimumSelectionScore,
-				this.isVulnerabilityScoreTouched,
-				this.scoringType,
-			);
 
 			this.$emit("beneficiariesCounted", this.countOf);
 			this.isCalculationLoading = false;
@@ -349,8 +377,11 @@ export default {
 
 			if (this.assistanceBodyIsValid(assistanceBody)) {
 				try {
+					this.isBeneficiariesCountLoading = true;
+					this.$emit("updateDataLoadingState", this.isBeneficiariesCountLoading);
+
 					const {
-						data: { groupEligibleIndividuals, selectedCount, totalCount },
+						data: { groupEligibleIndividuals, selectedCount, totalCount, commodities },
 						status,
 						message,
 					} = await AssistancesService.assistancePrecalculate(beneficiariesBody);
@@ -360,9 +391,16 @@ export default {
 					this.totalCount = totalCount;
 					this.countOf = selectedCount;
 
+					if (this.isCommoditiesCreated) {
+						this.$emit("calculatedCommodities", commodities);
+					}
+
 					this.prepareDataForBeneficiariesModal(groupEligibleIndividuals);
 				} catch (e) {
 					Notification(`${this.$t("Precalculate")}: ${e.message || e}`, "error");
+				} finally {
+					this.isBeneficiariesCountLoading = false;
+					this.$emit("updateDataLoadingState", this.isBeneficiariesCountLoading);
 				}
 			}
 		},
@@ -517,6 +555,18 @@ export default {
 				count: 0,
 				data: [],
 			};
+		},
+
+		updateComponentsData() {
+			this.isVulnerabilityScoreTouched = false;
+
+			this.$emit(
+				"updatedData",
+				this.prepareCriteria(),
+				this.minimumSelectionScore,
+				this.isVulnerabilityScoreTouched,
+				this.scoringType,
+			);
 		},
 
 		onSubmitCriteriaForm(criteriaForm) {

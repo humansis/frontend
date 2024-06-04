@@ -100,7 +100,12 @@ export default {
 		async fetchAssistanceCreationProgress() {
 			try {
 				const {
-					data: { name, createdCount, totalCount, isCreated },
+					data: {
+						name,
+						createdBeneficiariesCount,
+						totalBeneficiariesCount,
+						isCreated,
+					},
 					message,
 					status,
 				} = await AssistancesService.getAssistanceCreationProgress(
@@ -110,8 +115,8 @@ export default {
 				checkResponseStatus(status, message);
 
 				this.assistanceName = name;
-				this.beneficiariesCreated = createdCount;
-				this.beneficiariesTotal = totalCount;
+				this.beneficiariesCreated = createdBeneficiariesCount;
+				this.beneficiariesTotal = totalBeneficiariesCount;
 				this.isAssistanceCreated = isCreated;
 
 				if (this.isAssistanceCreated) {

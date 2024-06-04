@@ -9,7 +9,6 @@
 				:is-assistance-duplicated="newAssistanceForm !== null"
 				:data-before-duplicated="dataBeforeDuplicated"
 				:data-for-assistance-name="dataForAssistanceName"
-				@input="onUpdateData(false)"
 			/>
 
 			<LocationForm
@@ -106,10 +105,11 @@
 				:loading="loading.isSectors"
 				:error-messages="validationMsg('sector')"
 				:hint="sectorValidationMessage"
-				persistent-hint
 				label="Sector"
 				name="sector"
 				class="has-warning-message mb-4 "
+				persistent-hint
+				@click:clear="resetTargetInputs('sector')"
 				@update:modelValue="onSectorSelect"
 			/>
 
@@ -119,10 +119,11 @@
 				:loading="loading.isSubsectors"
 				:error-messages="validationMsg('subsector')"
 				:hint="subsectorValidationMessage"
-				persistent-hint
 				label="Subsector"
 				name="sub-sector"
 				class="has-warning-message mb-4"
+				persistent-hint
+				@click:clear="resetTargetInputs('subSector')"
 				@update:modelValue="onSubsectorSelect"
 			/>
 
@@ -134,6 +135,7 @@
 				label="Assistance Type"
 				name="assistance-type"
 				class="mb-4"
+				@click:clear="resetTargetInputs('assistanceType')"
 				@update:modelValue="onAssistanceTypeSelect"
 			/>
 
@@ -330,6 +332,14 @@ export default {
 				);
 			}
 		},
+
+		"formModel.targetType": function targetType() {
+			this.showComponents();
+		},
+
+		"formModel.name": function targetType() {
+			this.$emit("updatedData", this.formModel);
+		},
 	},
 
 	async mounted() {
@@ -338,7 +348,7 @@ export default {
 	},
 
 	updated() {
-		this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
+		this.$emit("updatedData", this.formModel);
 	},
 
 	methods: {
@@ -392,7 +402,7 @@ export default {
 				await this.showComponents();
 			}
 
-			this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
+			this.$emit("updatedData", this.formModel);
 		},
 
 		isFormValid() {
@@ -405,10 +415,10 @@ export default {
 				|| (!this.v$.$invalid && !invalidLocationForm && !invalidAssistanceName);
 		},
 
-		async onUpdateData(isFetchForced = true) {
+		async onUpdateData() {
 			this.onValuesForAssistanceName();
 			await this.$nextTick();
-			this.$emit("updatedData", { data: this.formModel, isFetchForced });
+			this.$emit("updatedData", this.formModel);
 		},
 
 		normalizeText(text) {
@@ -423,27 +433,33 @@ export default {
 			return this.formModel.locationId;
 		},
 
-		async onSectorSelect({ code }) {
-			this.formModel.subsector = [];
-			this.formModel.assistanceType = [];
-			this.formModel.targetType = [];
+		async onSectorSelect(sector) {
+			this.resetTargetInputs("sector");
 			this.onValidate("sector");
-			await this.fetchSubsectors(code);
+
+			if (!sector?.code) return;
+
+			await this.fetchSubsectors(sector.code);
 			this.sectorValidationMessage = "";
 		},
 
-		async onSubsectorSelect({ code }) {
-			this.formModel.assistanceType = [];
-			this.formModel.targetType = [];
+		async onSubsectorSelect(subSector) {
+			this.resetTargetInputs("subSector");
 			this.onValidate("subsector");
-			await this.fetchAssistanceTypes(code);
+
+			if (!subSector?.code) return;
+
+			await this.fetchAssistanceTypes(subSector.code);
 			this.subsectorValidationMessage = "";
 		},
 
-		async onAssistanceTypeSelect({ code }) {
-			this.formModel.targetType = [];
+		async onAssistanceTypeSelect(assistanceType) {
+			this.resetTargetInputs("assistanceType");
 			this.onValidate("assistanceType");
-			await this.fetchTargetTypes(code);
+
+			if (!assistanceType?.code) return;
+
+			await this.fetchTargetTypes(assistanceType.code);
 		},
 
 		async onTargetTypeSelect(targetType) {
@@ -454,8 +470,7 @@ export default {
 			} else {
 				this.onValidate("targetType");
 				this.$emit("targetSelect", targetType);
-				await this.showComponents();
-				this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
+				this.$emit("updatedData", this.formModel);
 			}
 		},
 
@@ -666,6 +681,28 @@ export default {
 
 			if (!this.formModel.subsector?.code) {
 				this.subsectorValidationMessage = `${this.$t("Subsector: {subSector} was removed, because this subsector is not selectable.", { subSector: normalizeText(subsector) })}`;
+			}
+		},
+
+		resetTargetInputs(selectedInput) {
+			switch (selectedInput) {
+				case "sector":
+					this.formModel.subsector = [];
+					this.formModel.assistanceType = [];
+					this.formModel.targetType = [];
+
+					break;
+				case "subSector":
+					this.formModel.assistanceType = [];
+					this.formModel.targetType = [];
+					break;
+				case "assistanceType":
+
+					this.formModel.targetType = [];
+					break;
+				default:
+
+					break;
 			}
 		},
 	},

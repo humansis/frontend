@@ -144,12 +144,6 @@ export default {
 		});
 	},
 
-	getAssistanceCommodities(id) {
-		return fetcher({
-			uri: `assistances/${id}/commodities`,
-		});
-	},
-
 	getCommodities(ids) {
 		return fetcher({
 			uri: `assistances/commodities${queryBuilder({ ids })}`,

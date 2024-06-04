@@ -82,7 +82,7 @@ export default {
 			required: true,
 		},
 
-		data: {
+		duplicatedData: {
 			type: Object,
 			default: null,
 		},
@@ -99,11 +99,12 @@ export default {
 	},
 
 	watch: {
-		data(data) {
-			if (data) {
-				this.formModel = data;
+		duplicatedData: {
+			deep: true,
+			handler(value) {
+				this.formModel = value;
 				this.$emit("updatedData", this.formModel);
-			}
+			},
 		},
 	},
 

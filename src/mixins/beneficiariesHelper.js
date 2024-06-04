@@ -201,22 +201,6 @@ export default {
 			return idNumbers;
 		},
 
-		async getAssistanceCommodities() {
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId);
-
-				checkResponseStatus(status, message);
-
-				this.commodities = data;
-			} catch (e) {
-				Notification(`${this.$t("Commodities")}: ${e.message || e}`, "error");
-			}
-		},
-
 		onOpenAssignVoucherModal(id, canAssignVoucher) {
 			if (canAssignVoucher) {
 				this.assignVoucherToBeneficiaryId = this.table.data.find((item) => item.id === id);
