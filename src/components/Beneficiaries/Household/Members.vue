@@ -41,6 +41,7 @@
 						:beneficiary="member"
 						:members-smart-card-numbers="smartCardNumbers[index]"
 						:data-cy="`member-${index + 1}-form`"
+						is-members-form
 					/>
 				</v-expansion-panel-text>
 			</v-expansion-panel>

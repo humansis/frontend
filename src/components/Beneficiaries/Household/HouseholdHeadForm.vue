@@ -18,6 +18,7 @@
 				<DataInput
 					v-model="formModel.nameLocal.familyName"
 					:error-messages="validationMsg('nameLocal.familyName')"
+					:optional="isMembersForm"
 					:data-cy="prepareComponentIdentifier()"
 					label="Local family name"
 					name="local-family-name"
@@ -29,6 +30,7 @@
 					v-model="formModel.nameLocal.firstName"
 					:error-messages="validationMsg('nameLocal.firstName')"
 					:data-cy="prepareComponentIdentifier()"
+					:optional="isMembersForm"
 					label="Local given name"
 					name="local-given-name"
 					class="mb-4"
@@ -235,6 +237,7 @@
 					v-model="formModel.residencyStatus"
 					:items="options.residencyStatus"
 					:loading="residenceStatusesLoading"
+					:optional="isMembersForm"
 					:error-messages="validationMsg('residencyStatus')"
 					:data-cy="prepareComponentIdentifier()"
 					label="Residency status"
@@ -462,8 +465,8 @@ export default {
 		return {
 			formModel: {
 				nameLocal: {
-					familyName: { required },
-					firstName: { required },
+					familyName: { ...(!this.isMembersForm && { required }) },
+					firstName: { ...(!this.isMembersForm && { required }) },
 				},
 				personalInformation: {
 					gender: { required },
@@ -518,7 +521,7 @@ export default {
 						),
 					},
 				},
-				residencyStatus: { required },
+				residencyStatus: { ...(!this.isMembersForm && { required }) },
 				phone1: {
 					ext: {
 						required: requiredIf(this.formModel.phone1.phoneNo),
@@ -559,6 +562,11 @@ export default {
 		membersSmartCardNumbers: {
 			type: Array,
 			default: () => [],
+		},
+
+		isMembersForm: {
+			type: Boolean,
+			default: false,
 		},
 
 		dataCy: {
