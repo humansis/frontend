@@ -538,7 +538,7 @@ export default {
 						gender: beneficiary.personalInformation.gender.code,
 						customFieldValues,
 						phones: [],
-						residencyStatus: beneficiary.residencyStatus.code,
+						residencyStatus: beneficiary.residencyStatus?.code,
 						isHead: beneficiary.isHead,
 						vulnerabilityCriteria: this.mapVulnerabilities(beneficiary.vulnerabilities),
 					};
