@@ -197,13 +197,13 @@ export default {
 		async fetchBeneficiariesByProject() {
 			try {
 				const { projectId } = this.$route.params;
+				const isAssistanceRemoteSmartCard = this.assistance.remoteDistributionAllowed
+					&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
 				const filters = {
 					excludeAssistance: this.$route.params.assistanceId,
-					...(this.assistance.remoteDistributionAllowed
-						&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
-						&& {
-							validSmartcard: true,
-						}),
+					...(isAssistanceRemoteSmartCard && {
+						validSmartcard: true,
+					}),
 				};
 
 				const {
