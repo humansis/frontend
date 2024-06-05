@@ -12,6 +12,7 @@ import PHONE from "./phone";
 import ROLE from "./role";
 import SCORING from "./scoring";
 import TABLE from "./table";
+import HOME from "./home";
 
 export {
 	ASSISTANCE,
@@ -24,6 +25,7 @@ export {
 	INSTITUTION,
 	HOUSEHOLD,
 	PHONE,
+	HOME,
 	ROLE,
 	SCORING,
 	TABLE,

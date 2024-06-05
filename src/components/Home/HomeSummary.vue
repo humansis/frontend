@@ -5,7 +5,7 @@
 		<v-col
 			v-for="{
 				id, code, value, icon,
-			} in summary"
+			} in summaries"
 			:ref="code"
 			:key="id"
 			cols="6"
@@ -27,82 +27,48 @@
 	</v-row>
 </template>
 
-<script>
+<script setup>
+import { onMounted, ref } from "vue";
 import HomeService from "@/services/HomeService";
 import { normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { HOME } from "@/consts";
 
-export default {
-	name: "HomeSummary",
+const summaries = ref([]);
 
-	data() {
-		return {
-			summary: [],
-			summaryCodes: [
-				{
-					code: "total_registrations",
-					icon: "users",
-				},
-				{
-					code: "active_projects",
-					icon: "clipboard-list",
-				},
-				{
-					code: "enrolled_beneficiaries",
-					icon: "user-plus",
-				},
-				{
-					code: "served_beneficiaries",
-					icon: "user-check",
-				},
-				{
-					code: "completed_assistances",
-					icon: "clipboard-check",
-				},
-			],
-		};
-	},
+const fetchData = async () => {
+	await Promise.all(HOME.SUMMARY.CODES.map(async (item, index) => {
+		summaries.value.push({
+			id: index,
+			code: item.code,
+			icon: item.icon,
+			value: "",
+		});
 
-	mounted() {
-		this.fetchData();
-	},
+		try {
+			const {
+				data: { data },
+				status,
+				message,
+			} = await HomeService.getSummariesForHomePage(item.code);
 
-	methods: {
-		normalizeText(text) {
-			return normalizeText(text);
-		},
+			checkResponseStatus(status, message);
 
-		async fetchData() {
-			await Promise.all(this.summaryCodes.map(async (item, index) => {
-				this.summary.push({
-					id: index,
-					code: item.code,
-					icon: item.icon,
-					value: "",
-				});
+			if (data[0]) {
+				const summaryIndex = summaries.value.findIndex(
+					(summary) => summary.code === data[0].code,
+				);
 
-				try {
-					const {
-						data: { data },
-						status,
-						message,
-					} = await HomeService.getSummariesForHomePage(item.code);
-
-					checkResponseStatus(status, message);
-
-					if (data[0]) {
-						const summaryIndex = this.summary.findIndex(
-							(summary) => summary.code === data[0].code,
-						);
-
-						this.summary[summaryIndex].value = data[0].value;
-					}
-				} catch (e) {
-					Notification(`${this.$t("Summaries")}: ${e.message || e}`, "error");
-				}
-			}));
-		},
-	},
+				summaries.value[summaryIndex].value = data[0].value;
+			}
+		} catch (e) {
+			Notification(`${this.$t("Summaries")}: ${e.message || e}`, "error");
+		}
+	}));
 };
+
+onMounted(async () => {
+	await fetchData();
+});
 </script>

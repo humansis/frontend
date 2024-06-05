@@ -3,125 +3,38 @@
 
 	<v-sheet height="400">
 		<LMap :zoom="getZoom" :center="getCenter">
-			<LTileLayer :url="url" :attribution="attribution" />
+			<LTileLayer
+				:url="HOME.DISTRIBUTION_MAP.URL"
+				:attribution="HOME.DISTRIBUTION_MAP.ATTRIBUTION"
+			/>
 		</LMap>
 	</v-sheet>
 </template>
 
-<script>
-import { mapState } from "vuex";
+<script setup>
+import { computed } from "vue";
+import { HOME } from "@/consts";
+import getters from "@/store/getters";
 import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import L from "leaflet";
 
 import "leaflet/dist/leaflet.css";
 
-export default {
-	name: "DistributionMap",
+const countryIso3 = computed(() => getters.getCountryFromVuexStorage().iso3);
 
-	components: {
-		LMap,
-		LTileLayer,
-	},
+const getCenter = computed(() => {
+	const { lat, lng } = HOME.DISTRIBUTION_MAP.POSITIONS.find(
+		({ country }) => country === countryIso3.value,
+	) || {};
 
-	data() {
-		return {
-			map: null,
-			zoom: 7,
-			url: "https://{s}.tile.osm.org/{z}/{x}/{y}.png",
-			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-			positions: [
-				{
-					country: "KHM",
-					lat: 13.5066394,
-					lng: 104.869423,
-					zoom: 7,
-				},
-				{
-					country: "SYR",
-					lat: 34.6401861,
-					lng: 39.0494106,
-					zoom: 7,
-				},
-				{
-					country: "UKR",
-					lat: 49.4871968,
-					lng: 31.2718321,
-					zoom: 6,
-				},
-				{
-					country: "ETH",
-					lat: 10.2116702,
-					lng: 38.6521203,
-					zoom: 6,
-				},
-				{
-					country: "MNG",
-					lat: 46.8250388,
-					lng: 103.8499736,
-					zoom: 5,
-				},
-				{
-					country: "ARM",
-					lat: 40.7696272,
-					lng: 44.6736646,
-					zoom: 7,
-				},
-				{
-					country: "AFG",
-					lat: 34.543896,
-					lng: 69.160652,
-					zoom: 6,
-				},
-				{
-					country: "ZMB",
-					lat: -13.1403507,
-					lng: 27.8493049,
-					zoom: 6,
-				},
-				{
-					country: "YEM",
-					lat: 15.369445,
-					lng: 44.191006,
-					zoom: 6,
-				},
-				{
-					country: "COD",
-					lat: -1,
-					lng: 15,
-					zoom: 6,
-				},
-				{
-					country: "MDA",
-					lat: 47.411631,
-					lng: 28.369885,
-					zoom: 6,
-				},
-				{
-					country: "CZE",
-					lat: 49.4350483,
-					lng: 16.6761388,
-					zoom: 6,
-				},
-			],
-		};
-	},
+	return L.latLng(lat, lng);
+});
 
-	computed: {
-		...mapState(["country"]),
+const getZoom = computed(() => {
+	const { zoom } = HOME.DISTRIBUTION_MAP.POSITIONS.find(
+		({ country }) => country === countryIso3.value,
+	) || {};
 
-		getCenter() {
-			const { lat, lng } = this.positions.find(
-				({ country }) => country === this.country.iso3,
-			) || {};
-			return L.latLng(lat, lng);
-		},
-
-		getZoom() {
-			const { zoom } = this.positions.find(
-				({ country }) => country === this.country.iso3,
-			) || {};
-			return zoom ?? 7;
-		},
-	},
-};
+	return zoom ?? HOME.DISTRIBUTION_MAP.DEFAULT_ZOOM;
+});
 </script>

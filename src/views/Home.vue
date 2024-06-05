@@ -10,25 +10,15 @@
 			</v-col>
 		</v-row>
 
-		<UpcomingAssistances />
+		<AssistancesList upcoming />
 	</v-container>
 </template>
 
-<script>
+<script setup>
 import DistributionMap from "@/components/Home/DistributionMap";
 import HomeSummary from "@/components/Home/HomeSummary";
-import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
-import vuetifyHelper from "@/mixins/vuetifyHelper";
+import AssistancesList from "@/components/Projects/AssistancesList";
+import vuetifyHelper from "@/composables/vuetifyHelper";
 
-export default {
-	name: "HomePage",
-
-	components: {
-		DistributionMap,
-		HomeSummary,
-		UpcomingAssistances,
-	},
-
-	mixins: [vuetifyHelper],
-};
+const { isMobile } = vuetifyHelper();
 </script>
