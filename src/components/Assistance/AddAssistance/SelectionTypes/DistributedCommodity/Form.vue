@@ -90,7 +90,7 @@
 		<template v-if="showDivisionFields">
 			<div
 				v-for="(divisionField, index) in formModel[divisionFieldsValidationString]"
-				:key="index"
+				:key="generateKeyForDivisionForm(index)"
 			>
 				<DataInput
 					v-model.number="formModel[divisionFieldsValidationString][index].value"
@@ -1042,6 +1042,12 @@ export default {
 				...customField,
 				value: `${customField.label} (${normalizeText(customField.targetType)})`,
 			}));
+		},
+
+		generateKeyForDivisionForm(index) {
+			const divisionName = this.divisionFieldsValidationString;
+
+			return `${divisionName}-${this.formModel[divisionName][index].rangeFrom}-${this.formModel[divisionName][index].rangeTo}`;
 		},
 	},
 };

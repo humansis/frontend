@@ -287,15 +287,15 @@ export default {
 	async created() {
 		await this.fetchProject();
 
-		if (this.isAssistanceDuplicated) {
-			await Promise.all([
-				this.fetchSelectionCriteria(),
-				this.fetchDetailOfAssistance(),
-				this.fetchScoringTypes(),
-			]);
+		if (!this.isAssistanceDuplicated) return;
 
-			await this.mapAssistance(this.duplicateAssistance);
-		}
+		await Promise.all([
+			this.fetchSelectionCriteria(),
+			this.fetchDetailOfAssistance(),
+			this.fetchScoringTypes(),
+		]);
+
+		await this.mapAssistance(this.duplicateAssistance);
 	},
 
 	methods: {
@@ -303,22 +303,22 @@ export default {
 			this.isProjectReady = false;
 			const { projectId } = this.$route.params;
 
-			if (projectId) {
-				try {
-					const {
-						data,
-						status,
-						message,
-					} = await ProjectService.getDetailOfProject(projectId);
+			if (!projectId) return;
 
-					checkResponseStatus(status, message);
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await ProjectService.getDetailOfProject(projectId);
 
-					this.project = data;
-				} catch (e) {
-					Notification(`${this.$t("Project")}: ${e.message || e}`, "error");
-				} finally {
-					this.isProjectReady = true;
-				}
+				checkResponseStatus(status, message);
+
+				this.project = data;
+			} catch (e) {
+				Notification(`${this.$t("Project")}: ${e.message || e}`, "error");
+			} finally {
+				this.isProjectReady = true;
 			}
 		},
 
@@ -490,15 +490,12 @@ export default {
 		isRemoteAndValid() {
 			const { remoteDistributionAllowed, target } = this.assistanceBody;
 
-			if (remoteDistributionAllowed) {
-				if (this.validateHasValidSmartCardCriterion(target)) return true;
+			if (!remoteDistributionAllowed) return true;
+			if (this.validateHasValidSmartCardCriterion(target)) return true;
 
-				this.isUnValidCardModalOpen = true;
+			this.isUnValidCardModalOpen = true;
 
-				return false;
-			}
-
-			return true;
+			return false;
 		},
 
 		async mapAssistance(assistance) {
@@ -601,14 +598,13 @@ export default {
 					scoreWeight: weight,
 				};
 
-				if (preparedSelectionCriteria[group]) {
-					preparedSelectionCriteria[group].data.push(selectionCriteria);
-				} else {
+				if (!preparedSelectionCriteria[group]) {
 					preparedSelectionCriteria[group] = {};
 					preparedSelectionCriteria[group].data = [];
 					preparedSelectionCriteria[group].tableData = [];
-					preparedSelectionCriteria[group].data.push(selectionCriteria);
 				}
+
+				preparedSelectionCriteria[group].data.push(selectionCriteria);
 			});
 
 			return preparedSelectionCriteria;
@@ -956,13 +952,11 @@ export default {
 		},
 
 		prepareAssistanceRound(round) {
-			if (round) {
-				return round < 99
-					? { code: round + 1, value: round + 1 }
-					: { code: round, value: round };
-			}
+			if (!round) return null;
 
-			return null;
+			return round < 99
+				? { code: round + 1, value: round + 1 }
+				: { code: round, value: round };
 		},
 
 		getValidSelectionCriteria(criteria = []) {

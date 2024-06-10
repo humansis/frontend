@@ -3,7 +3,7 @@
 		<DataSelect
 			v-model="formModel.criteriaTarget"
 			:items="options.criteriaTargets"
-			:loading="isCriteriaTargetLoading"
+			:loading="loading.isCriteriaTarget"
 			:error-messages="validationMsg('criteriaTarget')"
 			label="Criteria Target"
 			name="criteria-target"
@@ -14,7 +14,7 @@
 		<DataSelect
 			v-model="formModel.criteria"
 			:items="options.criteria"
-			:loading="isCriteriaLoading"
+			:loading="loading.isCriteria"
 			:error-messages="validationMsg('criteria')"
 			label="Criteria"
 			name="criteria"
@@ -25,7 +25,7 @@
 		<DataSelect
 			v-model="formModel.condition"
 			:items="options.conditions"
-			:loading="isCriteriaConditionsLoading"
+			:loading="loading.isCriteriaConditions"
 			:error-messages="validationMsg('condition')"
 			label="Condition"
 			name="condition"
@@ -47,7 +47,7 @@
 				v-else-if="isValueMultiselect"
 				v-model="formModel.value"
 				:items="valueSelectOptions"
-				:loading="isValueSelectLoading"
+				:loading="loading.isValueSelect"
 				:disabled="isValueDisabled"
 				:error-messages="validationMsg('value')"
 				label="Value"
@@ -198,11 +198,13 @@ export default {
 				],
 			},
 			valueSelectOptions: [],
-			isValueSelectLoading: false,
+			loading: {
+				isValueSelect: false,
+				isCriteriaTarget: false,
+				isCriteria: false,
+				isCriteriaConditions: false,
+			},
 			fieldTypeToDisplay: "",
-			isCriteriaTargetLoading: false,
-			isCriteriaLoading: false,
-			isCriteriaConditionsLoading: false,
 			isValueDisabled: false,
 		};
 	},
@@ -242,7 +244,7 @@ export default {
 	methods: {
 		async fetchCriteriaTargets() {
 			try {
-				this.isCriteriaTargetLoading = true;
+				this.loading.isCriteriaTarget = true;
 
 				const {
 					data: { data },
@@ -256,13 +258,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Criteria Targets")}: ${e.message || e}`, "error");
 			} finally {
-				this.isCriteriaTargetLoading = false;
+				this.loading.isCriteriaTarget = false;
 			}
 		},
 
 		async fetchCriteriaFields(target) {
 			try {
-				this.isCriteriaLoading = true;
+				this.loading.isCriteria = true;
 
 				const {
 					data: { data },
@@ -278,13 +280,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Criteria Fields")}: ${e.message || e}`, "error");
 			} finally {
-				this.isCriteriaLoading = false;
+				this.loading.isCriteria = false;
 			}
 		},
 
 		async fetchCriteriaConditions(target, field) {
 			try {
-				this.isCriteriaConditionsLoading = true;
+				this.loading.isCriteriaConditions = true;
 
 				const {
 					data: { data },
@@ -305,13 +307,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Criteria Conditions")}: ${e.message || e}`, "error");
 			} finally {
-				this.isCriteriaConditionsLoading = false;
+				this.loading.isCriteriaConditions = false;
 			}
 		},
 
 		async fetchResidenceStatuses() {
 			try {
-				this.isValueSelectLoading = true;
+				this.loading.isValueSelect = true;
 
 				const {
 					data: { data },
@@ -325,13 +327,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Residency Statuses")}: ${e.message || e}`, "error");
 			} finally {
-				this.isValueSelectLoading = false;
+				this.loading.isValueSelect = false;
 			}
 		},
 
 		async fetchLivelihoods() {
 			try {
-				this.isValueSelectLoading = true;
+				this.loading.isValueSelect = true;
 
 				const {
 					data: { data },
@@ -345,13 +347,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Livelihoods")}: ${e.message || e}`, "error");
 			} finally {
-				this.isValueSelectLoading = false;
+				this.loading.isValueSelect = false;
 			}
 		},
 
 		async fetchLocationsTypes() {
 			try {
-				this.isValueSelectLoading = true;
+				this.loading.isValueSelect = true;
 
 				const {
 					data: { data },
@@ -365,7 +367,7 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Location Types")}: ${e.message || e}`, "error");
 			} finally {
-				this.isValueSelectLoading = false;
+				this.loading.isValueSelect = false;
 			}
 		},
 
