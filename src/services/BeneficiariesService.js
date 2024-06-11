@@ -185,11 +185,10 @@ export default {
 		return data;
 	},
 
-	async getBeneficiariesByProject(id, target, assistanceId) {
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects/${id}/targets/${target}/beneficiaries?filter[excludeAssistance]=${assistanceId}`,
+	getBeneficiariesByProject({ id, target, filters }) {
+		return fetcher({
+			uri: `projects/${id}/targets/${target}/beneficiaries${queryBuilder({ filters })}`,
 		});
-		return { data, totalCount };
 	},
 
 	async addHouseholdsToProject(projectId, ids) {
