@@ -276,7 +276,9 @@ export default {
 		assistanceBody: {
 			deep: true,
 			async handler(value) {
-				if (this.checkDataInAssistanceBody(value) && !this.isCalculatedDataFetched) {
+				if (this.checkDataInAssistanceBody(value)
+					&& !this.isCalculatedDataFetched
+					&& this.isAssistanceDuplicated) {
 					this.isCalculatedDataFetched = true;
 					await this.fetchCommoditiesValue();
 				}

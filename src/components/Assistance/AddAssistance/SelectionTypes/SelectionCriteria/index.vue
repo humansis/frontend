@@ -323,18 +323,13 @@ export default {
 		},
 
 		data(data) {
-			if (data) {
-				this.groups = data;
-
-				if (this.isAssistanceDuplicated) {
-					this.updateComponentsData();
-				}
-			}
+			this.prepareDuplicatedData(data);
 		},
 	},
 
 	async created() {
 		await this.fetchScoringTypes();
+		this.prepareDuplicatedData(this.data);
 	},
 
 	methods: {
@@ -598,6 +593,13 @@ export default {
 			this.groups.forEach((group, key) => {
 				this.groups[key].beneficiaries = groupData[key];
 			});
+		},
+
+		prepareDuplicatedData(data) {
+			if (data && this.isAssistanceDuplicated) {
+				this.groups = data;
+				this.updateComponentsData();
+			}
 		},
 
 		assistanceBodyIsValid({ sector, subsector, target, type }) {
