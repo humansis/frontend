@@ -6,10 +6,9 @@
 			<AssistanceName
 				v-model="formModel.name"
 				ref="assistanceName"
-				:duplicate-assistance="newAssistanceForm !== null"
+				:is-assistance-duplicated="newAssistanceForm !== null"
 				:data-before-duplicated="dataBeforeDuplicated"
 				:data-for-assistance-name="dataForAssistanceName"
-				@input="onUpdateData(false)"
 			/>
 
 			<LocationForm
@@ -71,7 +70,7 @@
 				/>
 			</div>
 
-			<div class="mb-4">
+			<div>
 				<DataInput
 					v-if="!options.budgetLines.length"
 					v-model="formModel.budgetLine"
@@ -103,44 +102,47 @@
 			<DataSelect
 				v-model="formModel.sector"
 				:items="options.sectors"
-				:loading="loading.sectors"
+				:loading="loading.isSectors"
 				:error-messages="validationMsg('sector')"
 				:hint="sectorValidationMessage"
-				persistent-hint
 				label="Sector"
 				name="sector"
 				class="has-warning-message mb-4 "
+				persistent-hint
+				@click:clear="resetTargetInputs('sector')"
 				@update:modelValue="onSectorSelect"
 			/>
 
 			<DataSelect
 				v-model="formModel.subsector"
 				:items="options.subsectors"
-				:loading="loading.subsectors"
+				:loading="loading.isSubsectors"
 				:error-messages="validationMsg('subsector')"
 				:hint="subsectorValidationMessage"
-				persistent-hint
 				label="Subsector"
 				name="sub-sector"
 				class="has-warning-message mb-4"
+				persistent-hint
+				@click:clear="resetTargetInputs('subSector')"
 				@update:modelValue="onSubsectorSelect"
 			/>
 
 			<DataSelect
 				v-model="formModel.assistanceType"
 				:items="options.assistanceTypes"
-				:loading="loading.assistanceTypes"
+				:loading="loading.isAssistanceTypes"
 				:error-messages="validationMsg('assistanceType')"
 				label="Assistance Type"
 				name="assistance-type"
 				class="mb-4"
+				@click:clear="resetTargetInputs('assistanceType')"
 				@update:modelValue="onAssistanceTypeSelect"
 			/>
 
 			<DataSelect
 				v-model="formModel.targetType"
 				:items="options.targetTypes"
-				:loading="loading.targetTypes"
+				:loading="loading.isTargetTypes"
 				:error-messages="validationMsg('targetType')"
 				label="Target Type"
 				name="target-type"
@@ -273,10 +275,10 @@ export default {
 				budgetLines: [],
 			},
 			loading: {
-				sectors: true,
-				subsectors: false,
-				assistanceTypes: false,
-				targetTypes: false,
+				isSectors: true,
+				isSubsectors: false,
+				isAssistanceTypes: false,
+				isTargetTypes: false,
 			},
 			sectorValidationMessage: "",
 			subsectorValidationMessage: "",
@@ -330,6 +332,14 @@ export default {
 				);
 			}
 		},
+
+		"formModel.targetType": function targetType() {
+			this.showComponents();
+		},
+
+		"formModel.name": function targetType() {
+			this.$emit("updatedData", this.formModel);
+		},
 	},
 
 	async mounted() {
@@ -338,31 +348,52 @@ export default {
 	},
 
 	updated() {
-		this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
+		this.$emit("updatedData", this.formModel);
 	},
 
 	methods: {
 		async mapTargets() {
-			const { sector, subsector, assistanceType, targetType } = this.formModel;
+			const {
+				sector,
+				subsector,
+				assistanceType,
+				targetType,
+			} = this.formModel;
+
 			if (sector && typeof sector !== "object") {
-				this.formModel.sector = getArrayOfCodeListByKey([sector], this.options.sectors, "code");
+				this.formModel.sector = getArrayOfCodeListByKey(
+					[sector],
+					this.options.sectors,
+					"code",
+				);
 				await this.fetchSubsectors(sector);
 			}
 
 			if (subsector && typeof subsector !== "object") {
-				this.formModel.subsector = getArrayOfCodeListByKey([subsector], this.options.subsectors, "code");
-				await this.fetchAssistanceTypes(subsector);
-			} else {
-				await this.fetchAssistanceTypes(subsector);
+				this.formModel.subsector = getArrayOfCodeListByKey(
+					[subsector],
+					this.options.subsectors,
+					"code",
+				);
 			}
 
+			await this.fetchAssistanceTypes(subsector);
+
 			if (assistanceType && typeof assistanceType !== "object") {
-				this.formModel.assistanceType = getArrayOfCodeListByKey([assistanceType], this.options.assistanceTypes, "code");
+				this.formModel.assistanceType = getArrayOfCodeListByKey(
+					[assistanceType],
+					this.options.assistanceTypes,
+					"code",
+				);
 				await this.fetchTargetTypes(assistanceType);
 			}
 
 			if (targetType && typeof targetType !== "object") {
-				this.formModel.targetType = getArrayOfCodeListByKey([targetType], this.options.targetTypes, "code");
+				this.formModel.targetType = getArrayOfCodeListByKey(
+					[targetType],
+					this.options.targetTypes,
+					"code",
+				);
 			}
 
 			this.validateSectorAndSubSector(sector, subsector);
@@ -371,21 +402,23 @@ export default {
 				await this.showComponents();
 			}
 
-			this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
+			this.$emit("updatedData", this.formModel);
 		},
 
-		submit() {
+		isFormValid() {
 			this.v$.$touch();
+
 			const invalidLocationForm = this.$refs.locationForm.submitLocationForm();
 			const invalidAssistanceName = this.$refs.assistanceName.onIsValid();
+
 			return !this.v$.$invalid
 				|| (!this.v$.$invalid && !invalidLocationForm && !invalidAssistanceName);
 		},
 
-		async onUpdateData(isFetchForced = true) {
+		async onUpdateData() {
 			this.onValuesForAssistanceName();
 			await this.$nextTick();
-			this.$emit("updatedData", { data: this.formModel, isFetchForced });
+			this.$emit("updatedData", this.formModel);
 		},
 
 		normalizeText(text) {
@@ -400,27 +433,33 @@ export default {
 			return this.formModel.locationId;
 		},
 
-		async onSectorSelect({ code }) {
-			this.formModel.subsector = [];
-			this.formModel.assistanceType = [];
-			this.formModel.targetType = [];
+		async onSectorSelect(sector) {
+			this.resetTargetInputs("sector");
 			this.onValidate("sector");
-			await this.fetchSubsectors(code);
+
+			if (!sector?.code) return;
+
+			await this.fetchSubsectors(sector.code);
 			this.sectorValidationMessage = "";
 		},
 
-		async onSubsectorSelect({ code }) {
-			this.formModel.assistanceType = [];
-			this.formModel.targetType = [];
+		async onSubsectorSelect(subSector) {
+			this.resetTargetInputs("subSector");
 			this.onValidate("subsector");
-			await this.fetchAssistanceTypes(code);
+
+			if (!subSector?.code) return;
+
+			await this.fetchAssistanceTypes(subSector.code);
 			this.subsectorValidationMessage = "";
 		},
 
-		onAssistanceTypeSelect({ code }) {
-			this.formModel.targetType = [];
+		async onAssistanceTypeSelect(assistanceType) {
+			this.resetTargetInputs("assistanceType");
 			this.onValidate("assistanceType");
-			this.fetchTargetTypes(code);
+
+			if (!assistanceType?.code) return;
+
+			await this.fetchTargetTypes(assistanceType.code);
 		},
 
 		async onTargetTypeSelect(targetType) {
@@ -431,8 +470,7 @@ export default {
 			} else {
 				this.onValidate("targetType");
 				this.$emit("targetSelect", targetType);
-				await this.showComponents();
-				this.$emit("updatedData", { data: this.formModel, isFetchForced: true });
+				this.$emit("updatedData", this.formModel);
 			}
 		},
 
@@ -443,6 +481,7 @@ export default {
 
 		async getComponentsToShow() {
 			if (!(this.formModel.assistanceType && this.formModel.targetType)) return [];
+
 			const {
 				assistanceType: { code: assistanceType },
 				targetType: { code: targetType },
@@ -459,11 +498,6 @@ export default {
 						return [
 							ASSISTANCE.COMPONENT.SELECTION_CRITERIA,
 							ASSISTANCE.COMPONENT.DISTRIBUTED_COMMODITY,
-						];
-					case ASSISTANCE.TARGET.COMMUNITY:
-						return [
-							ASSISTANCE.COMPONENT.DISTRIBUTED_COMMODITY,
-							ASSISTANCE.COMPONENT.COMMUNITIES,
 						];
 					case ASSISTANCE.TARGET.INSTITUTION:
 						return [
@@ -484,13 +518,6 @@ export default {
 						return [
 							ASSISTANCE.COMPONENT.SELECTION_CRITERIA,
 							ASSISTANCE.COMPONENT.ACTIVITY_DESCRIPTION,
-						];
-					case ASSISTANCE.TARGET.COMMUNITY:
-						return [
-							ASSISTANCE.COMPONENT.ACTIVITY_DESCRIPTION,
-							ASSISTANCE.COMPONENT.HOUSEHOLD_TARGETED,
-							ASSISTANCE.COMPONENT.INDIVIDUALS_TARGETED,
-							ASSISTANCE.COMPONENT.COMMUNITIES,
 						];
 					case ASSISTANCE.TARGET.INSTITUTION:
 						return [
@@ -522,7 +549,7 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Sectors")}: ${e.message || e}`, "error");
 			} finally {
-				this.loading.sectors = false;
+				this.loading.isSectors = false;
 			}
 		},
 
@@ -530,7 +557,7 @@ export default {
 			const { projectId } = this.$route.params;
 
 			try {
-				this.loading.subsectors = true;
+				this.loading.isSubsectors = true;
 
 				const {
 					data: { data },
@@ -547,13 +574,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Subsectors")}: ${e.message || e}`, "error");
 			} finally {
-				this.loading.subsectors = false;
+				this.loading.isSubsectors = false;
 			}
 		},
 
 		async fetchAssistanceTypes(code) {
 			try {
-				this.loading.assistanceTypes = true;
+				this.loading.isAssistanceTypes = true;
 
 				const {
 					data: { data },
@@ -572,13 +599,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Assistance Types")}: ${e.message || e}`, "error");
 			} finally {
-				this.loading.assistanceTypes = false;
+				this.loading.isAssistanceTypes = false;
 			}
 		},
 
 		async fetchTargetTypes(code) {
 			try {
-				this.loading.targetTypes = true;
+				this.loading.isTargetTypes = true;
 
 				const {
 					data: { data },
@@ -594,7 +621,7 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Target Types")}: ${e.message || e}`, "error");
 			} finally {
-				this.loading.targetTypes = false;
+				this.loading.isTargetTypes = false;
 			}
 		},
 
@@ -625,9 +652,7 @@ export default {
 		},
 
 		prepareDataFromProjectTargets() {
-			if (!this.project.targets?.length) {
-				return;
-			}
+			if (!this.project.targets?.length) return;
 
 			this.project.targets.forEach((target) => {
 				const { activity, budgetLine } = target;
@@ -651,13 +676,33 @@ export default {
 
 		validateSectorAndSubSector(sector, subsector) {
 			if (!this.formModel.sector?.code) {
-				this.sectorValidationMessage = `${this.$t("Sector")}:
-					${sector} ${this.$t("was removed, because this sector is not selectable.")}`;
+				this.sectorValidationMessage = `${this.$t("Sector: {sector} was removed, because this sector is not selectable.", { sector })}`;
 			}
 
 			if (!this.formModel.subsector?.code) {
-				this.subsectorValidationMessage = `${this.$t("Subsector")}:
-				 	${normalizeText(subsector)} ${this.$t("was removed, because this subsector is not selectable.")}`;
+				this.subsectorValidationMessage = `${this.$t("Subsector: {subSector} was removed, because this subsector is not selectable.", { subSector: normalizeText(subsector) })}`;
+			}
+		},
+
+		resetTargetInputs(selectedInput) {
+			switch (selectedInput) {
+				case "sector":
+					this.formModel.subsector = [];
+					this.formModel.assistanceType = [];
+					this.formModel.targetType = [];
+
+					break;
+				case "subSector":
+					this.formModel.assistanceType = [];
+					this.formModel.targetType = [];
+					break;
+				case "assistanceType":
+
+					this.formModel.targetType = [];
+					break;
+				default:
+
+					break;
 			}
 		},
 	},

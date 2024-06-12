@@ -27,11 +27,7 @@
 		v-model="detailModal.isOpened"
 		header="Selected Beneficiaries"
 	>
-		<BeneficiariesModalList
-			close-button
-			:data="beneficiariesData"
-			:scores="beneficiariesScores"
-		/>
+		<BeneficiariesModalList :data="beneficiariesData" />
 	</Modal>
 
 	<Modal
@@ -45,18 +41,18 @@
 			submit-button-label="Create"
 			close-button
 			@formSubmitted="onSubmitCriteriaForm"
-			@formClosed="onCloseCriteriaModal"
+			@formClosed="criteriaModal.isOpened = false"
 		/>
 	</Modal>
 
 	<SelectionCriteriaGroup
 		v-for="(group, key) of groups"
 		:data="group?.data"
-		:count="group?.tableData?.length"
+		:beneficiaries-count="group?.beneficiaries?.totalCount"
 		:key="key"
 		:group-id="key"
 		:target-type="selectedTargetType"
-		:loading="calculationLoading"
+		:loading="isCalculationLoading"
 		:is-assistance-duplicated="isAssistanceDuplicated"
 		:custom-fields="customFields"
 		@addCriteria="onAddCriteria"
@@ -70,8 +66,8 @@
 			<DataSelect
 				v-model="scoringType"
 				:items="options.scoringTypes"
-				:loading="scoringTypesLoading"
-				:disabled="calculationLoading || !groups.length"
+				:loading="isScoringTypesLoading"
+				:disabled="isCalculationLoading || !groups.length"
 				label="Scoring"
 				name="scoring"
 				item-title="identifier"
@@ -107,7 +103,7 @@
 	<v-row>
 		<v-col class="d-flex align-center justify-end">
 			<v-btn
-				:disabled="vulnerabilityScoreTouched || calculationLoading || !groups.length"
+				:disabled="isDetailsButtonDisabled"
 				color="primary"
 				class="text-none mr-3"
 				variant="elevated"
@@ -127,13 +123,19 @@
 		</v-col>
 	</v-row>
 
-	<div class="text-h6 text-right mt-4">
-		<strong>
-			{{ countOf }}/{{ totalCount }}
-		</strong>
+	<template v-if="!isCalculatedDataLoading && !isBeneficiariesCountLoading">
+		<div class="text-h6 text-right mt-4">
+			<strong>
+				{{ countOf }}/{{ totalCount }}
+			</strong>
 
-		{{ $t(selectedTargetType) }}
-	</div>
+			{{ $t(selectedTargetType) }}
+		</div>
+	</template>
+
+	<template v-else>
+		<Loading custom-class="text-right mt-4 mr-12" is-small />
+	</template>
 </template>
 
 <script>
@@ -145,6 +147,7 @@ import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
+import Loading from "@/components/Loading";
 import { normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
@@ -162,12 +165,13 @@ export default {
 		DataSelect,
 		DataInput,
 		ExportControl,
+		Loading,
 	},
 
 	emits: [
-		"deliveredCommodityValue",
 		"updatedData",
 		"beneficiariesCounted",
+		"calculatedCommodities",
 	],
 
 	props: {
@@ -194,6 +198,21 @@ export default {
 		isAssistanceDuplicated: {
 			type: Boolean,
 			default: false,
+		},
+
+		isCommoditiesCreated: {
+			type: Boolean,
+			default: false,
+		},
+
+		isCalculatedDataLoading: {
+			type: Boolean,
+			default: false,
+		},
+
+		calculatedBeneficiaries: {
+			type: Object,
+			default: () => {},
 		},
 	},
 
@@ -226,15 +245,14 @@ export default {
 			filters: { enabled: true },
 			minimumSelectionScore: null,
 			scoringType: AssistancesService.getDefaultScoringType(),
-			scoringTypesLoading: false,
-			minimumSelectionScoreValid: null,
+			isScoringTypesLoading: false,
+			isBeneficiariesCountLoading: false,
 			beneficiariesData: [],
-			beneficiariesScores: [],
 			totalBeneficiariesData: [],
 			countOf: 0,
 			totalCount: 0,
-			calculationLoading: false,
-			vulnerabilityScoreTouched: false,
+			isCalculationLoading: false,
+			isVulnerabilityScoreTouched: false,
 		};
 	},
 
@@ -260,8 +278,8 @@ export default {
 		},
 
 		isExportButtonDisabled() {
-			return this.vulnerabilityScoreTouched
-				|| this.calculationLoading
+			return this.isVulnerabilityScoreTouched
+				|| this.isCalculationLoading
 				|| !this.groups.length
 				|| !this.totalCount;
 		},
@@ -272,9 +290,15 @@ export default {
 		},
 
 		isUpdateButtonEnabled() {
-			return this.calculationLoading
+			return this.isCalculationLoading
 				|| !this.groups.length
 				|| this.isMinVulnerabilityScoreFloat;
+		},
+
+		isDetailsButtonDisabled() {
+			return this.isVulnerabilityScoreTouched
+				|| this.isCalculationLoading
+				|| !this.groups.length;
 		},
 	},
 
@@ -287,29 +311,145 @@ export default {
 					this.totalCount = 0;
 					this.countOf = 0;
 				}
+			},
+		},
 
-				this.$emit("deliveredCommodityValue");
+		calculatedBeneficiaries: {
+			deep: true,
+			handler(value) {
+				this.totalCount = value.totalCount;
+				this.countOf = value.selectedCount;
 			},
 		},
 
 		data(data) {
-			if (data) {
-				this.groups = data;
-
-				if (this.isAssistanceDuplicated) {
-					this.fetchCriteriaInfo();
-				}
-			}
+			this.prepareDuplicatedData(data);
 		},
 	},
 
 	async created() {
 		await this.fetchScoringTypes();
+		this.prepareDuplicatedData(this.data);
 	},
 
 	methods: {
-		submit() {
-			return !!this.groups.length;
+		async fetchCriteriaInfo() {
+			this.isCalculationLoading = true;
+
+			this.updateComponentsData();
+
+			await this.getCountOfBeneficiaries();
+
+			this.$emit("beneficiariesCounted", this.countOf);
+			this.isCalculationLoading = false;
+		},
+
+		async onUpdateVulnerabilityScores() {
+			if (this.isCalculationLoading || !this.groups.length) return;
+
+			await this.fetchCriteriaInfo();
+		},
+
+		async getCountOfBeneficiaries() {
+			const threshold = this.minimumSelectionScore ?? null;
+			const assistanceBody = { ...this.assistanceBody };
+
+			assistanceBody.selectionCriteria = [...this.prepareCriteria()];
+
+			if (typeof threshold === "string") {
+				assistanceBody.threshold = null;
+			} else {
+				assistanceBody.threshold = threshold;
+			}
+
+			if (assistanceBody.selectionCriteria?.length) {
+				await this.calculationOfAssistanceBeneficiaries(assistanceBody);
+			}
+		},
+
+		async calculationOfAssistanceBeneficiaries(assistanceBody) {
+			const { dateExpiration, ...beneficiariesBody } = assistanceBody;
+
+			if (this.assistanceBodyIsValid(assistanceBody)) {
+				try {
+					this.isBeneficiariesCountLoading = true;
+					this.$emit("updateDataLoadingState", this.isBeneficiariesCountLoading);
+
+					const {
+						data: { groupEligibleIndividuals, selectedCount, totalCount, commodities },
+						status,
+						message,
+					} = await AssistancesService.assistancePrecalculate(beneficiariesBody);
+
+					checkResponseStatus(status, message);
+
+					this.totalCount = totalCount;
+					this.countOf = selectedCount;
+
+					if (this.isCommoditiesCreated) {
+						this.$emit("calculatedCommodities", commodities);
+					}
+
+					this.prepareDataForBeneficiariesModal(groupEligibleIndividuals);
+				} catch (e) {
+					Notification(`${this.$t("Precalculate")}: ${e.message || e}`, "error");
+				} finally {
+					this.isBeneficiariesCountLoading = false;
+					this.$emit("updateDataLoadingState", this.isBeneficiariesCountLoading);
+				}
+			}
+		},
+
+		async fetchScoringTypes() {
+			try {
+				this.isScoringTypesLoading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getScoringTypes(
+					null,
+					null,
+					this.filters,
+				);
+
+				checkResponseStatus(status, message);
+
+				data.forEach((item) => {
+					this.options.scoringTypes.push({
+						...item,
+						identifier: `${item.name} (ID: ${item.id})`,
+					});
+				});
+			} catch (e) {
+				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.scoringType = this.options.scoringTypes?.[0] || null;
+				this.isScoringTypesLoading = false;
+			}
+		},
+
+		async onScoringTypeChanged() {
+			await this.fetchCriteriaInfo();
+		},
+
+		async onRemoveCriteriaGroup(groupKey) {
+			this.groups.splice(groupKey, 1);
+
+			await this.getCountOfBeneficiaries();
+
+			this.selectionCriteriaUpdate();
+		},
+
+		async onUpdatedCriteria({ groupKey }) {
+			if (this.groups[groupKey].data?.length === 0) {
+				this.groups.splice(groupKey, 1);
+			}
+
+			await this.getCountOfBeneficiaries();
+
+			this.selectionCriteriaUpdate();
 		},
 
 		async onExportSelectedBeneficiaries(exportType, format) {
@@ -334,10 +474,6 @@ export default {
 					this.exportControl.loading = false;
 				}
 			}
-		},
-
-		async onScoringTypeChanged() {
-			await this.fetchCriteriaInfo();
 		},
 
 		prepareCriteria() {
@@ -416,17 +552,25 @@ export default {
 			};
 		},
 
-		onCloseCriteriaModal() {
-			this.criteriaModal.isOpened = false;
+		updateComponentsData() {
+			this.isVulnerabilityScoreTouched = false;
+
+			this.$emit(
+				"updatedData",
+				this.prepareCriteria(),
+				this.minimumSelectionScore,
+				this.isVulnerabilityScoreTouched,
+				this.scoringType,
+			);
 		},
 
 		onSubmitCriteriaForm(criteriaForm) {
 			if (criteriaForm.groupId !== undefined) {
-				this.groups[criteriaForm.groupId].tableData = [];
+				this.groups[criteriaForm.groupId].beneficiaries = [];
 				this.groups[criteriaForm.groupId].data.push({ ...criteriaForm, newlyCreated: true });
 			} else {
 				const index = this.groups.push({ data: [] }) - 1;
-				this.groups[index].tableData = [];
+				this.groups[index].beneficiaries = [];
 				this.groups[index].data.push({ ...criteriaForm, newlyCreated: true });
 			}
 
@@ -435,182 +579,26 @@ export default {
 			this.fetchCriteriaInfo();
 		},
 
-		async fetchCriteriaInfo() {
-			this.calculationLoading = true;
-			this.groups.forEach((group, key) => {
-				this.getCountOfBeneficiariesInGroup(key);
-			});
-
-			await this.getCountOfBeneficiaries({ isTotalCount: true });
-			await this.getCountOfBeneficiaries({ isTotalCount: false });
-
-			this.vulnerabilityScoreTouched = false;
-
-			this.$emit(
-				"updatedData",
-				this.prepareCriteria(),
-				this.minimumSelectionScore,
-				this.vulnerabilityScoreTouched,
-				this.scoringType,
-			);
-
-			this.$emit("beneficiariesCounted", this.countOf);
-			this.$emit("deliveredCommodityValue");
-			this.calculationLoading = false;
+		isSelectionCriteriaDataAvailable() {
+			return !!this.groups.length;
 		},
 
 		onVulnerabilityScoreInput() {
-			this.vulnerabilityScoreTouched = true;
+			this.isVulnerabilityScoreTouched = true;
 			this.totalCount = 0;
 			this.countOf = 0;
 		},
 
-		async onUpdateVulnerabilityScores() {
-			if (this.calculationLoading || !this.groups.length) return;
-
-			await this.fetchCriteriaInfo();
+		prepareDataForBeneficiariesModal(groupData) {
+			this.groups.forEach((group, key) => {
+				this.groups[key].beneficiaries = groupData[key];
+			});
 		},
 
-		async getCountOfBeneficiariesInGroup(groupKey) {
-			const assistanceBody = { ...this.assistanceBody };
-			const preparedCriteria = this.prepareCriteria();
-
-			assistanceBody.selectionCriteria = preparedCriteria
-				.filter(({ group }) => group === groupKey);
-			assistanceBody.threshold = null;
-
-			if (assistanceBody.selectionCriteria?.length) {
-				await this.calculationOfAssistanceBeneficiaries({
-					assistanceBody, isTotalCount: false, groupKey,
-				});
-			}
-		},
-
-		async getCountOfBeneficiaries({ isTotalCount = false }) {
-			const threshold = this.minimumSelectionScore ?? null;
-			const assistanceBody = { ...this.assistanceBody };
-
-			assistanceBody.selectionCriteria = [...this.prepareCriteria()];
-
-			if (typeof threshold === "string") {
-				assistanceBody.threshold = null;
-			} else {
-				assistanceBody.threshold = isTotalCount ? null : threshold;
-			}
-
-			if (isTotalCount) {
-				assistanceBody.scoringBlueprintId = null;
-			}
-
-			if (assistanceBody.selectionCriteria?.length) {
-				await this.calculationOfAssistanceBeneficiaries({
-					assistanceBody,
-					isTotalCount,
-				});
-				await this.calculationOfAssistanceBeneficiariesScores({
-					assistanceBody,
-				});
-			}
-
-			this.$emit("deliveredCommodityValue");
-		},
-
-		async calculationOfAssistanceBeneficiaries({ assistanceBody, isTotalCount, groupKey = null }) {
-			const { dateExpiration, ...beneficiariesBody } = assistanceBody;
-
-			if (this.assistanceBodyIsValid(assistanceBody)) {
-				try {
-					const {
-						data: { data, totalCount },
-						status,
-						message,
-					} = await AssistancesService.calculationOfBeneficiaries(beneficiariesBody);
-
-					checkResponseStatus(status, message);
-
-					if (groupKey === null && this.groups.length) {
-						if (isTotalCount) {
-							this.totalCount = totalCount;
-						} else {
-							this.countOf = totalCount;
-						}
-					}
-
-					if (groupKey !== null) {
-						const newGroups = [...this.groups];
-
-						if (newGroups[groupKey]?.tableData) {
-							newGroups[groupKey].tableData = data;
-						}
-
-						this.groups = newGroups;
-					} else {
-						this.totalBeneficiariesData = data;
-					}
-				} catch (e) {
-					Notification(`${this.$t("Calculation")}: ${e.message || e}`, "error");
-				}
-			}
-		},
-
-		async calculationOfAssistanceBeneficiariesScores({ assistanceBody }) {
-			const beneficiaryIds = this.totalBeneficiariesData?.map(({ id }) => id) || [];
-			const threshold = typeof this.minimumSelectionScore === "string"
-				? null
-				: this.minimumSelectionScore;
-			const body = {
-				beneficiaryIds,
-				sector: assistanceBody.sector,
-				scoringBlueprintId: this.scoringType?.id || null,
-				threshold,
-			};
-
-			if (beneficiaryIds.length) {
-				try {
-					const {
-						data: { data },
-						status,
-						message,
-					} = await AssistancesService.calculationOfBeneficiariesScores(body);
-
-					checkResponseStatus(status, message);
-
-					this.beneficiariesScores = data;
-				} catch (e) {
-					Notification(`${this.$t("Calculation")}: ${e.message || e}`, "error");
-				} finally {
-					this.minimumSelectionScoreValid = null;
-				}
-			}
-		},
-
-		async fetchScoringTypes() {
-			try {
-				this.scoringTypesLoading = true;
-
-				const {
-					data: { data },
-					status,
-					message,
-				} = await AssistancesService.getScoringTypes(
-					null,
-					null,
-					this.filters,
-				);
-
-				checkResponseStatus(status, message);
-
-				data.forEach((item) => {
-					this.options.scoringTypes.push({
-						...item,
-						identifier: `${item.name} (ID: ${item.id})`,
-					});
-				});
-			} catch (e) {
-				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
-			} finally {
-				this.scoringType = this.options.scoringTypes?.[0] || null;
-				this.scoringTypesLoading = false;
+		prepareDuplicatedData(data) {
+			if (data && this.isAssistanceDuplicated) {
+				this.groups = data;
+				this.updateComponentsData();
 			}
 		},
 
@@ -618,40 +606,12 @@ export default {
 			return sector && subsector && target && type;
 		},
 
-		onRemoveCriteriaGroup(groupKey) {
-			this.groups.splice(groupKey, 1);
-
-			this.groups.forEach((group, key) => {
-				this.getCountOfBeneficiariesInGroup(key);
-			});
-
-			this.getCountOfBeneficiaries({ totalCount: true });
-			this.getCountOfBeneficiaries({ totalCount: false });
-
-			this.selectionCriteriaUpdate();
-		},
-
-		onUpdatedCriteria({ groupKey }) {
-			if (this.groups[groupKey].data?.length === 0) {
-				this.groups.splice(groupKey, 1);
-			}
-
-			this.groups.forEach((group, key) => {
-				this.getCountOfBeneficiariesInGroup(key);
-			});
-
-			this.getCountOfBeneficiaries({ totalCount: true });
-			this.getCountOfBeneficiaries({ totalCount: false });
-
-			this.selectionCriteriaUpdate();
-		},
-
 		selectionCriteriaUpdate() {
 			this.$emit(
 				"updatedData",
 				this.prepareCriteria(),
 				this.minimumSelectionScore,
-				this.vulnerabilityScoreTouched || this.calculationLoading,
+				this.isVulnerabilityScoreTouched || this.isCalculationLoading,
 				this.scoringType,
 			);
 
@@ -659,17 +619,15 @@ export default {
 		},
 
 		onShowBeneficiariesInGroup(key) {
-			this.beneficiariesData = this.groups[key]?.tableData;
+			this.beneficiariesData = this.groups[key]?.beneficiaries.data;
 			this.detailModal.isOpened = true;
 		},
 
 		onShowTotalBeneficiaries() {
-			this.beneficiariesData = this.totalBeneficiariesData;
+			this.beneficiariesData = this.groups.flatMap(
+				(group) => group.beneficiaries?.data || [],
+			);
 			this.detailModal.isOpened = true;
-		},
-
-		closeCriteriaGroupModal() {
-			this.detailModal.isOpened = false;
 		},
 
 		clearComponent() {

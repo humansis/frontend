@@ -3,7 +3,7 @@
 		<DataSelect
 			v-model="formModel.modality"
 			:items="options.modalities"
-			:loading="loading.modalities"
+			:loading="loading.isModalities"
 			:error-messages="validationMsg('modality')"
 			label="Modality"
 			name="modality"
@@ -14,7 +14,7 @@
 		<DataSelect
 			v-model="formModel.modalityType"
 			:items="options.types"
-			:loading="loading.types"
+			:loading="loading.isTypes"
 			:error-messages="validationMsg('modalityType')"
 			label="Modality Type"
 			name="modality-type"
@@ -26,7 +26,6 @@
 			v-if="displayedFields.division"
 			v-model="formModel.division"
 			:items="divisionOptions"
-			:loading="loading.division"
 			:error-messages="validationMsg('division')"
 			label="Distribute"
 			name="division"
@@ -38,7 +37,7 @@
 			v-if="displayedFields.customField"
 			v-model="formModel.customField"
 			:items="options.customFields"
-			:loading="loading.customFields"
+			:loading="loading.isCustomFields"
 			:error-messages="validationMsg('customField')"
 			label="Custom field"
 			name="custom-field"
@@ -90,18 +89,18 @@
 
 		<template v-if="showDivisionFields">
 			<div
-				v-for="(divisionField, key, i) in formModel[divisionFieldsValidationString]"
-				:key="key"
+				v-for="(divisionField, index) in formModel[divisionFieldsValidationString]"
+				:key="generateKeyForDivisionForm(index)"
 			>
 				<DataInput
-					v-model.number="formModel[divisionFieldsValidationString][key]"
-					:label="divisionFields[divisionFieldsValidationString][i].label"
-					:error-messages="validationMsg(`${divisionFieldsValidationString}.${key}`)"
-					:name="`division-${key}`"
+					v-model.number="formModel[divisionFieldsValidationString][index].value"
+					:label="divisionFields[divisionFieldsValidationString][index].label"
+					:error-messages="validationMsg(divisionFieldsValidationString, 'formModel', index)"
+					:name="`division-${index}`"
 					type="number"
 					class="mb-4"
 					hide-spin-buttons
-					@update:modelValue="onValidate(`${divisionFieldsValidationString}.${key}`)"
+					@update:modelValue="onValidate(divisionFieldsValidationString)"
 				/>
 			</div>
 		</template>
@@ -218,6 +217,7 @@
 					:name="`product-category-${index}`"
 					hide-details="auto"
 					@blur="onValidate('allowedProductCategoryTypes')"
+					@input="checkAllowedProductCategoryTypes"
 				>
 					<template v-slot:label>
 						{{ $t(productCategoryType) }}
@@ -235,7 +235,7 @@
 			v-if="formModel.allowedProductCategoryTypes.includes(CASHBACK)"
 			v-model.number="formModel.cashbackLimit"
 			:error-messages="validationMsg('cashbackLimit')"
-			:disabled="cashbackLimitDisabled"
+			:disabled="isCashbackLimitDisabled"
 			label="Cashback Limit"
 			name="cashback-limit"
 			min="0.01"
@@ -243,6 +243,7 @@
 			class="mb-4"
 			hide-spin-buttons
 			@blur="onValidate('cashbackLimit')"
+			@input="checkCashbackLimit"
 		/>
 	</v-card-text>
 
@@ -332,14 +333,14 @@ export default {
 				quantity: {
 					required: requiredIf(this.displayedFields.quantity),
 					...(this.displayedFields.quantity && { minValue: minValue(1) }),
-					...this.decimalPartValidationRule(this.formModel.quantity),
+					...this.decimalPartValidationRule,
 				},
 				value: {
 					required: requiredIf(this.displayedFields.value && !this.isModalityInKind),
 					...(this.displayedFields.value && {
 						minValue: minValue(this.isModalityVoucher ? 1 : 0.01),
 					}),
-					...this.decimalPartValidationRule(this.formModel.value),
+					...this.decimalPartValidationRule,
 				},
 				currency: {
 					required: requiredIf(this.displayedFields.currency && !this.isModalityInKind),
@@ -350,129 +351,68 @@ export default {
 				secondQuantity: {
 					required: false,
 					minValue: minValue(1),
-					...this.decimalPartValidationRule(this.formModel.secondQuantity),
 				},
-				// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
 				...(this.isCountrySYR
 					&& {
-						divisionNwsFields: {
-							firstNwsFields: {
-								required: requiredIf(this.displayedFields.householdMembersNwsFields),
-								...(this.displayedFields.householdMembersNwsFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionNwsFields.firstNwsFields,
-									this.displayedFields.householdMembersNwsFields,
-								),
-							},
-							secondNwsFields: {
-								required: requiredIf(this.displayedFields.householdMembersNwsFields),
-								...(this.displayedFields.householdMembersNwsFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionNwsFields.secondNwsFields,
-									this.displayedFields.householdMembersNwsFields,
-								),
-							},
-							thirdNwsFields: {
-								required: requiredIf(this.displayedFields.householdMembersNwsFields),
-								...(this.displayedFields.householdMembersNwsFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionNwsFields.thirdNwsFields,
-									this.displayedFields.householdMembersNwsFields,
-								),
-							},
-							fourthNwsFields: {
-								required: requiredIf(this.displayedFields.householdMembersNwsFields),
-								...(this.displayedFields.householdMembersNwsFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionNwsFields.fourthNwsFields,
-									this.displayedFields.householdMembersNwsFields,
-								),
-							},
-							fifthNwsFields: {
-								required: requiredIf(this.displayedFields.householdMembersNwsFields),
-								...(this.displayedFields.householdMembersNwsFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionNwsFields.fifthNwsFields,
-									this.displayedFields.householdMembersNwsFields,
-								),
-							},
+						payloadDivisionNwsFields: {
+							$each: helpers.forEach({
+								value: {
+									required: requiredIf(function isHouseholdMembersNwsFields() {
+										return this.displayedFields.householdMembersNwsFields;
+									}),
+									...(function isHouseholdMembersNwsFields() {
+										return this.displayedFields.householdMembersNwsFields;
+									} && {
+										minValue: minValue(this.minValueForFields),
+									}),
+									...(function isHouseholdMembersNwsFields() {
+										return this.displayedFields.householdMembersNwsFields;
+									} && {
+										...this.decimalPartValidationRule(),
+									}),
+								},
+							}),
 						},
-						divisionNesFields: {
-							firstNesFields: {
-								required: requiredIf(this.displayedFields.householdMembersNesFields),
-								...(this.displayedFields.householdMembersNesFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionNesFields.firstNesFields,
-									this.displayedFields.householdMembersNesFields,
-								),
-							},
-							secondNesFields: {
-								required: requiredIf(this.displayedFields.householdMembersNesFields),
-								...(this.displayedFields.householdMembersNesFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionNesFields.firstNesFields,
-									this.displayedFields.householdMembersNesFields,
-								),
-							},
-							thirdNesFields: {
-								required: requiredIf(this.displayedFields.householdMembersNesFields),
-								...(this.displayedFields.householdMembersNesFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionNesFields.firstNesFields,
-									this.displayedFields.householdMembersNesFields,
-								),
-							},
-							fourthNesFields: {
-								required: requiredIf(this.displayedFields.householdMembersNesFields),
-								...(this.displayedFields.householdMembersNesFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionNesFields.firstNesFields,
-									this.displayedFields.householdMembersNesFields,
-								),
-							},
+						payloadDivisionNesFields: {
+							$each: helpers.forEach({
+								value: {
+									required: requiredIf(function isHouseholdMembersNesFields() {
+										return this.displayedFields.householdMembersNesFields;
+									}),
+									...(function isHouseholdMembersNesFields() {
+										return this.displayedFields.householdMembersNesFields;
+									} && {
+										minValue: minValue(this.minValueForFields),
+									}),
+									...(function isHouseholdMembersNesFields() {
+										return this.displayedFields.householdMembersNesFields;
+									} && {
+										...this.decimalPartValidationRule(),
+									}),
+								},
+							}),
 						},
 					}),
 				...(this.isCountryCOD
 					&& {
-						divisionCodFields: {
-							firstCodFields: {
-								required: requiredIf(this.displayedFields.householdMembersCodFields),
-								...(this.displayedFields.householdMembersCodFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionCodFields.firstCodFields,
-									this.displayedFields.householdMembersCodFields,
-								),
-							},
-							secondCodFields: {
-								required: requiredIf(this.displayedFields.householdMembersCodFields),
-								...(this.displayedFields.householdMembersCodFields && {
-									minValue: minValue(this.minValueForFields),
-								}),
-								...this.decimalPartValidationRule(
-									this.formModel.divisionCodFields.secondCodFields,
-									this.displayedFields.householdMembersCodFields,
-								),
-							},
+						payloadDivisionCodFields: {
+							$each: helpers.forEach({
+								value: {
+									required: requiredIf(function isHouseholdMembersCodFields() {
+										return this.displayedFields.householdMembersCodFields;
+									}),
+									...(function isHouseholdMembersCodFields() {
+										return this.displayedFields.householdMembersCodFields;
+									} && {
+										minValue: minValue(this.minValueForFields),
+									}),
+									...(function isHouseholdMembersCodFields() {
+										return this.displayedFields.householdMembersCodFields;
+									} && {
+										...this.decimalPartValidationRule(),
+									}),
+								},
+							}),
 						},
 					}),
 				description: {
@@ -489,7 +429,9 @@ export default {
 						minValue: minValue(0.01),
 					}),
 					...(this.maxCashback && { maxValue: maxValue(this.maxCashback) }),
-					...this.decimalPartValidationRule(this.formModel.cashbackLimit),
+					...(this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK) && {
+						...this.decimalPartValidationRule(),
+					}),
 				},
 			},
 		};
@@ -545,9 +487,9 @@ export default {
 				customFields: [],
 			},
 			loading: {
-				modalities: false,
-				types: false,
-				customFields: false,
+				isModalities: false,
+				isTypes: false,
+				isCustomFields: false,
 			},
 			decimalValidationMessage: "The value has more than two decimal places.",
 		};
@@ -616,7 +558,7 @@ export default {
 			];
 		},
 
-		cashbackLimitDisabled() {
+		isCashbackLimitDisabled() {
 			return this.formModel[this.valueOrQuantity] >= 1
 				&& this.formModel.cashbackLimit === this.formModel[this.valueOrQuantity]
 				&& this.formModel.allowedProductCategoryTypes.length === 1
@@ -663,19 +605,19 @@ export default {
 
 		divisionFieldsValidationString() {
 			if (this.displayedFields.householdMembersNwsFields) {
-				return "divisionNwsFields";
+				return "payloadDivisionNwsFields";
 			} if (this.displayedFields.householdMembersNesFields) {
-				return "divisionNesFields";
+				return "payloadDivisionNesFields";
 			}
 
-			return "divisionCodFields";
+			return "payloadDivisionCodFields";
 		},
 
 		divisionFields() {
 			return {
-				divisionNwsFields: this.divisionNwsFields,
-				divisionNesFields: this.divisionNesFields,
-				divisionCodFields: this.divisionCodFields,
+				payloadDivisionNwsFields: this.divisionNwsFields,
+				payloadDivisionNesFields: this.divisionNesFields,
+				payloadDivisionCodFields: this.divisionCodFields,
 			};
 		},
 
@@ -937,7 +879,7 @@ export default {
 
 		async fetchModalities() {
 			try {
-				this.loading.modalities = true;
+				this.loading.isModalities = true;
 
 				const {
 					data: { data },
@@ -951,13 +893,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Modalities")}: ${e.message || e}}`, "error");
 			} finally {
-				this.loading.modalities = false;
+				this.loading.isModalities = false;
 			}
 		},
 
 		async fetchModalitiesWithTypes() {
 			try {
-				this.loading.modalities = true;
+				this.loading.isModalities = true;
 
 				const {
 					data,
@@ -971,13 +913,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Modalities")}: ${e.message || e}}`, "error");
 			} finally {
-				this.loading.modalities = false;
+				this.loading.isModalities = false;
 			}
 		},
 
 		async fetchModalityTypes(code) {
 			try {
-				this.loading.types = true;
+				this.loading.isTypes = true;
 
 				const {
 					data: { data },
@@ -991,13 +933,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Modality Types")}: ${e.message || e}`, "error");
 			} finally {
-				this.loading.types = false;
+				this.loading.isTypes = false;
 			}
 		},
 
 		async fetchCustomFields() {
 			try {
-				this.loading.customFields = true;
+				this.loading.isCustomFields = true;
 
 				const {
 					data: { data, totalCount },
@@ -1018,17 +960,17 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Custom Fields")}: ${e.message || e}`, "error");
 			} finally {
-				this.loading.customFields = false;
+				this.loading.isCustomFields = false;
 			}
 		},
 
-		decimalPartValidationRule(value, isRuleUsed = true) {
-			return ((value ?? false) && isRuleUsed && {
+		decimalPartValidationRule() {
+			return {
 				isDecimalPartLengthValid: helpers.withMessage(
 					this.decimalValidationMessage,
 					isDecimalPartLengthValid,
 				),
-			});
+			};
 		},
 
 		onSubmitForm() {
@@ -1036,34 +978,6 @@ export default {
 
 			if (this.v$.$invalid) {
 				return;
-			}
-
-			// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
-			if (this.displayedFields.householdMembersNwsFields) {
-				this.formModel.payloadDivisionNwsFields[0].value = this.formModel
-					.divisionNwsFields.firstNwsFields;
-				this.formModel.payloadDivisionNwsFields[1].value = this.formModel
-					.divisionNwsFields.secondNwsFields;
-				this.formModel.payloadDivisionNwsFields[2].value = this.formModel
-					.divisionNwsFields.thirdNwsFields;
-				this.formModel.payloadDivisionNwsFields[3].value = this.formModel
-					.divisionNwsFields.fourthNwsFields;
-				this.formModel.payloadDivisionNwsFields[4].value = this.formModel
-					.divisionNwsFields.fifthNwsFields;
-			} else if (this.displayedFields.householdMembersNesFields) {
-				this.formModel.payloadDivisionNesFields[0].value = this.formModel
-					.divisionNesFields.firstNesFields;
-				this.formModel.payloadDivisionNesFields[1].value = this.formModel
-					.divisionNesFields.secondNesFields;
-				this.formModel.payloadDivisionNesFields[2].value = this.formModel
-					.divisionNesFields.thirdNesFields;
-				this.formModel.payloadDivisionNesFields[3].value = this.formModel
-					.divisionNesFields.fourthNesFields;
-			} else {
-				this.formModel.payloadDivisionCodFields[0].value = this.formModel
-					.divisionCodFields.firstCodFields;
-				this.formModel.payloadDivisionCodFields[1].value = this.formModel
-					.divisionCodFields.secondCodFields;
 			}
 
 			this.$emit("formSubmitted", {
@@ -1128,6 +1042,12 @@ export default {
 				...customField,
 				value: `${customField.label} (${normalizeText(customField.targetType)})`,
 			}));
+		},
+
+		generateKeyForDivisionForm(index) {
+			const divisionName = this.divisionFieldsValidationString;
+
+			return `${divisionName}-${this.formModel[divisionName][index].rangeFrom}-${this.formModel[divisionName][index].rangeTo}`;
 		},
 	},
 };

@@ -1,11 +1,13 @@
 export default {
 	STATUS: {
+		CREATING: "creating",
 		NEW: "new",
 		VALIDATED: "validated",
 		CLOSED: "closed",
 	},
-	DEFAULT_SELECTED_STATUS: ["new", "validated"],
+	DEFAULT_SELECTED_STATUS: ["creating", "new", "validated"],
 	DEFAULT_SELECTED_STATUS_BUTTONS: {
+		creating: true,
 		new: true,
 		validated: true,
 		closed: false,
@@ -13,7 +15,6 @@ export default {
 	TARGET: {
 		INDIVIDUAL: "individual",
 		HOUSEHOLD: "household",
-		COMMUNITY: "community",
 		INSTITUTION: "institution",
 	},
 	TYPE: {
@@ -35,7 +36,6 @@ export default {
 	COMPONENT: {
 		SELECTION_CRITERIA: "selectionCriteria",
 		DISTRIBUTED_COMMODITY: "distributedCommodity",
-		COMMUNITIES: "communities",
 		INSTITUTIONS: "institutions",
 		ACTIVITY_DESCRIPTION: "activityDescription",
 		HOUSEHOLD_TARGETED: "householdsTargeted",
@@ -52,7 +52,6 @@ export default {
 		secondUnit: null,
 		secondQuantity: null,
 		description: null,
-		// TODO quick fix, we will fix in the future. (no $each in new version of vuelidate)
 		payloadDivisionNwsFields: [
 			{
 				rangeFrom: 1,
@@ -114,23 +113,6 @@ export default {
 				value: null,
 			},
 		],
-		divisionNwsFields: {
-			firstNwsFields: null,
-			secondNwsFields: null,
-			thirdNwsFields: null,
-			fourthNwsFields: null,
-			fifthNwsFields: null,
-		},
-		divisionNesFields: {
-			firstNesFields: null,
-			secondNesFields: null,
-			thirdNesFields: null,
-			fourthNesFields: null,
-		},
-		divisionCodFields: {
-			firstCodFields: null,
-			secondCodFields: null,
-		},
 		remoteDistributionAllowed: false,
 		allowedProductCategoryTypes: ["Food"],
 		cashbackLimit: null,

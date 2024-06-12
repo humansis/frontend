@@ -205,6 +205,14 @@ export default {
 				if (this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION) {
 					this.commodities = data.commodities;
 				}
+
+				if (this.assistance.state.code !== ASSISTANCE.STATUS.NEW) {
+					await this.$router.push({
+						name: "AssistanceDetail",
+						params: { assistanceId: this.assistance.id },
+
+					});
+				}
 			} catch (e) {
 				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
 			} finally {

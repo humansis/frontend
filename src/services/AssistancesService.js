@@ -130,34 +130,17 @@ export default {
 		});
 	},
 
-	calculationCommodities(body) {
+	assistancePrecalculate(body) {
 		return fetcher({
-			uri: "assistances/commodities",
+			uri: "assistances/precalculate",
 			method: "POST",
 			body,
 		});
 	},
 
-	calculationOfBeneficiaries(body) {
+	getAssistanceCreationProgress(id) {
 		return fetcher({
-			uri: "assistances/beneficiaries",
-			method: "POST",
-			body,
-		});
-	},
-
-	calculationOfBeneficiariesScores(body) {
-		return fetcher({
-			uri: "assistances/vulnerability-scores",
-			method: "POST",
-			body,
-			version: 2,
-		});
-	},
-
-	getAssistanceCommodities(id) {
-		return fetcher({
-			uri: `assistances/${id}/commodities`,
+			uri: `assistances/${id}/creation-progress`,
 		});
 	},
 
@@ -193,12 +176,6 @@ export default {
 				queryBuilder({ page, sort, size, filters }) + fulltext
 			}`,
 			version: 2,
-		});
-	},
-
-	getListOfCommunities({ id, page, size, sort, search }) {
-		return fetcher({
-			uri: `assistances/${id}/assistances-communities${queryBuilder({ page, size, sort, search })}`,
 		});
 	},
 

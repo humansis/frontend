@@ -3,7 +3,7 @@
 		<DataSelect
 			v-model="formModel.criteriaTarget"
 			:items="options.criteriaTargets"
-			:loading="criteriaTargetLoading"
+			:loading="loading.isCriteriaTarget"
 			:error-messages="validationMsg('criteriaTarget')"
 			label="Criteria Target"
 			name="criteria-target"
@@ -14,7 +14,7 @@
 		<DataSelect
 			v-model="formModel.criteria"
 			:items="options.criteria"
-			:loading="criteriaLoading"
+			:loading="loading.isCriteria"
 			:error-messages="validationMsg('criteria')"
 			label="Criteria"
 			name="criteria"
@@ -25,7 +25,7 @@
 		<DataSelect
 			v-model="formModel.condition"
 			:items="options.conditions"
-			:loading="criteriaConditionsLoading"
+			:loading="loading.isCriteriaConditions"
 			:error-messages="validationMsg('condition')"
 			label="Condition"
 			name="condition"
@@ -47,8 +47,8 @@
 				v-else-if="isValueMultiselect"
 				v-model="formModel.value"
 				:items="valueSelectOptions"
-				:loading="valueSelectLoading"
-				:disabled="valueDisabled"
+				:loading="loading.isValueSelect"
+				:disabled="isValueDisabled"
 				:error-messages="validationMsg('value')"
 				label="Value"
 				name="value"
@@ -198,13 +198,14 @@ export default {
 				],
 			},
 			valueSelectOptions: [],
-			valueSelectLoading: false,
+			loading: {
+				isValueSelect: false,
+				isCriteriaTarget: false,
+				isCriteria: false,
+				isCriteriaConditions: false,
+			},
 			fieldTypeToDisplay: "",
-			criteriaTargetLoading: false,
-			criteriaLoading: false,
-			criteriaConditionsLoading: false,
-			advancedOptions: false,
-			valueDisabled: false,
+			isValueDisabled: false,
 		};
 	},
 
@@ -237,14 +238,13 @@ export default {
 	},
 
 	created() {
-		this.advancedOptions = false;
 		this.fetchCriteriaTargets();
 	},
 
 	methods: {
 		async fetchCriteriaTargets() {
 			try {
-				this.criteriaTargetLoading = true;
+				this.loading.isCriteriaTarget = true;
 
 				const {
 					data: { data },
@@ -258,13 +258,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Criteria Targets")}: ${e.message || e}`, "error");
 			} finally {
-				this.criteriaTargetLoading = false;
+				this.loading.isCriteriaTarget = false;
 			}
 		},
 
 		async fetchCriteriaFields(target) {
 			try {
-				this.criteriaLoading = true;
+				this.loading.isCriteria = true;
 
 				const {
 					data: { data },
@@ -280,13 +280,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Criteria Fields")}: ${e.message || e}`, "error");
 			} finally {
-				this.criteriaLoading = false;
+				this.loading.isCriteria = false;
 			}
 		},
 
 		async fetchCriteriaConditions(target, field) {
 			try {
-				this.criteriaConditionsLoading = true;
+				this.loading.isCriteriaConditions = true;
 
 				const {
 					data: { data },
@@ -307,13 +307,14 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Criteria Conditions")}: ${e.message || e}`, "error");
 			} finally {
-				this.criteriaConditionsLoading = false;
+				this.loading.isCriteriaConditions = false;
 			}
 		},
 
 		async fetchResidenceStatuses() {
 			try {
-				this.valueSelectLoading = true;
+				this.loading.isValueSelect = true;
+
 				const {
 					data: { data },
 					status,
@@ -326,13 +327,14 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Residency Statuses")}: ${e.message || e}`, "error");
 			} finally {
-				this.valueSelectLoading = false;
+				this.loading.isValueSelect = false;
 			}
 		},
 
 		async fetchLivelihoods() {
 			try {
-				this.valueSelectLoading = true;
+				this.loading.isValueSelect = true;
+
 				const {
 					data: { data },
 					status,
@@ -345,13 +347,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Livelihoods")}: ${e.message || e}`, "error");
 			} finally {
-				this.valueSelectLoading = false;
+				this.loading.isValueSelect = false;
 			}
 		},
 
 		async fetchLocationsTypes() {
 			try {
-				this.valueSelectLoading = true;
+				this.loading.isValueSelect = true;
 
 				const {
 					data: { data },
@@ -365,7 +367,7 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Location Types")}: ${e.message || e}`, "error");
 			} finally {
-				this.valueSelectLoading = false;
+				this.loading.isValueSelect = false;
 			}
 		},
 
@@ -419,17 +421,16 @@ export default {
 			// if any of these criteria is set, preset value to true and disable the field
 			if (criteriaWithPresetValue.includes(criteria.code)) {
 				[this.formModel.value] = this.options.boolean;
-				this.valueDisabled = true;
+				this.isValueDisabled = true;
 			} else {
-				this.valueDisabled = false;
+				this.isValueDisabled = false;
 			}
 		},
 
 		onSubmitForm() {
 			this.v$.$touch();
-			if (this.v$.$invalid) {
-				return;
-			}
+
+			if (this.v$.$invalid) return;
 
 			if (this.fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.LOCATION
 				&& this.$refs.locationForm.submitLocationForm()) {

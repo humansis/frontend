@@ -128,7 +128,6 @@ export default {
 			let result = "";
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
 				case ASSISTANCE.TARGET.INSTITUTION:
 					result = "name";
 					break;
@@ -181,7 +180,6 @@ export default {
 			let result = "";
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
 				case ASSISTANCE.TARGET.INSTITUTION:
 					result = option.name;
 					break;
@@ -233,9 +231,6 @@ export default {
 			};
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					body.communityIds = [removingId];
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					body.institutionIds = [removingId];
 					break;
@@ -259,9 +254,6 @@ export default {
 			};
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					body.communityIds = getArrayOfIdsByParam(beneficiaries, "id");
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					body.institutionIds = getArrayOfIdsByParam(beneficiaries, "id");
 					break;
@@ -283,9 +275,6 @@ export default {
 			let assistanceTarget = "";
 
 			switch (target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					assistanceTarget = "communities";
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					assistanceTarget = "institutions";
 					break;

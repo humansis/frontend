@@ -495,12 +495,6 @@ export default {
 					checkableTable: false,
 				},
 				visibleColumns: [],
-				communityColumns: [
-					{ key: "id", title: "ID" },
-					{ key: "name" },
-					{ key: "contactGivenName", title: "Contact Name" },
-					{ key: "contactFamilyName" },
-				],
 				institutionEditColumns: [
 					{ key: "id", title: "ID", sortable: false },
 					{ key: "name" },
@@ -526,11 +520,6 @@ export default {
 			},
 			institutionModal: {
 				isOpened: false,
-				isWaiting: false,
-			},
-			communityModal: {
-				isOpened: false,
-				isEditing: false,
 				isWaiting: false,
 			},
 			inputDistributedModal: {
@@ -561,11 +550,6 @@ export default {
 				justification: null,
 			},
 			institutionModel: { ...INSTITUTION.DEFAULT_FORM_MODEL },
-			communityModel: {
-				addressStreet: null,
-				addressNumber: null,
-				addressPostCode: null,
-			},
 			randomSampleSize: 10,
 			assignVoucherModal: {
 				isOpened: false,
@@ -992,40 +976,8 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 			this.table.data = [];
+
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					try {
-						const sort = this.table.sortColumn !== ""
-							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-							: "";
-
-						const {
-							data: { data, totalCount },
-							status,
-							message,
-						} = await AssistancesService.getListOfCommunities({
-							id: this.$route.params.assistanceId,
-							page: page || this.table.currentPage,
-							size: size || this.perPage,
-							search: this.table.searchPhrase,
-							sort,
-						});
-
-						checkResponseStatus(status, message);
-
-						this.table.data = [];
-						this.table.progress = 0;
-						this.$emit("beneficiariesCounted", totalCount);
-						this.table.total = totalCount;
-
-						if (totalCount > 0) {
-							await this.prepareDataForTable(data);
-						}
-					} catch (e) {
-						Notification(`${this.$t("Communities")}: ${e.message || e}`, "error");
-					}
-
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					try {
 						const sort = this.table.sortColumn !== ""
@@ -1114,9 +1066,6 @@ export default {
 			let additionalColumns = [];
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					baseColumns = this.table.communityColumns;
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					baseColumns = this.assistanceDetail
 						? this.institutionDetailColumns
@@ -1152,35 +1101,8 @@ export default {
 		async prepareDataForTable(data) {
 			this.table.progress += 25;
 			this.table.checkedRows = [];
-			let beneficiaryIds = [];
-			let beneficiaries = [];
-
-			const distributionItems = {
-				reliefPackages: [],
-			};
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					beneficiaryIds = data.map((item) => item.communityId);
-					beneficiaries = await this.getCommunities(beneficiaryIds);
-
-					data.forEach((community, key) => {
-						const foundCommunity = beneficiaries.find(
-							(bnf) => bnf.id === community.communityId,
-						);
-
-						const item = { ...community, ...foundCommunity };
-						this.table.data[key] = item;
-
-						if (item.reliefPackages?.length) {
-							distributionItems.reliefPackages.push(...item.reliefPackages);
-						}
-					});
-
-					this.table.data = [...this.table.data];
-
-					this.table.progress += 55;
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					data.forEach((item, key) => {
 						const { institution, reliefPackages } = item;
@@ -1367,24 +1289,6 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Set as not distributed")} ${e.message || e}`, "error");
 			}
-		},
-
-		async getCommunities(ids) {
-			try {
-				const {
-					data,
-					status,
-					message,
-				} = await BeneficiariesService.getCommunities(ids);
-
-				checkResponseStatus(status, message);
-
-				return data;
-			} catch (e) {
-				Notification(`${this.$t("Communities")}: ${e.message || e}`, "error");
-			}
-
-			return [];
 		},
 
 		async getBeneficiaries(ids, filters) {

@@ -143,6 +143,16 @@
 			</v-btn>
 
 			<v-btn
+				:class="filterButtonCreating"
+				icon-left="sticky-note"
+				variant="tonal"
+				prepend-icon="sticky-note"
+				@click="onStatusFilter('creating')"
+			>
+				{{ $t('Creating') }}
+			</v-btn>
+
+			<v-btn
 				:class="filterButtonNew"
 				icon-left="sticky-note"
 				variant="tonal"
@@ -207,6 +217,7 @@ import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
 const customSort = { progress: () => {} };
 const statusTags = [
+	{ code: ASSISTANCE.STATUS.CREATING, class: "status creating" },
 	{ code: ASSISTANCE.STATUS.NEW, class: "status new" },
 	{ code: ASSISTANCE.STATUS.VALIDATED, class: "status validated" },
 	{ code: ASSISTANCE.STATUS.CLOSED, class: "status closed" },
@@ -268,7 +279,7 @@ export default {
 			exportLoading: false,
 			selectedFilters: [...ASSISTANCE.DEFAULT_SELECTED_STATUS],
 			statusActive: { ...ASSISTANCE.DEFAULT_SELECTED_STATUS_BUTTONS },
-			filters: { states: ["new", "validated"] },
+			filters: { states: [...ASSISTANCE.DEFAULT_SELECTED_STATUS] },
 			isLoadingList: false,
 			table: {
 				data: [],
@@ -303,6 +314,13 @@ export default {
 	},
 
 	computed: {
+		filterButtonCreating() {
+			return [
+				"text-none ml-3 status creating",
+				{ "is-selected": this.statusActive.creating },
+			];
+		},
+
 		filterButtonNew() {
 			return [
 				"text-none ml-3 status new",
@@ -519,10 +537,15 @@ export default {
 		},
 
 		getRouteNameToAssistance({ state: { code } }) {
-			return code === ASSISTANCE.STATUS.CLOSED
-			|| code === ASSISTANCE.STATUS.VALIDATED
-				? "AssistanceDetail"
-				: "AssistanceEdit";
+			switch (code) {
+				case ASSISTANCE.STATUS.CLOSED:
+				case ASSISTANCE.STATUS.VALIDATED:
+					return "AssistanceDetail";
+				case ASSISTANCE.STATUS.CREATING:
+					return "AssistanceCreationProgress";
+				default:
+					return "AssistanceEdit";
+			}
 		},
 
 		assistanceProgress(data) {
@@ -546,7 +569,14 @@ export default {
 		onGoToUpdate(id) {
 			const assistance = this.table.data.find((item) => item.id === id);
 
-			if (this.upcoming) {
+			if (assistance.state.code === ASSISTANCE.STATUS.CREATING) {
+				this.$router.push({
+					name: "AssistanceCreationProgress",
+					params: {
+						assistanceId: assistance.id,
+					},
+				});
+			} else if (this.upcoming) {
 				this.showDetail(assistance);
 			} else {
 				this.$router.push({
@@ -619,7 +649,7 @@ export default {
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export Assistances")}: ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}
