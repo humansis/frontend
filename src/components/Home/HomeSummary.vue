@@ -30,6 +30,7 @@
 <script>
 import HomeService from "@/services/HomeService";
 import { normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -73,7 +74,7 @@ export default {
 		},
 
 		async fetchData() {
-			this.summaryCodes.forEach((item, index) => {
+			await Promise.all(this.summaryCodes.map(async (item, index) => {
 				this.summary.push({
 					id: index,
 					code: item.code,
@@ -81,19 +82,26 @@ export default {
 					value: "",
 				});
 
-				HomeService.getSummariesForHomePage(item.code)
-					.then((response) => {
-						if (response.data[0]) {
-							const summaryIndex = this.summary.findIndex(
-								(summary) => summary.code === response.data[0].code,
-							);
+				try {
+					const {
+						data: { data },
+						status,
+						message,
+					} = await HomeService.getSummariesForHomePage(item.code);
 
-							this.summary[summaryIndex].value = response.data[0].value;
-						}
-					}).catch((e) => {
-						Notification(`${this.$t("Summaries")} ${e.message || e}`, "error");
-					});
-			});
+					checkResponseStatus(status, message);
+
+					if (data[0]) {
+						const summaryIndex = this.summary.findIndex(
+							(summary) => summary.code === data[0].code,
+						);
+
+						this.summary[summaryIndex].value = data[0].value;
+					}
+				} catch (e) {
+					Notification(`${this.$t("Summaries")}: ${e.message || e}`, "error");
+				}
+			}));
 		},
 	},
 };

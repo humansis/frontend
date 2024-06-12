@@ -44,6 +44,7 @@ import InstitutionService from "@/services/InstitutionService";
 import DataSelect from "@/components/Inputs/DataSelect";
 import addressHelper from "@/mixins/addressHelper";
 import validation from "@/mixins/validation";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -135,38 +136,53 @@ export default {
 		},
 
 		async fetchInstitutions() {
-			await InstitutionService.getListOfInstitutions(
-				null,
-				null,
-				null,
-				null,
-				{ projects: [this.projectId] },
-			)
-				.then(({ data }) => {
-					this.options.institutions = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await InstitutionService.getListOfInstitutions({
+					filters: { projects: [this.projectId] },
 				});
-			this.loading.institutions = false;
+
+				checkResponseStatus(status, message);
+
+				this.options.institutions = data;
+			} catch (e) {
+				Notification(`${this.$t("Institutions")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.institutions = false;
+			}
 		},
 
 		async fetchCommunities() {
-			await CommunityService.getListOfCommunities()
-				.then(async ({ data }) => {
-					this.options.communities = await this.prepareCommunitiesForSelect(data);
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Communities")} ${e.message || e}`, "error");
-				});
-			this.loading.communities = false;
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await CommunityService.getListOfCommunities({});
+
+				checkResponseStatus(status, message);
+				this.options.communities = await this.prepareCommunitiesForSelect(data);
+			} catch (e) {
+				Notification(`${this.$t("Communities")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.communities = false;
+			}
 		},
 
 		async fetchUsedInstitutions(assistanceId) {
 			try {
-				const { data: { data } } = await AssistancesService.getListOfInstitutions(
-					assistanceId,
-				);
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getListOfInstitutions({
+					id: assistanceId,
+				});
+
+				checkResponseStatus(status, message);
 
 				this.prepareDuplicatedInstitutions(data);
 				this.onTargetSelect();

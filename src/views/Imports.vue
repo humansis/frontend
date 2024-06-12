@@ -65,6 +65,7 @@ import ImportsList from "@/components/Imports/ImportsList";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { EXPORT } from "@/consts";
@@ -209,49 +210,70 @@ export default {
 		},
 
 		async fetchProjects() {
-			this.projectsLoading = true;
+			try {
+				this.projectsLoading = true;
 
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.options.projects = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({});
 
-			this.projectsLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.projects = data;
+			} catch (e) {
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			} finally {
+				this.projectsLoading = false;
+			}
 		},
 
 		async createImport(importBody) {
-			this.importModal.isWaiting = true;
+			try {
+				this.importModal.isWaiting = true;
 
-			await ImportService.createImport(importBody).then(({ status, data }) => {
-				if (status === 200) {
-					Notification(this.$t("Import Successfully Created"), "success");
-					this.$refs.importList.fetchData();
+				const {
+					data,
+					status,
+					message,
+				} = await ImportService.createImport(importBody);
 
-					this.$router.push({ name: "Import", params: { importId: data.id } });
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Import")} ${e.message || e}`, "error");
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Import Successfully Created"), "success");
+				await this.$refs.importList.fetchData();
+
+				this.$router.push({ name: "Import", params: { importId: data.id } });
+			} catch (e) {
+				Notification(`${this.$t("Import")}: ${e.message || e}`, "error");
+			} finally {
 				this.importModal.isWaiting = false;
-			});
+			}
 		},
 
 		async updateImport(id, { title, projectId, description }) {
-			this.importModal.isWaiting = true;
+			try {
+				this.importModal.isWaiting = true;
 
-			await ImportService.changeImportState(id, { title, projectId, description })
-				.then(({ status }) => {
-					if (status === 202) {
-						Notification(this.$t("Import Successfully Updated"), "success");
-						this.$refs.importList.fetchData();
-						this.importModal.isOpened = false;
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Import")} ${e.message || e}`, "error");
-					this.importModal.isWaiting = false;
+				const {
+					status,
+					message,
+				} = await ImportService.changeImportState({
+					importId: id,
+					body: { title, projectId, description },
 				});
+
+				checkResponseStatus(status, message, 202);
+
+				Notification(this.$t("Import Successfully Updated"), "success");
+				await this.$refs.importList.fetchData();
+				this.importModal.isOpened = false;
+			} catch (e) {
+				Notification(`${this.$t("Import")}: ${e.message || e}`, "error");
+			} finally {
+				this.importModal.isWaiting = false;
+			}
 		},
 
 		async onDownloadTemplate(exportType, format) {
@@ -259,11 +281,15 @@ export default {
 				try {
 					this.exportControl.isLoading = true;
 
-					const { data, status, message } = await ImportService.exportTemplate(format);
+					const {
+						data,
+						status,
+						message,
+					} = await ImportService.exportTemplate(format);
 
 					downloadFile(data, "import-template", status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Downloading Template")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Downloading Template")}: ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.isLoading = false;
 				}

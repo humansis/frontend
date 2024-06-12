@@ -291,6 +291,7 @@ import DataTextarea from "@/components/Inputs/DataTextarea";
 import IdTypeSelect from "@/components/Inputs/IdTypeSelect";
 import validation from "@/mixins/validation";
 import { isIdsListLengthValid } from "@/utils/customValidators";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -405,69 +406,73 @@ export default {
 				};
 
 				if (this.deduplication) {
-					await BeneficiariesService.removeBeneficiaryFromAssistance(
-						this.$route.params.assistanceId,
-						target,
-						body,
-					).then(({ data, message }) => {
-						if (data) {
-							if (data.errors?.message) {
-								Notification(data.errors.message, "error");
-							} else {
-								this.distributeData = data;
-								this.distributedFormVisible = false;
-							}
-						} else {
-							Notification(message, "warning");
-						}
-					}).catch((e) => {
-						Notification(`${this.$t("Beneficiary remove")} ${e.message || e}`, "error");
-					}).finally(() => {
+					try {
+						const {
+							data,
+							status,
+							message,
+						} = await BeneficiariesService.removeBeneficiaryFromAssistance({
+							assistanceId: this.$route.params.assistanceId,
+							target,
+							body,
+						});
+
+						checkResponseStatus(status, message);
+
+						this.distributeData = data;
+						this.distributedFormVisible = false;
+					} catch (e) {
+						Notification(`${this.$t("Beneficiary remove")}: ${e.message || e}`, "error");
+					} finally {
 						this.isDistributedButtonLoading = false;
 						this.$emit("submit");
-					});
+					}
 				} else {
-					await BeneficiariesService.addBeneficiaryToAssistance(
-						this.$route.params.assistanceId,
-						target,
-						body,
-					).then(({ data, message }) => {
-						if (data) {
-							if (data.errors?.message) {
-								Notification(data.errors.message, "warning");
-							} else {
-								this.distributeData = data;
-								this.distributedFormVisible = false;
-							}
-						} else {
-							Notification(message, "warning");
-						}
-					}).catch((error) => {
-						Notification(error, "error");
-					}).finally(() => {
+					try {
+						const {
+							data,
+							status,
+							message,
+						} = await BeneficiariesService.addBeneficiaryToAssistance({
+							assistanceId: this.$route.params.assistanceId,
+							target,
+							body,
+						});
+
+						checkResponseStatus(status, message);
+
+						this.distributeData = data;
+						this.distributedFormVisible = false;
+					} catch (e) {
+						Notification(`${this.$t("Beneficiary")}: ${e}`, "error");
+					} finally {
 						this.isDistributedButtonLoading = false;
 						this.$emit("submit");
-					});
+					}
 				}
 			} else {
 				body = numberIds.map((idNumber) => ({ idNumber }));
 
-				await AssistancesService.updateReliefPackagesWithNumberIds(
-					this.$route.params.assistanceId,
-					body,
-				).then(({ data, status, message }) => {
-					if (status === 200) {
-						this.distributeData = data;
-						this.distributedFormVisible = false;
-					} else {
-						Notification(message, "warning");
-					}
-				}).catch((error) => {
-					Notification(error, "error");
-				}).finally(() => {
+				try {
+					const {
+						data,
+						status,
+						message,
+					} = await AssistancesService.updateReliefPackagesWithNumberIds(
+						this.$route.params.assistanceId,
+						body,
+					);
+
+					checkResponseStatus(status, message);
+
+					this.distributeData = data;
+					this.distributedFormVisible = false;
+				} catch (e) {
+					Notification(`${this.$t("Relief Packages")}: ${e.message || e}`, "error");
+				} finally {
 					this.isDistributedButtonLoading = false;
 					this.$emit("submit");
-				});
+				}
 
 				this.v$.$reset();
 			}

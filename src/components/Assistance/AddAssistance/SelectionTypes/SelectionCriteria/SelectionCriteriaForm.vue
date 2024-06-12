@@ -243,15 +243,23 @@ export default {
 
 	methods: {
 		async fetchCriteriaTargets() {
-			this.criteriaTargetLoading = true;
+			try {
+				this.criteriaTargetLoading = true;
 
-			await AssistancesService.getAssistanceSelectionCriteriaTargets()
-				.then(({ data }) => { this.options.criteriaTargets = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Criteria Targets")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistanceSelectionCriteriaTargets();
 
-			this.criteriaTargetLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.criteriaTargets = data;
+			} catch (e) {
+				Notification(`${this.$t("Criteria Targets")}: ${e.message || e}`, "error");
+			} finally {
+				this.criteriaTargetLoading = false;
+			}
 		},
 
 		async fetchCriteriaFields(target) {
@@ -277,61 +285,88 @@ export default {
 		},
 
 		async fetchCriteriaConditions(target, field) {
-			this.criteriaConditionsLoading = true;
+			try {
+				this.criteriaConditionsLoading = true;
 
-			await AssistancesService.getAssistanceSelectionCriteriaConditions(target.code, field.code)
-				.then(({ data }) => {
-					this.options.conditions = data;
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistanceSelectionCriteriaConditions(
+					target.code,
+					field.code,
+				);
 
-					if (data.length === 1 && data[0].code === "=") {
-						this.formModel.condition = { ...data[0] };
-					}
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Criteria Conditions")} ${e.message || e}`, "error");
-				});
+				checkResponseStatus(status, message);
 
-			this.criteriaConditionsLoading = false;
+				this.options.conditions = data;
+
+				if (data.length === 1 && data[0].code === "=") {
+					this.formModel.condition = { ...data[0] };
+				}
+			} catch (e) {
+				Notification(`${this.$t("Criteria Conditions")}: ${e.message || e}`, "error");
+			} finally {
+				this.criteriaConditionsLoading = false;
+			}
 		},
 
 		async fetchResidenceStatuses() {
-			this.valueSelectLoading = true;
+			try {
+				this.valueSelectLoading = true;
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfResidenceStatuses();
 
-			await BeneficiariesService.getListOfResidenceStatuses()
-				.then(({ data }) => {
-					this.valueSelectOptions = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Residency Statuses")} ${e.message || e}`, "error");
-				});
+				checkResponseStatus(status, message);
 
-			this.valueSelectLoading = false;
+				this.valueSelectOptions = data;
+			} catch (e) {
+				Notification(`${this.$t("Residency Statuses")}: ${e.message || e}`, "error");
+			} finally {
+				this.valueSelectLoading = false;
+			}
 		},
 
 		async fetchLivelihoods() {
-			this.valueSelectLoading = true;
+			try {
+				this.valueSelectLoading = true;
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfLivelihoods();
 
-			await BeneficiariesService.getListOfLivelihoods()
-				.then(({ data }) => {
-					this.valueSelectOptions = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Livelihoods")} ${e.message || e}`, "error");
-				});
+				checkResponseStatus(status, message);
 
-			this.valueSelectLoading = false;
+				this.valueSelectOptions = data;
+			} catch (e) {
+				Notification(`${this.$t("Livelihoods")}: ${e.message || e}`, "error");
+			} finally {
+				this.valueSelectLoading = false;
+			}
 		},
 
 		async fetchLocationsTypes() {
-			this.valueSelectLoading = true;
+			try {
+				this.valueSelectLoading = true;
 
-			await BeneficiariesService.getListOfLocationsTypes()
-				.then(({ data }) => { this.valueSelectOptions = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Location Types")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfLocationsTypes();
 
-			this.valueSelectLoading = false;
+				checkResponseStatus(status, message);
+
+				this.valueSelectOptions = data;
+			} catch (e) {
+				Notification(`${this.$t("Location Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.valueSelectLoading = false;
+			}
 		},
 
 		prepareDataForCriteria(selectionCriteria) {

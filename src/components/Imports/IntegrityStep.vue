@@ -343,6 +343,8 @@ import ImportService from "@/services/ImportService";
 import FileUpload from "@/components/Inputs/FileUpload";
 import Loading from "@/components/Loading";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
+import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
@@ -499,37 +501,41 @@ export default {
 	},
 
 	methods: {
-		getAffectedRecords() {
-			const { importId } = this.$route.params;
+		async getAffectedRecords() {
+			try {
+				this.downloadAffectedRecordsLoading = true;
+				this.dropFiles = [];
 
-			this.downloadAffectedRecordsLoading = true;
-			this.dropFiles = [];
+				const { importId } = this.$route.params;
 
-			ImportService.getFilesWithInvalidEntriesFromImport(importId)
-				.then(({ data: { data } }) => {
-					this.invalidFiles = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Invalid Files")} ${e.message || e}`, "error");
-				}).finally(() => {
-					this.downloadAffectedRecordsLoading = false;
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ImportService.getFilesWithInvalidEntriesFromImport(importId);
+
+				checkResponseStatus(status, message);
+
+				this.invalidFiles = data;
+			} catch (e) {
+				Notification(`${this.$t("Invalid Files")}: ${e.message || e}`, "error");
+			} finally {
+				this.downloadAffectedRecordsLoading = false;
+			}
 		},
 
-		onDownloadAffectedFile(id, file) {
-			ImportService.downloadFileWithInvalidEntriesFromImport(id)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `${file}`;
-						link.click();
-					} else {
-						Notification(message, "warning");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Downloaded File")} ${e.message || e}`, "error");
-				});
+		async onDownloadAffectedFile(id, file) {
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await ImportService.downloadFileWithInvalidEntriesFromImport(id);
+
+				downloadFile(data, file, status, "", message);
+			} catch (e) {
+				Notification(`${this.$t("Downloaded File")}: ${e.message || e}`, "error");
+			}
 		},
 
 		onStartIdentityCheck() {
@@ -540,30 +546,35 @@ export default {
 			});
 		},
 
-		onStartIntegrityCheckAgain() {
+		async onStartIntegrityCheckAgain() {
 			const { importId } = this.$route.params;
 
 			if (this.dropFiles.length === 1) {
-				this.startIntegrityCheckAgainLoading = true;
+				try {
+					this.startIntegrityCheckAgainLoading = true;
 
-				ImportService.uploadFilesIntoImport(importId, this.dropFiles)
-					.then(({ status, message }) => {
-						if (status === 200) {
-							Notification(this.$t("Uploaded Successfully"), "success");
-
-							this.filesUpload = false;
-							this.invalidFiles = [];
-						} else {
-							Notification(message, "warning");
-						}
-					}).catch((e) => {
-						Notification(`${this.$t("Upload")} ${e.message}`, "error");
-					}).finally(() => {
-						this.startIntegrityCheckAgainLoading = false;
-						setTimeout(() => {
-							this.getAffectedRecords();
-						}, 1500);
+					const {
+						status,
+						message,
+					} = await ImportService.uploadFilesIntoImport({
+						files: this.dropFiles,
+						importId,
 					});
+
+					checkResponseStatus(status, message);
+
+					Notification(this.$t("Uploaded Successfully"), "success");
+
+					this.filesUpload = false;
+					this.invalidFiles = [];
+				} catch (e) {
+					Notification(`${this.$t("Upload")}: ${e.message}`, "error");
+				} finally {
+					this.startIntegrityCheckAgainLoading = false;
+					setTimeout(() => {
+						this.getAffectedRecords();
+					}, 1500);
+				}
 			}
 		},
 

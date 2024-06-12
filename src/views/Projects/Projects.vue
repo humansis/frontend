@@ -28,6 +28,7 @@ import { mapState } from "vuex";
 import ProjectService from "@/services/ProjectService";
 import ProjectsList from "@/components/Projects/ProjectsList";
 import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -59,14 +60,19 @@ export default {
 		},
 
 		async onProjectDelete(id) {
-			await ProjectService.deleteProject(id).then((response) => {
-				if (response.status === 204) {
-					Notification(this.$t("Project Successfully Deleted"), "success");
-					this.$refs.projectsList.removeFromList(id);
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Project")} ${e.message || e}`, "error");
-			});
+			try {
+				const {
+					status,
+					message,
+				} = await ProjectService.deleteProject(id);
+
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("Project Successfully Deleted"), "success");
+				this.$refs.projectsList.removeFromList(id);
+			} catch (e) {
+				Notification(`${this.$t("Project")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

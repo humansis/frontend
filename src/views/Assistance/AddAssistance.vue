@@ -279,25 +279,35 @@ export default {
 		this.isDuplicated = !!this.$route.query.duplicateAssistance;
 
 		if (this.isDuplicated) {
-			await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance)
-				.then(({ data, message }) => {
-					if (!data) {
-						throw new Error(message);
-					}
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getSelectionCriteria(this.$route.query.duplicateAssistance);
 
-					this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Assistance Selection Criteria")} ${e.message || e}`, "error");
-				});
+				checkResponseStatus(status, message);
 
-			await AssistancesService.getDetailOfAssistance(this.$route.query.duplicateAssistance)
-				.then(async (data) => {
-					this.duplicateAssistance = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Duplicate Assistance")} ${e.message || e}`, "error");
-				});
+				this.assistanceSelectionCriteria = this.getValidSelectionCriteria(data);
+			} catch (e) {
+				Notification(`${this.$t("Assistance Selection Criteria")}: ${e.message || e}`, "error");
+			}
+
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await AssistancesService.getDetailOfAssistance(
+					this.$route.query.duplicateAssistance,
+				);
+
+				checkResponseStatus(status, message);
+
+				this.duplicateAssistance = data;
+			} catch (e) {
+				Notification(`${this.$t("Duplicate Assistance")}: ${e.message || e}`, "error");
+			}
 
 			try {
 				this.scoringTypesLoading = true;
@@ -330,14 +340,21 @@ export default {
 			const { projectId } = this.$route.params;
 
 			if (projectId) {
-				await ProjectService.getDetailOfProject(projectId)
-					.then(({ data }) => {
-						this.project = data;
-						this.isProjectReady = true;
-					})
-					.catch((e) => {
-						Notification(`${this.$t("Project")} ${e.message || e}`, "error");
-					});
+				try {
+					const {
+						data,
+						status,
+						message,
+					} = await ProjectService.getDetailOfProject(projectId);
+
+					checkResponseStatus(status, message);
+
+					this.project = data;
+				} catch (e) {
+					Notification(`${this.$t("Project")}: ${e.message || e}`, "error");
+				} finally {
+					this.isProjectReady = true;
+				}
 			}
 		},
 
@@ -349,11 +366,20 @@ export default {
 			await this.onFetchDistributedCommodity(updatedCommodities || this.assistanceBody.commodities);
 
 			const { dateExpiration, ...commoditiesBody } = this.assistanceBody;
-			const result = await AssistancesService.calculationCommodities(commoditiesBody);
 
-			if (result.status !== 200) return;
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.calculationCommodities(commoditiesBody);
 
-			this.calculatedCommodityValue = result.data.data;
+				checkResponseStatus(status, message);
+
+				this.calculatedCommodityValue = data;
+			} catch (e) {
+				Notification(`${this.$t("Commodities")}: ${e.message || e}`, "error");
+			}
 		},
 
 		onValidateNewAssistance() {
@@ -405,32 +431,31 @@ export default {
 
 			const { dateExpiration, ...assistanceBody } = this.assistanceBody;
 
-			await AssistancesService.createAssistance(assistanceBody)
-				.then(({ status, data: { id }, message }) => {
-					const success = status === 200;
-					const badRequest = status === 400;
+			try {
+				const {
+					data: { id },
+					status,
+					message,
+				} = await AssistancesService.createAssistance(assistanceBody);
 
-					if (success) {
-						Notification(this.$t("Assistance Successfully Created"), "success");
-						if (id) {
-							this.$router.push({
-								name: "AssistanceEdit",
-								params: { assistanceId: id },
-							});
-						} else {
-							this.$router.push({
-								name: "Project",
-								params: { projectId: this.$route.params.projectId },
-							});
-						}
-					}
+				checkResponseStatus(status, message);
 
-					if (badRequest) {
-						Notification(message || `${this.$t("Error code 400")}`, "warning");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("New Assistance")} ${e.message || e}`, "error");
-				});
+				Notification(this.$t("Assistance Successfully Created"), "success");
+
+				if (id) {
+					this.$router.push({
+						name: "AssistanceEdit",
+						params: { assistanceId: id },
+					});
+				} else {
+					this.$router.push({
+						name: "Project",
+						params: { projectId: this.$route.params.projectId },
+					});
+				}
+			} catch (e) {
+				Notification(`${this.$t("New Assistance")}: ${e.message || e}`, "error");
+			}
 
 			this.loading = false;
 		},
@@ -734,22 +759,35 @@ export default {
 				&& inputDate <= new Date(this.project.endDate);
 		},
 
-		fetchAssistanceCommodities() {
-			return AssistancesService.getAssistanceCommodities(this.$route.query.duplicateAssistance)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Commodities")} ${e.message || e}`, "error");
-				});
+		async fetchAssistanceCommodities() {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistanceCommodities(
+					this.$route.query.duplicateAssistance,
+				);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Commodities")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async fetchCustomFields() {
 			try {
-				const { data: { data } } = await CustomFieldsService.getListOfCustomFields(
-					null,
-					null,
-					null,
-					null,
-				);
+				const {
+					data: { data },
+					status,
+					message,
+				} = await CustomFieldsService.getListOfCustomFields({});
+
+				checkResponseStatus(status, message);
 
 				this.customFields = data;
 			} catch (e) {

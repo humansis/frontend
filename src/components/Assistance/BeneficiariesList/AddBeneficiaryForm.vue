@@ -296,41 +296,43 @@ export default {
 			}
 
 			if (body.removed || !body.added) {
-				await BeneficiariesService.removeBeneficiaryFromAssistance(
-					this.$route.params.assistanceId,
-					assistanceTarget,
-					body,
-					this.beneficiaryEndpointVersion,
-				)
-					.then(({ data, status }) => {
-						if (status === 400) {
-							Notification(data, "warning");
-						} else {
-							Notification(successMessage, "success");
-						}
-					})
-					.catch((e) => {
-						Notification(`${this.$t("Beneficiary")} ${e.message || e}`, "error");
+				try {
+					const {
+						status,
+						message,
+					} = await BeneficiariesService.removeBeneficiaryFromAssistance({
+						assistanceId: this.$route.params.assistanceId,
+						target: assistanceTarget,
+						endpointVersion: this.beneficiaryEndpointVersion,
+						body,
 					});
+
+					checkResponseStatus(status, message);
+
+					Notification(successMessage, "success");
+				} catch (e) {
+					Notification(`${this.$t("Beneficiary")}: ${e.message || e}`, "error");
+				}
 			}
 
 			if (body.added) {
-				await BeneficiariesService.addBeneficiaryToAssistance(
-					this.$route.params.assistanceId,
-					assistanceTarget,
-					body,
-					this.beneficiaryEndpointVersion,
-				)
-					.then(({ data, status }) => {
-						if (status === 400) {
-							Notification(data, "warning");
-						} else {
-							Notification(successMessage, "success");
-						}
-					})
-					.catch((e) => {
-						Notification(`${this.$t("Beneficiary")} ${e}`, "error");
+				try {
+					const {
+						status,
+						message,
+					} = await BeneficiariesService.addBeneficiaryToAssistance({
+						assistanceId: this.$route.params.assistanceId,
+						target: assistanceTarget,
+						endpointVersion: this.beneficiaryEndpointVersion,
+						body,
 					});
+
+					checkResponseStatus(status, message);
+
+					Notification(successMessage, "success");
+				} catch (e) {
+					Notification(`${this.$t("Beneficiary")}: ${e}`, "error");
+				}
 			}
 
 			this.submitButtonLoading = false;

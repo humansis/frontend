@@ -108,6 +108,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -156,15 +157,23 @@ export default {
 		},
 
 		async fetchReferralTypes() {
-			this.referralTypeLoading = true;
+			try {
+				this.referralTypeLoading = true;
 
-			await BeneficiariesService.getListOfReferralTypes()
-				.then(({ data }) => { this.options.referralType = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Referral Types")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfReferralTypes();
 
-			this.referralTypeLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.referralType = data;
+			} catch (e) {
+				Notification(`${this.$t("Referral Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.referralTypeLoading = false;
+			}
 		},
 
 	},

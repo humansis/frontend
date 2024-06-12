@@ -25,6 +25,7 @@ import OrganizationServiceService from "@/services/OrganizationServiceService";
 import OrganizationServiceForm from "@/components/AdministrativeSettings/OrganizationServices/Form";
 import OrganizationServicesList from "@/components/AdministrativeSettings/OrganizationServices/List";
 import Modal from "@/components/Inputs/Modal";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -107,21 +108,27 @@ export default {
 		},
 
 		async updateOrganizationService(id, organizationServiceBody) {
-			this.organizationServiceModal.isWaiting = true;
+			try {
+				this.organizationServiceModal.isWaiting = true;
 
-			await OrganizationServiceService.updateOrganizationService(id, organizationServiceBody)
-				.then(({ status, message }) => {
-					if (status === 200) {
-						Notification(this.$t("Organization Service Successfully Updated"), "success");
-						this.$refs.organizationServicesList.fetchData();
-						this.onCloseOrganizationServiceModal();
-					} else {
-						Notification(message, "error");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Organization Service")} ${e.message || e}`, "error");
-					this.organizationServiceModal.isWaiting = false;
+				const {
+					status,
+					message,
+				} = await OrganizationServiceService.updateOrganizationService({
+					body: organizationServiceBody,
+					id,
 				});
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Organization Service Successfully Updated"), "success");
+				await this.$refs.organizationServicesList.fetchData();
+				this.onCloseOrganizationServiceModal();
+			} catch (e) {
+				Notification(`${this.$t("Organization Service")}: ${e.message || e}`, "error");
+			} finally {
+				this.organizationServiceModal.isWaiting = false;
+			}
 		},
 	},
 };

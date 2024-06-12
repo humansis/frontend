@@ -150,6 +150,7 @@
 import ImportService from "@/services/ImportService";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import Loading from "@/components/Loading";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
@@ -324,25 +325,36 @@ export default {
 			this.duplicities = value;
 		},
 
-		onChangeBulkDuplicitiesStatus(status) {
-			const { importId } = this.$route.params;
-			this.resolversAllLoading = true;
-			this.allFromSolved = false;
+		async onChangeBulkDuplicitiesStatus(duplicitiesStatus) {
+			try {
+				this.resolversAllLoading = true;
+				this.allFromSolved = false;
 
-			ImportService.changeBulkDuplicitiesStatus(importId, { status })
-				.then((response) => {
-					if (response.status === 202) {
-						this.resolversAllActive = status;
+				const { importId } = this.$route.params;
 
-						if (this.duplicitiesContentOpened) {
-							this.$refs.duplicityResolver.fetchData();
-						}
-						Notification(this.$t("Duplicities were resolved"), "success");
-					}
-				}).finally(() => {
-					this.resolversAllLoading = false;
-					this.$emit("updated");
+				const {
+					status,
+					message,
+				} = await ImportService.changeBulkDuplicitiesStatus({
+					filter: { status: duplicitiesStatus },
+					importId,
 				});
+
+				checkResponseStatus(status, message, 202);
+
+				this.resolversAllActive = duplicitiesStatus;
+
+				if (this.duplicitiesContentOpened) {
+					await this.$refs.duplicityResolver.fetchData();
+				}
+
+				Notification(this.$t("Duplicities were resolved"), "success");
+			} catch (e) {
+				Notification(`${this.$t("Change Duplicities")}: ${e.message || e}`, "error");
+			} finally {
+				this.resolversAllLoading = false;
+				this.$emit("updated");
+			}
 		},
 
 		onResolveDuplicities() {

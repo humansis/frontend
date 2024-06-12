@@ -57,6 +57,7 @@ import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { TABLE } from "@/consts";
 
@@ -101,20 +102,28 @@ export default {
 			try {
 				this.isLoadingList = true;
 
-				const { data: { data, totalCount } } = await ProductService.getListOfCategories(
-					this.table.currentPage,
-					this.perPage,
-					this.table.sortColumn !== ""
-						? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-						: "",
-					this.table.searchPhrase,
-				);
+				const sort = this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await ProductService.getListOfCategories({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					sort,
+				});
 
 				this.table.data = [];
+
+				checkResponseStatus(status, message);
+
 				this.table.total = totalCount;
 				this.prepareDataForTable(data);
 			} catch (e) {
-				Notification(`${this.$t("Categories")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Categories")}: ${e.message || e}`, "error");
 			} finally {
 				this.isLoadingList = false;
 			}

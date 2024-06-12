@@ -140,6 +140,7 @@ import Members from "@/components/Beneficiaries/Household/Members";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 
@@ -381,33 +382,46 @@ export default {
 		},
 
 		async updateHousehold(id, householdBody) {
-			this.saveButtonLoading = true;
+			try {
+				this.saveButtonLoading = true;
 
-			await BeneficiariesService.updateHousehold(id, householdBody).then((response) => {
-				if (response.status === 200) {
-					Notification(this.$t("Household Successfully Updated"), "success");
-					this.$router.push({ name: "Households" });
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Household")} ${e.message || e}`, "error");
-			});
+				const {
+					status,
+					message,
+				} = await BeneficiariesService.updateHousehold({
+					id,
+					body: householdBody,
+				});
 
-			this.saveButtonLoading = false;
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Household Successfully Updated"), "success");
+				this.$router.push({ name: "Households" });
+			} catch (e) {
+				Notification(`${this.$t("Household")}: ${e.message || e}`, "error");
+			} finally {
+				this.saveButtonLoading = false;
+			}
 		},
 
 		async createHousehold(householdBody) {
-			this.saveButtonLoading = true;
+			try {
+				this.saveButtonLoading = true;
 
-			await BeneficiariesService.createHousehold(householdBody).then((response) => {
-				if (response.status === 200) {
-					Notification(this.$t("Household Successfully Created"), "success");
-					this.$router.push({ name: "Households" });
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Household")} ${e.message || e}`, "error");
-			});
+				const {
+					status,
+					message,
+				} = await BeneficiariesService.createHousehold(householdBody);
 
-			this.saveButtonLoading = false;
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Household Successfully Created"), "success");
+				await this.$router.push({ name: "Households" });
+			} catch (e) {
+				Notification(`${this.$t("Household")}: ${e.message || e}`, "error");
+			} finally {
+				this.saveButtonLoading = false;
+			}
 		},
 
 		prepareSummaryMembers(members) {

@@ -1,38 +1,22 @@
-import { download, fetcher, idsToUri } from "@/utils/fetcher";
+import { download, fetcher } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import CryptoJS from "crypto-js";
 
 export default {
-	async getListOfUsers(
-		page,
-		size,
-		sort,
-		search = null,
-		ids = null,
-		param = null,
-		showVendors = true,
-	) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const idsText = ids ? idsToUri(ids, param) : "";
-		const showVendorsText = `&filter[showVendors]=${showVendors}`;
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `users?${pageText + sizeText + sortText + fulltext + idsText + showVendorsText}`,
+	getListOfUsers({ page, size, sort, search, ids, idsParam, filters }) {
+		return fetcher({
+			uri: `users${queryBuilder({ page, size, sort, search, ids, idsParam, filters })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async getListOfUsersProjects(userId) {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfUsersProjects(userId) {
+		return fetcher({
 			uri: `users/${userId}/projects`,
 		});
-		return { data, totalCount };
 	},
 
-	async createUser(body) {
+	createUser(body) {
 		return this.initializeUser(body.username)
 			.then(({ data: { salt, userId }, status, message }) => {
 				const userBody = body;
@@ -45,31 +29,30 @@ export default {
 					throw new Error(message);
 				}
 
-				return fetcher({ uri: `users/${userId}`, method: "PUT", body: userBody });
+				return fetcher({
+					uri: `users/${userId}`,
+					method: "PUT",
+					body: userBody,
+				});
 			})
 			.catch((e) => {
-				Notification(`Initialize User ${e.message || e}`, "error");
+				Notification(`${this.$t("Initialize User")}: ${e.message || e}`, "error");
 			});
 	},
 
-	async changeUsersAttribute(userId, attribute, value) {
-		const { data, status } = await fetcher({
-			uri: `users/${userId}`,
-			method: "PATCH",
-			body: {
-				[attribute]: value,
-			},
+	initializeUser(username) {
+		return fetcher({
+			uri: "users/initialize",
+			method: "POST",
+			body: { username },
 		});
-		return { data, status };
 	},
 
-	async initializeUser(username) {
-		return fetcher({ uri: "users/initialize", method: "POST", body: { username } });
-	},
-
-	async requestSalt(username) {
-		const { data, status } = await fetcher({ uri: `users/salt/${username}`, method: "GET" });
-		return { data, status };
+	requestSalt(username) {
+		return fetcher({
+			uri: `users/salt/${username}`,
+			method: "GET",
+		});
 	},
 
 	saltPassword(salt, password) {
@@ -83,48 +66,51 @@ export default {
 		return CryptoJS.enc.Base64.stringify(digest);
 	},
 
-	async getDetailOfUser(id) {
-		const { data, status } = await fetcher({
+	getDetailOfUser(id) {
+		return fetcher({
 			uri: `users/${id}`,
 		});
-		return { data, status };
 	},
 
-	async updateUser(id, body) {
+	updateUser({ id, body }) {
 		return this.requestSalt(body.username)
-			.then(async ({ data: { salt } }) => {
+			.then(({ data: { salt } }) => {
 				const userBody = body;
+
 				userBody.password = userBody.password
 					? this.saltPassword(salt, userBody.password)
 					: null;
-				const { data, status } = await fetcher({
-					uri: `users/${id}`, method: "PUT", body: userBody,
+
+				return fetcher({
+					uri: `users/${id}`,
+					method: "PUT",
+					body: userBody,
 				});
-				return { data, status };
 			})
 			.catch((e) => {
-				Notification(`Update User ${e.message || e}`, "error");
+				Notification(`${this.$t("Update User")}: ${e.message || e}`, "error");
 			});
 	},
 
-	async deleteUser(id) {
-		const { data, status } = await fetcher({
-			uri: `users/${id}`, method: "DELETE",
+	deleteUser(id) {
+		return fetcher({
+			uri: `users/${id}`,
+			method: "DELETE",
 		});
-		return { data, status };
 	},
 
-	async exportUsers(format) {
-		const formatText = format ? `type=${format}` : "";
-
-		return download({ uri: `users/exports?${formatText}` });
+	exportUsers(format) {
+		return download({
+			uri: `users/exports${queryBuilder({ format })}`,
+		});
 	},
 
-	async patchUser(id, body) {
-		const { data, status } = await fetcher({
-			uri: `users/${id}`, method: "PATCH", body,
+	patchUser({ id, body }) {
+		return fetcher({
+			uri: `users/${id}`,
+			method: "PATCH",
+			body,
 		});
-		return { data, status };
 	},
 
 };

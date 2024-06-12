@@ -90,6 +90,7 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 
@@ -283,57 +284,103 @@ export default {
 		},
 
 		async fetchProvinces() {
-			this.provincesLoading = true;
-			await LocationsService.getListOfAdm1()
-				.then((result) => { this.options.provinces = result.data; })
-				.catch((e) => {
-					Notification(`${this.$t("Adm1")} ${e.message || e}`, "error");
-				});
-			this.provincesLoading = false;
+			try {
+				this.provincesLoading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getListOfAdm1();
+
+				checkResponseStatus(status, message);
+
+				this.options.provinces = data;
+			} catch (e) {
+				Notification(`${this.$t("Adm1")}: ${e.message || e}`, "error");
+			} finally {
+				this.provincesLoading = false;
+			}
 		},
 
 		async fetchDistricts(adm1Id) {
-			this.districtsLoading = true;
-			await LocationsService.getListOfAdm2(adm1Id)
-				.then((result) => { this.options.districts = result.data; })
-				.catch((e) => {
-					Notification(`${this.$t("Adm2")} ${e.message || e}`, "error");
-				});
-			this.districtsLoading = false;
+			try {
+				this.districtsLoading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getListOfAdm2(adm1Id);
+
+				checkResponseStatus(status, message);
+
+				this.options.districts = data;
+			} catch (e) {
+				Notification(`${this.$t("Adm2")}: ${e.message || e}`, "error");
+			} finally {
+				this.districtsLoading = false;
+			}
 		},
 
 		async fetchCommunes(adm2Id) {
-			this.communesLoading = true;
-			await LocationsService.getListOfAdm3(adm2Id)
-				.then((result) => { this.options.communes = result.data; })
-				.catch((e) => {
-					Notification(`${this.$t("Adm3")} ${e.message || e}`, "error");
-				});
-			this.communesLoading = false;
+			try {
+				this.communesLoading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getListOfAdm3(adm2Id);
+
+				checkResponseStatus(status, message);
+
+				this.options.communes = data;
+			} catch (e) {
+				Notification(`${this.$t("Adm3")}: ${e.message || e}`, "error");
+			} finally {
+				this.communesLoading = false;
+			}
 		},
 
 		async fetchVillages(adm3Id) {
-			this.villagesLoading = true;
-			await LocationsService.getListOfAdm4(adm3Id)
-				.then((result) => { this.options.villages = result.data; })
-				.catch((e) => {
-					Notification(`${this.$t("Adm4")} ${e.message || e}`, "error");
-				});
-			this.villagesLoading = false;
+			try {
+				this.villagesLoading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getListOfAdm4(adm3Id);
+
+				checkResponseStatus(status, message);
+
+				this.options.villages = data;
+			} catch (e) {
+				Notification(`${this.$t("Adm4")}: ${e.message || e}`, "error");
+			} finally {
+				this.villagesLoading = false;
+			}
 		},
 
 		async fetchCamps(id) {
-			await AddressService.getCamp(id)
-				.then((data) => {
-					this.formModel.adm1Id = data.adm1Id;
-					this.formModel.adm2Id = data.adm2Id;
-					this.formModel.adm3Id = data.adm3Id;
-					this.formModel.adm4Id = data.adm4Id;
-					this.formModel.locationId = data.locationId;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Camp")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await AddressService.getCamp(id);
+
+				checkResponseStatus(status, message);
+
+				this.formModel.adm1Id = data.adm1Id;
+				this.formModel.adm2Id = data.adm2Id;
+				this.formModel.adm3Id = data.adm3Id;
+				this.formModel.adm4Id = data.adm4Id;
+				this.formModel.locationId = data.locationId;
+			} catch (e) {
+				Notification(`${this.$t("Camp")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async mapLocations() {

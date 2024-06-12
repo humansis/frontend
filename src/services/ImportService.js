@@ -1,131 +1,98 @@
-import { download, fetcher, filtersToUri, idsToUri, upload } from "@/utils/fetcher";
+import { download, fetcher, upload } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	async getListOfImports(page, size, sort, search = null, filters = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const filtersUri = filters ? filtersToUri(filters) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `imports?${pageText + sizeText + sortText + fulltext + filtersUri}`,
+	getListOfImports({ page, size, sort, search, filters }) {
+		return fetcher({
+			uri: `imports${queryBuilder({ page, size, sort, search, filters })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async createImport(body) {
-		const { data, status } = await fetcher(
-			{ uri: "imports", method: "POST", body,
+	createImport(body) {
+		return fetcher(
+			{
+				uri: "imports",
+				method: "POST",
+				body,
 			},
 		);
-		return { data, status };
 	},
 
-	async getDetailOfImport(importId) {
-		const { data, status } = await fetcher({
+	getDetailOfImport(importId) {
+		return fetcher({
 			uri: `imports/${importId}`,
 		});
-		return { data, status };
 	},
 
-	async changeImportState(importId, body) {
-		const { data, status, message } = await fetcher({
+	changeImportState({ importId, body }) {
+		return fetcher({
 			uri: `imports/${importId}`,
 			method: "PATCH",
 			body,
 		});
-		return { data, status, message };
 	},
 
-	async getFilesInImport(importId) {
-		const { data, status } = await fetcher({
+	getFilesInImport(importId) {
+		return fetcher({
 			uri: `imports/${importId}/files`,
 		});
-		return { data, status };
 	},
 
-	async uploadFilesIntoImport(importId, files) {
+	uploadFilesIntoImport({ importId, files }) {
 		const formData = new FormData();
 
 		files.forEach((file) => {
 			formData.append(file.name, file);
 		});
 
-		const { data, status, message } = await upload({
+		return upload({
 			uri: `imports/${importId}/files`,
 			method: "POST",
 			body: formData,
 		});
-		return { data, status, message };
 	},
 
-	async removeFilesFromImport(fileId) {
-		const { data, status } = await fetcher({
-			uri: `imports/files/${fileId}`,
-			method: "DELETE",
+	getDuplicitiesInImport({ importId, page, size, filter }) {
+		return fetcher({
+			uri: `imports/${importId}/duplicities${queryBuilder({ page, size, filter })}`,
 		});
-		return { data, status };
 	},
 
-	async getDuplicitiesInImport(importId, page, size, filter) {
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const filtersUri = filter ? filtersToUri(filter) : "";
-
-		const { data, status } = await fetcher({
-			uri: `imports/${importId}/duplicities?${pageText + sizeText + filtersUri}`,
-		});
-		return { data, status };
-	},
-
-	async changeBulkDuplicitiesStatus(importId, body) {
-		const { data, status } = await fetcher({
+	changeBulkDuplicitiesStatus({ importId, body }) {
+		return fetcher({
 			uri: `imports/${importId}/duplicities`,
 			method: "PATCH",
 			body,
 			tryRequest: true,
 		});
-
-		return { data, status };
 	},
 
-	async getStatisticsInImport(importId) {
-		const { data, status } = await fetcher({
+	getStatisticsInImport(importId) {
+		return fetcher({
 			uri: `imports/${importId}/statistics`,
 		});
-		return { data, status };
 	},
 
-	async getNotImportedRowsInImport(importId) {
-		const { data, status } = await fetcher({
+	getNotImportedRowsInImport(importId) {
+		return fetcher({
 			uri: `imports/${importId}/fails`,
 		});
-		return { data, status };
 	},
 
-	async downloadFileWithInvalidEntriesFromImport(id) {
-		return download({ uri: `imports/invalid-files/${id}` });
+	downloadFileWithInvalidEntriesFromImport(id) {
+		return download({
+			uri: `imports/invalid-files/${id}`,
+		});
 	},
 
-	async getFilesWithInvalidEntriesFromImport(importId) {
-		const { data } = await fetcher({
+	getFilesWithInvalidEntriesFromImport(importId) {
+		return fetcher({
 			uri: `imports/${importId}/invalid-files`,
 		});
-		return { data };
 	},
 
-	async getImportItemsDetail(importId, queueIds) {
-		const idsText = queueIds.length ? idsToUri(queueIds) : "";
-
-		const { data, status } = await fetcher({
-			uri: `imports/${importId}/queue?${idsText}`,
-		});
-		return { data, status };
-	},
-
-	async resolveImportItemDuplicity(queueId, state, acceptedDuplicityId) {
-		const { status } = await fetcher({
+	resolveImportItemDuplicity({ queueId, state, acceptedDuplicityId }) {
+		return fetcher({
 			uri: `imports/queue/${queueId}`,
 			method: "PATCH",
 			body: {
@@ -134,13 +101,11 @@ export default {
 			},
 			tryRequest: true,
 		});
-
-		return { status };
 	},
 
-	async exportTemplate(format) {
-		const formatText = format ? `type=${format}` : "";
-
-		return download({ uri: `imports/template?${formatText}` });
+	exportTemplate(format) {
+		return download({
+			uri: `imports/template${queryBuilder({ format })}`,
+		});
 	},
 };

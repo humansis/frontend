@@ -2,6 +2,7 @@ import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import ProjectService from "@/services/ProjectService";
 import baseHelper from "@/mixins/baseHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -71,32 +72,62 @@ export default {
 
 		async getBeneficiaries(ids) {
 			if (!ids.length) return [];
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
-					return [];
-				});
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getBeneficiaries(ids);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getAssistances(ids) {
 			if (!ids.length) return [];
-			return AssistancesService.getAssistances(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
-					return [];
-				});
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistances(ids);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Assistances")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getProjects(ids) {
 			if (!ids.length) return [];
-			return ProjectService.getListOfProjects(null, null, null, ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-					return [];
-				});
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({ ids });
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 	},
 };

@@ -157,6 +157,7 @@ import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { PHONE, ROLE } from "@/consts";
 
@@ -279,46 +280,76 @@ export default {
 
 		async fetchProjects() {
 			if (!this.formDisabled) {
-				await ProjectService.getListOfProjects()
-					.then(({ data }) => {
-						this.options.projects = data;
+				try {
+					const {
+						data: { data },
+						status,
+						message,
+					} = await ProjectService.getListOfProjects({});
 
-						this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, data, "id");
-					}).catch((e) => {
-						Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-					});
+					checkResponseStatus(status, message);
+
+					this.options.projects = data;
+
+					this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, data, "id");
+				} catch (e) {
+					Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+				}
 			} else if (this.formModel.id) {
-				await UsersService.getListOfUsersProjects(this.formModel.id).then(({ data }) => {
+				try {
+					const {
+						data: { data },
+						status,
+						message,
+					} = await UsersService.getListOfUsersProjects(this.formModel.id);
+
+					checkResponseStatus(status, message);
+
 					this.formModel.projectIds = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-				});
+				} catch (e) {
+					Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+				}
 			}
 
 			this.projectsLoading = false;
 		},
 
 		async fetchRoles() {
-			await SystemService.getRoles()
-				.then(({ data }) => {
-					this.options.rights = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Roles")} ${e.message || e}`, "error");
-				});
-			this.formModel.rights = getArrayOfCodeListByKey(this.formModel.roles, this.options.rights, "code");
-			this.rolesLoading = false;
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await SystemService.getRoles();
+
+				checkResponseStatus(status, message);
+
+				this.options.rights = data;
+			} catch (e) {
+				Notification(`${this.$t("Roles")}: ${e.message || e}`, "error");
+			} finally {
+				this.formModel.rights = getArrayOfCodeListByKey(this.formModel.roles, this.options.rights, "code");
+				this.rolesLoading = false;
+			}
 		},
 
 		async fetchCountries() {
-			await CountriesService.getListOfCountries()
-				.then(({ data }) => {
-					this.options.countries = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Countries")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await CountriesService.getListOfCountries();
 
-			this.formModel.countries = getArrayOfCodeListByKey(this.formModel.countries, this.options.countries, "iso3");
-			this.countriesLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.countries = data;
+				this.formModel.countries = getArrayOfCodeListByKey(this.formModel.countries, this.options.countries, "iso3");
+			} catch (e) {
+				Notification(`${this.$t("Countries")}: ${e.message || e}`, "error");
+			} finally {
+				this.countriesLoading = false;
+			}
 		},
 
 		mapSelects() {

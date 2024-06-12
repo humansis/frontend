@@ -2,7 +2,7 @@ import { download, fetcher } from "@/utils/fetcher";
 import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	getListOfCustomFields(page, size, sort, search = null, filters = null) {
+	getListOfCustomFields({ page, size, sort, search, filters }) {
 		return fetcher({
 			uri: `country-specifics${queryBuilder({ page, size, sort, search, filters })}`,
 		});
@@ -24,22 +24,10 @@ export default {
 		});
 	},
 
-	getDetailOfCustomField(id) {
-		return fetcher({
-			uri: `country-specifics/${id}`,
-		});
-	},
-
 	deleteCustomField(id) {
 		return fetcher({
 			uri: `country-specifics/${id}`,
 			method: "DELETE",
-		});
-	},
-
-	getCustomFieldAnswer(id) {
-		return fetcher({
-			uri: `country-specifics/answers/${id}`,
 		});
 	},
 

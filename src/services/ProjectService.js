@@ -1,18 +1,11 @@
-import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
+import { download, fetcher } from "@/utils/fetcher";
 import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	async getListOfProjects(page, size, sort, ids, search = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects?${pageText + sizeText + sortText + fulltext + idsText}`,
+	getListOfProjects({ page, size, sort, ids, search }) {
+		return fetcher({
+			uri: `projects${queryBuilder({ page, size, sort, ids, search })}`,
 		});
-		return { data, totalCount };
 	},
 
 	getShortListOfProjects(ids) {
@@ -22,31 +15,37 @@ export default {
 	},
 
 	createProject(body) {
-		return fetcher({ uri: "projects", method: "POST", body });
+		return fetcher({
+			uri: "projects",
+			method: "POST",
+			body,
+		});
 	},
 
-	async getDetailOfProject(id) {
-		const { data } = await fetcher({
+	getDetailOfProject(id) {
+		return fetcher({
 			uri: `projects/${id}`,
 		});
-		return { data };
 	},
 
-	updateProject(id, body) {
+	updateProject({ id, body }) {
 		return fetcher({
-			uri: `projects/${id}`, method: "PUT", body,
+			uri: `projects/${id}`,
+			method: "PUT",
+			body,
 		});
 	},
 
-	async deleteProject(id) {
-		const { data, status } = await fetcher({ uri: `projects/${id}`, method: "DELETE" });
-		return { data, status };
+	deleteProject(id) {
+		return fetcher({
+			uri: `projects/${id}`,
+			method: "DELETE",
+		});
 	},
 
-	async exportProjects(format, filters) {
-		const formatText = format ? `type=${format}` : "";
-		const filtersUri = filters ? filtersToUri(filters) : "";
-
-		return download({ uri: `projects/exports?${formatText + filtersUri}` });
+	exportProjects({ format, filters }) {
+		return download({
+			uri: `projects/exports${queryBuilder({ format, filters })}`,
+		});
 	},
 };
