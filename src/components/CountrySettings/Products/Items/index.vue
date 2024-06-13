@@ -261,7 +261,7 @@ export default {
 					message,
 				} = await ProductService.updateProduct({
 					id,
-					productBody,
+					body: productBody,
 				});
 
 				checkResponseStatus(status, message);
