@@ -114,7 +114,7 @@ export default {
 			},
 		],
 		remoteDistributionAllowed: false,
-		allowedProductCategoryTypes: ["Food"],
+		allowedProductCategoryTypes: [],
 		cashbackLimit: null,
 	},
 	DEFAULT_DISPLAYED_FIELDS: {
