@@ -1,9 +1,10 @@
 <template>
-	<span>
+	<span :data-cy="identifierBuilder()">
 		<v-tooltip
 			v-for="(icon, key) in filteredIcons"
 			:key="key"
 			:text="$t(icon.value || '')"
+			:data-cy="identifierBuilder('tooltip')"
 			location="top"
 			color="red"
 			content-class="tooltip-top"
@@ -22,14 +23,22 @@
 
 <script>
 import { mapState } from "vuex";
+import identifierBuilder from "@/mixins/identifierBuilder";
 
 export default {
 	name: "SvgIcon",
+
+	mixins: [identifierBuilder],
 
 	props: {
 		items: {
 			type: Array,
 			required: true,
+		},
+
+		dataCy: {
+			type: String,
+			default: "",
 		},
 	},
 

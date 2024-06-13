@@ -18,6 +18,7 @@
 	<div class="d-flex justify-end">
 		<v-btn
 			v-if="userCan.addCustomField"
+			:data-cy="identifierBuilder('custom-fields-new-button')"
 			class="text-none ml-0 mb-3"
 			color="primary"
 			prepend-icon="plus"
@@ -41,6 +42,7 @@ import CustomFieldsService from "@/services/CustomFieldsService";
 import CustomFieldsForm from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsForm";
 import CustomFieldsList from "@/components/CountrySettings/CountrySpecific/CustomFields/CustomFieldsList";
 import Modal from "@/components/Inputs/Modal";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -55,7 +57,7 @@ export default {
 		CustomFieldsForm,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, identifierBuilder],
 
 	data() {
 		return {

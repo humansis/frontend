@@ -54,6 +54,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
+				data-cy="items-export"
 				@export="onExportProducts"
 			/>
 		</template>
@@ -96,7 +97,7 @@ export default {
 		return {
 			TABLE,
 			isLoadingList: false,
-			dataCy: "products-table",
+			dataCy: "items-table",
 			exportControl: {
 				loading: false,
 				location: "products",

@@ -55,6 +55,7 @@
 			:custom-key-sort="frontendSorting"
 			:cell-props="getCellProps"
 			:items-per-page-options="TABLE.PER_PAGE_OPTIONS"
+			:data-cy="identifierBuilder()"
 			@[rowClickEvent]="onHandleRowClick"
 		>
 			<template v-slot:loader>
@@ -91,6 +92,7 @@
 						</v-chip>
 
 						<v-chip
+							:data-cy="identifierBuilder('total-count-data')"
 							label=""
 							color="grey-darken-1"
 							class="rounded-e-lg rounded-bs-0 rounded-ts-0"
@@ -129,6 +131,7 @@
 					<v-col class="go-page-col">
 						<DataInput
 							v-model.number="page"
+							:data-cy="prepareComponentIdentifier()"
 							type="number"
 							min="0"
 							label="Go to page"
@@ -158,7 +161,13 @@
 
 				<template v-else>
 					<slot :name="`custom-${column.key}`" :row="item" :index="index">
-						<ColumnField :column="column" :cell-data="item[column.key]" />
+						<ColumnField
+							:column="column"
+							:cell-data="item[column.key]"
+							:column-key="column.key"
+							:dataIndex="index"
+							:table-identifier="dataCy"
+						/>
 					</slot>
 				</template>
 			</template>
@@ -270,6 +279,11 @@ export default {
 			default: "elevated",
 		},
 
+		dataCy: {
+			type: String,
+			default: "table",
+		},
+
 		headers: {
 			type: Object,
 			required: true,
@@ -292,7 +306,6 @@ export default {
 			rowClickEvent: this.isRowClickDisabled ? null : "click:row",
 			page: this.currentPage,
 			perPage: this.$attrs["items-per-page"],
-			dataCy: "table",
 		};
 	},
 

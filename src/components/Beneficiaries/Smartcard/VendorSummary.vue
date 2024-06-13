@@ -1,5 +1,5 @@
 <template>
-	<v-card-title class="text-h6 font-weight-bold">
+	<v-card-title :data-cy="identifierBuilder(`${header}-text`)" class="text-h6 font-weight-bold">
 		{{ $t(header) }}
 
 		<v-divider />
@@ -9,12 +9,18 @@
 		<template v-if="!history">
 			<div class="d-flex justify-space-between">
 				<span>
-					<span class="text-subtitle-2 font-weight-bold">{{ $t("Total No. Transactions") }}: </span>
+					<span
+						class="text-subtitle-2 font-weight-bold"
+						:data-cy="identifierBuilder(`total-no-transactions-text`)"
+					>
+						{{ $t("Total No. Transactions") }}:
+					</span>
 					{{ totalNumberOfTransactions }}
 				</span>
 
 				<v-btn
 					:disabled="isProjectsLoading"
+					:data-cy="identifierBuilder(`history-button`)"
 					variant="outlined"
 					class="text-none text-right"
 					@click="onShowHistory"
@@ -86,6 +92,7 @@
 
 		<v-btn
 			v-if="history"
+			:data-cy="identifierBuilder(`back-button`)"
 			class="text-none"
 			color="blue-grey-lighten-4"
 			variant="elevated"
@@ -95,6 +102,7 @@
 		</v-btn>
 
 		<v-btn
+			:data-cy="identifierBuilder(`close-button`)"
 			class="text-none ml-2"
 			color="blue-grey-lighten-4"
 			variant="elevated"
@@ -134,6 +142,7 @@ import VendorService from "@/services/VendorService";
 import RedeemedBatches from "@/components/Beneficiaries/Smartcard/RedeemedBatches";
 import RedemptionSummary from "@/components/Beneficiaries/Smartcard/RedemptionSummary";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
@@ -146,12 +155,17 @@ export default {
 		RedemptionSummary,
 	},
 
-	mixins: [grid],
+	mixins: [grid, identifierBuilder],
 
 	props: {
 		vendor: {
 			type: Object,
 			required: true,
+		},
+
+		dataCy: {
+			type: String,
+			default: "modal",
 		},
 	},
 

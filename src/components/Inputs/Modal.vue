@@ -3,6 +3,7 @@
 		v-model="$attrs.modelValue"
 		width="960"
 		scrollable
+		data-cy="modal-card"
 	>
 		<v-card>
 			<template v-if="!customHeader">
