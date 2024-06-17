@@ -1,7 +1,10 @@
 import { download, fetcher } from "@/utils/fetcher";
 import { queryBuilder } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
+import i18n from "@/plugins/i18n";
 import CryptoJS from "crypto-js";
+
+const { global: { t } } = i18n;
 
 export default {
 	getListOfUsers({ page, size, sort, search, ids, idsParam, filters }) {
@@ -36,7 +39,7 @@ export default {
 				});
 			})
 			.catch((e) => {
-				Notification(`${this.$t("Initialize User")}: ${e.message || e}`, "error");
+				throw e;
 			});
 	},
 
@@ -88,7 +91,7 @@ export default {
 				});
 			})
 			.catch((e) => {
-				Notification(`${this.$t("Update User")}: ${e.message || e}`, "error");
+				Notification(`${t("Update User")}: ${e.message || e}`, "error");
 			});
 	},
 
