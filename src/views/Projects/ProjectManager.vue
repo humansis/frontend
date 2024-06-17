@@ -406,6 +406,7 @@ export default {
 					isDataLoading: this.sectorsLoading,
 					validations: {
 						required: true,
+						integer: true,
 						minValue: 1,
 						maxValue: 100000000000,
 					},
@@ -427,6 +428,7 @@ export default {
 					type: GENERAL.EDITABLE_TABLE.COLUMN_TYPE.NUMBER_INPUT,
 					isDataLoading: this.sectorsLoading,
 					validations: {
+						integer: true,
 						minValue: 1,
 						maxValue: 100000000000,
 						requiredIf: "secondTargetType",

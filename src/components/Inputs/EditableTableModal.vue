@@ -117,7 +117,7 @@
 </template>
 
 <script>
-import { maxValue, minValue, requiredIf } from "@vuelidate/validators";
+import { integer, maxValue, minValue, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DataTextarea from "@/components/Inputs/DataTextarea";
@@ -217,8 +217,10 @@ export default {
 					),
 					...(validations?.minValue && { minValue: minValue(validations.minValue) }),
 					...(validations?.maxValue && { maxValue: maxValue(validations.maxValue) }),
+					...(validations?.integer && { integer }),
 				};
 			});
+
 			return validationsRules;
 		},
 
