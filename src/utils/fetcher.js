@@ -9,7 +9,9 @@ async function getErrorsFromResponse(data) {
 	let debugs = "";
 
 	if (data.errors && data.errors.length) {
-		errors = data.errors.map((error) => error.message).join(" ");
+		const errorMessages = data.errors.map((error) => error.message);
+		const uniqueErrorMessages = Array.from(new Set(errorMessages));
+		errors = uniqueErrorMessages.join(" ");
 	} else if (data.errors?.message) {
 		errors = data.errors.message;
 	} else {
