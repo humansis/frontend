@@ -1,6 +1,6 @@
 <template>
 	<div v-if="projectSummary" class="d-flex justify-center flex-column mx-auto summary-container">
-		<h1 class="text-center">{{ projectSummary.name }}</h1>
+		<h1 class="text-center text-break">{{ projectSummary.name }}</h1>
 
 		<v-row
 			class="mt-2 mb-6"
@@ -148,6 +148,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.project-name {
+	word-break: break-word;
+}
+
 .summary-container {
 	max-width: 90rem;
 
