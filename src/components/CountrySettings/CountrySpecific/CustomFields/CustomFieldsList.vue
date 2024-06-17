@@ -139,6 +139,8 @@ export default {
 					sort,
 				});
 
+				this.table.data = [];
+
 				checkResponseStatus(status, message);
 
 				if (totalCount > 0) {
