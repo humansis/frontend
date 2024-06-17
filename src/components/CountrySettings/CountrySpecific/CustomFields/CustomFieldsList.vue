@@ -10,6 +10,7 @@
 		class="custom-fields-table"
 		reset-sort-button
 		is-search-visible
+		is-frontend-sort-disabled
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
