@@ -409,20 +409,20 @@ export default {
 		async fetchImportNotImportedRows() {
 			const { importId } = this.$route.params;
 
-			if (importId) {
-				try {
-					const {
-						data: { data },
-						status,
-						message,
-					} = await ImportService.getNotImportedRowsInImport(importId);
+			if (!importId) return;
 
-					checkResponseStatus(status, message);
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ImportService.getNotImportedRowsInImport(importId);
 
-					this.notImportedRows = data;
-				} catch (e) {
-					Notification(`${this.$t("Not imported rows")}: ${e.message || e}`, "error");
-				}
+				checkResponseStatus(status, message);
+
+				this.notImportedRows = data;
+			} catch (e) {
+				Notification(`${this.$t("Not imported rows")}: ${e.message || e}`, "error");
 			}
 		},
 

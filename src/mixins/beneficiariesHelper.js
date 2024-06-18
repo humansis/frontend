@@ -71,19 +71,15 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await AssistancesService
-					.getBookletsForAssistance(
-						bookletIds,
-					);
+				} = await AssistancesService.getBookletsForAssistance(bookletIds);
 
 				checkResponseStatus(status, message);
 
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Booklets")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getBookletStatuses() {
@@ -99,23 +95,26 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Booklet Statuses")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async onAssignBookletToBeneficiary(booklet) {
 			this.assignVoucherModal.isWaiting = true;
+
 			let target = "";
 
 			switch (this.assistance.target) {
 				case ASSISTANCE.TARGET.INSTITUTION:
 					target = "institutions";
+
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
 				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					target = "beneficiaries";
+
+					break;
 			}
 
 			try {
@@ -166,20 +165,18 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await AssistancesService
-					.getReliefPackagesForAssistance(
-						this.$route.params.assistanceId,
-						reliefPackageIds,
-					);
+				} = await AssistancesService.getReliefPackagesForAssistance(
+					this.$route.params.assistanceId,
+					reliefPackageIds,
+				);
 
 				checkResponseStatus(status, message);
 
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Relief Packages")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		preparePhoneForTable(phones) {
@@ -198,6 +195,7 @@ export default {
 					idNumbers += this.prepareColumnFormatForNationalIds(item.idNumber, item.idType);
 				});
 			}
+
 			return idNumbers;
 		},
 
@@ -227,22 +225,28 @@ export default {
 			switch (this.assistance.target) {
 				case ASSISTANCE.TARGET.INSTITUTION:
 					this.showInstitutionDetail(beneficiary);
+
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
 				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					this.showBeneficiaryDetail(beneficiary);
+
+					break;
 			}
 		},
 
 		showEditModal({ id }) {
 			switch (this.assistance.target) {
 				case ASSISTANCE.TARGET.INSTITUTION:
+
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
 				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					this.showBeneficiaryEdit(id);
+
+					break;
 			}
 		},
 
@@ -291,7 +295,7 @@ export default {
 					Notification(`${this.$t("Institution")}: ${e.message || e}`, "error");
 				}
 			} catch (e) {
-				Notification(`${this.$t("Institution detail")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Institution detail")}: ${e.message || e}`, "error");
 			} finally {
 				this.institutionModal.isWaiting = false;
 			}
@@ -299,10 +303,12 @@ export default {
 
 		showBeneficiaryEdit(id) {
 			const beneficiary = this.table.data.find((item) => item.id === id);
+
 			this.beneficiaryModel = {
 				...beneficiary,
 				dateOfBirth: new Date(beneficiary.dateOfBirth),
 			};
+
 			this.beneficiaryModal = {
 				isOpened: true,
 				isEditing: true,
@@ -337,7 +343,9 @@ export default {
 		async onRandomSample() {
 			const size = Math.round(this.table.total * (this.randomSampleSize / 100));
 			const randomPage = this.rnd(1, this.table.total / size);
+
 			this.table.customPerPage = size;
+
 			await this.fetchData(randomPage, size);
 		},
 
@@ -350,11 +358,13 @@ export default {
 				isOpened: false,
 				isEditing: false,
 			};
+
 			await this.reloadBeneficiariesList();
 		},
 
 		async onPageChange(currentPage) {
 			this.table.currentPage = currentPage;
+
 			await this.reloadBeneficiariesList();
 		},
 
@@ -372,6 +382,7 @@ export default {
 			}
 
 			this.table.sortReset = false;
+
 			await this.reloadBeneficiariesList();
 		},
 
@@ -392,6 +403,7 @@ export default {
 
 		async onResetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
 			this.table.sortReset = true;
+
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = sortColumn;
 				this.table.sortDirection = sortDirection;

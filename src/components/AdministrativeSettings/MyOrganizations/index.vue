@@ -174,20 +174,20 @@ export default {
 		},
 
 		async uploadImage(id, image) {
-			if (image) {
-				try {
-					const {
-						status,
-						message,
-					} = await MyOrganizationsService.uploadImage({
-						id,
-						image,
-					});
+			if (!image) return;
 
-					checkResponseStatus(status, message);
-				} catch (e) {
-					Notification(`${this.$t("Image upload")}: ${e.message || e}`, "error");
-				}
+			try {
+				const {
+					status,
+					message,
+				} = await MyOrganizationsService.uploadImage({
+					id,
+					image,
+				});
+
+				checkResponseStatus(status, message);
+			} catch (e) {
+				Notification(`${this.$t("Image upload")}: ${e.message || e}`, "error");
 			}
 		},
 

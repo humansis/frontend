@@ -547,34 +547,34 @@ export default {
 		},
 
 		async onStartIntegrityCheckAgain() {
+			if (this.dropFiles.length !== 1) return;
+
 			const { importId } = this.$route.params;
 
-			if (this.dropFiles.length === 1) {
-				try {
-					this.startIntegrityCheckAgainLoading = true;
+			try {
+				this.startIntegrityCheckAgainLoading = true;
 
-					const {
-						status,
-						message,
-					} = await ImportService.uploadFilesIntoImport({
-						files: this.dropFiles,
-						importId,
-					});
+				const {
+					status,
+					message,
+				} = await ImportService.uploadFilesIntoImport({
+					files: this.dropFiles,
+					importId,
+				});
 
-					checkResponseStatus(status, message);
+				checkResponseStatus(status, message);
 
-					Notification(this.$t("Uploaded Successfully"), "success");
+				Notification(this.$t("Uploaded Successfully"), "success");
 
-					this.filesUpload = false;
-					this.invalidFiles = [];
-				} catch (e) {
-					Notification(`${this.$t("Upload")}: ${e.message}`, "error");
-				} finally {
-					this.startIntegrityCheckAgainLoading = false;
-					setTimeout(() => {
-						this.getAffectedRecords();
-					}, 1500);
-				}
+				this.filesUpload = false;
+				this.invalidFiles = [];
+			} catch (e) {
+				Notification(`${this.$t("Upload")}: ${e.message}`, "error");
+			} finally {
+				this.startIntegrityCheckAgainLoading = false;
+				setTimeout(() => {
+					this.getAffectedRecords();
+				}, 1500);
 			}
 		},
 

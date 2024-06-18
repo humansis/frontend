@@ -277,22 +277,22 @@ export default {
 		},
 
 		async uploadProductImage(image) {
-			if (image) {
-				try {
-					const {
-						data: { url },
-						status,
-						message,
-					} = await ProductService.uploadProductImage(image);
+			if (!image) return null;
 
-					checkResponseStatus(status, message);
+			try {
+				const {
+					data: { url },
+					status,
+					message,
+				} = await ProductService.uploadProductImage(image);
 
-					return url;
-				} catch (e) {
-					Notification(`${this.$t("Image upload")}: ${e.message || e}`, "error");
-				}
+				checkResponseStatus(status, message);
+
+				return url;
+			} catch (e) {
+				Notification(`${this.$t("Image upload")}: ${e.message || e}`, "error");
+				return null;
 			}
-			return null;
 		},
 
 		async onRemoveProduct(id) {

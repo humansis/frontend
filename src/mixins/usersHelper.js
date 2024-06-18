@@ -17,9 +17,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Users detail")}: ${e.message || e}`, "error");
+				return null;
 			}
-
-			return null;
 		},
 	},
 };

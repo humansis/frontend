@@ -12,10 +12,7 @@
 			is-editing
 		/>
 
-		<v-card
-			v-else
-			class="text-center pa-16"
-		>
+		<v-card v-else class="text-center pa-16">
 			<v-progress-circular
 				:size="128"
 				model-value="20"
@@ -60,6 +57,7 @@ export default {
 				} = await BeneficiariesService.getDetailOfHousehold(id);
 
 				checkResponseStatus(status, message);
+
 				this.detailOfHousehold = data;
 			} catch (e) {
 				Notification(`${this.$t("Household")}: ${e.message || e}`, "error");
