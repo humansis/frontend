@@ -241,6 +241,11 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
+		isCommoditySmartCard: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -325,7 +330,9 @@ export default {
 		},
 
 		assistanceDates() {
-			if (this.dateExpiration) {
+			if (!this.isCommoditySmartCard) {
+				this.formModel.isDateOfAssistanceValid = true;
+			} else if (this.dateExpiration) {
 				this.formModel.isDateOfAssistanceValid = isDateBeforeOrEqual(
 					this.formModel.dateOfAssistance,
 					this.dateExpiration,

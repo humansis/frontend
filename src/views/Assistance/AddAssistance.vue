@@ -58,6 +58,7 @@
 					:data-before-duplicated="componentsData.dataBeforeDuplicated"
 					:date-expiration="assistanceBody.dateExpiration"
 					:validation-messages="validationMessages"
+					:is-commodity-smart-card="isCommoditySmartCard"
 					@updatedData="onFetchNewAssistanceForm"
 					@targetSelect="onTargetSelected"
 					@showComponent="onShowComponent"
@@ -114,7 +115,8 @@
 					<ActivityDetails
 						ref="activityDetails"
 						:visible="visibleActivityDetails"
-						:duplicatedData="componentsData.activityDetails"
+						:duplicated-data="componentsData.activityDetails"
+						:is-assistance-duplicated="isAssistanceDuplicated"
 						@updatedData="onFetchActivityDetails"
 					/>
 				</div>
@@ -191,6 +193,7 @@ export default {
 			isCalculatedDataLoading: false,
 			isUnValidCardModalOpen: false,
 			isCalculatedDataFetched: false,
+			isCommoditySmartCard: false,
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
@@ -748,6 +751,8 @@ export default {
 				|| !this.isAssistanceDuplicated) {
 				await this.fetchCommoditiesValue();
 			}
+
+			this.isCommoditySmartCard = commodities[0].modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
 		remoteAllowed(commodity) {

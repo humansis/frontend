@@ -172,6 +172,7 @@ export default {
 		"updatedData",
 		"beneficiariesCounted",
 		"calculatedCommodities",
+		"updateDataLoadingState",
 	],
 
 	props: {
@@ -213,6 +214,11 @@ export default {
 		calculatedBeneficiaries: {
 			type: Object,
 			default: () => {},
+		},
+
+		scoring: {
+			type: Object,
+			required: true,
 		},
 	},
 
