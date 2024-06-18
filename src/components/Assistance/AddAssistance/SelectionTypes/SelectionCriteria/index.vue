@@ -317,6 +317,7 @@ export default {
 		calculatedBeneficiaries: {
 			deep: true,
 			handler(value) {
+				this.prepareDataForBeneficiariesModal(value.groupBeneficiaries);
 				this.totalCount = value.totalCount;
 				this.countOf = value.selectedCount;
 			},

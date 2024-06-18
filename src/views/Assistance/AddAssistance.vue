@@ -384,7 +384,12 @@ export default {
 				this.isCalculatedDataLoading = true;
 
 				const {
-					data: { commodities, selectedCount, totalCount },
+					data: {
+						groupEligibleIndividuals,
+						commodities,
+						selectedCount,
+						totalCount,
+					},
 					status,
 					message,
 				} = await AssistancesService.assistancePrecalculate(this.assistanceBody);
@@ -393,6 +398,7 @@ export default {
 
 				this.calculatedCommodityValue = commodities;
 				this.calculatedBeneficiaries = {
+					groupBeneficiaries: groupEligibleIndividuals,
 					selectedCount,
 					totalCount,
 				};

@@ -232,6 +232,8 @@ import { ASSISTANCE } from "@/consts";
 export default {
 	name: "AssistanceForm",
 
+	emits: ["formSubmitted", "formClosed"],
+
 	components: {
 		DataTextarea,
 		AssistanceName,
