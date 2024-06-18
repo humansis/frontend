@@ -336,11 +336,11 @@ export default {
 					status,
 					message,
 				} = await ImportService.changeBulkDuplicitiesStatus({
-					filter: { status: duplicitiesStatus },
+					body: { status: duplicitiesStatus },
 					importId,
 				});
 
-				checkResponseStatus(status, message, 202);
+				checkResponseStatus(status, message);
 
 				this.resolversAllActive = duplicitiesStatus;
 

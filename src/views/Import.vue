@@ -538,7 +538,7 @@ export default {
 					importId,
 				});
 
-				if (status === 202) {
+				if (status === 200) {
 					if (state === IMPORT.STATUS.CANCEL) {
 						Notification(this.$t("Import Canceled"), "success");
 						this.onChangeTab(4);
@@ -561,8 +561,8 @@ export default {
 				Notification(`${this.$t("Import")}: ${e.message || e}`, type);
 			} finally {
 				this.loadingChangeStateButton = false;
-				this.onFetchImportStatistics();
-				this.fetchImportFiles();
+				await this.onFetchImportStatistics();
+				await this.fetchImportFiles();
 			}
 		},
 

@@ -477,7 +477,7 @@ export default {
 
 					this.table.data[duplicityKey].disabled = false;
 				}
-				Notification(`${this.$t("Duplicity resolve")} ${e.message || e}}`, "error");
+				Notification(`${this.$t("Duplicity resolve")} ${e.message || e}`, "error");
 			}
 
 			this.table.data = this.table.data.map((item) => ({
