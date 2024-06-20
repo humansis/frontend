@@ -148,10 +148,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.project-name {
-	word-break: break-word;
-}
-
 .summary-container {
 	max-width: 90rem;
 
