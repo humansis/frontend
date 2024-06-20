@@ -155,7 +155,7 @@ export default {
 
 		async getUserData() {
 			const { userId } = this.user;
-			const user = this.getDetailOfUser(userId);
+			const user = await this.getDetailOfUser(userId);
 
 			this.mapUser(user);
 		},
