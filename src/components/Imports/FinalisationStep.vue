@@ -317,7 +317,6 @@ export default {
 	data() {
 		return {
 			importStatistics: {},
-			importStatus: "",
 			changeStateButtonLoading: false,
 			notImportedRows: [],
 			isNotImportedRowsVisible: false,
@@ -362,20 +361,20 @@ export default {
 		},
 
 		finishedImport() {
-			if (!this.importStatus) return false;
+			if (!this.status) return false;
 
-			return this.importStatus === IMPORT.STATUS.FINISH
-				|| this.importStatus === IMPORT.STATUS.IMPORTING
-				|| this.importStatus === IMPORT.STATUS.CANCEL
-				|| this.importStatus === IMPORT.STATUS.AUTOMATICALLY_CANCELED;
+			return this.status === IMPORT.STATUS.FINISH
+				|| this.status === IMPORT.STATUS.IMPORTING
+				|| this.status === IMPORT.STATUS.CANCEL
+				|| this.status === IMPORT.STATUS.AUTOMATICALLY_CANCELED;
 		},
 
 		canCancelImport() {
-			return this.importStatus
-				&& this.importStatus !== IMPORT.STATUS.FINISH
-				&& this.importStatus !== IMPORT.STATUS.CANCEL
-				&& this.importStatus !== IMPORT.STATUS.AUTOMATICALLY_CANCELED
-				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
+			return this.status
+				&& this.status !== IMPORT.STATUS.FINISH
+				&& this.status !== IMPORT.STATUS.CANCEL
+				&& this.status !== IMPORT.STATUS.AUTOMATICALLY_CANCELED
+				&& this.status !== IMPORT.STATUS.IMPORTING;
 		},
 	},
 
@@ -386,10 +385,6 @@ export default {
 
 		loadingChangeStateButton(value) {
 			this.changeStateButtonLoading = value;
-		},
-
-		status(value) {
-			this.importStatus = value;
 		},
 	},
 

@@ -283,9 +283,9 @@ export default {
 				case IMPORT.STATUS.CANCEL:
 					return this.$t("Import was canceled.");
 				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
-					return this.activeStep === 3
-						? this.$t("Please approve and start import")
-						: this.$t("Please Go to finalization");
+					return this.activeStep === 4
+						? this.$t("Please approve and run import")
+						: this.$t("Please go to finalization");
 				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
 					return `${this.$t("Import failed:")} ${this.importFailReason}`;
 				default:
