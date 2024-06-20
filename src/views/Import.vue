@@ -67,7 +67,7 @@
 			<template v-slot:item.1>
 				<StartStep
 					:importFiles="importFiles"
-					:status="importStatus"
+					:import-status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -79,7 +79,7 @@
 			<template v-slot:item.2>
 				<IntegrityStep
 					:statistics="statistics"
-					:status="importStatus"
+					:import-status="importStatus"
 					:importFiles="importFiles"
 					:loading-change-state-button="loadingChangeStateButton"
 					:is-import-loaded="isImportLoaded"
@@ -92,7 +92,7 @@
 			<template v-slot:item.3>
 				<IdentityStep
 					:statistics="statistics"
-					:status="importStatus"
+					:import-status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -104,7 +104,7 @@
 			<template v-slot:item.4>
 				<FinalisationStep
 					:statistics="statistics"
-					:status="importStatus"
+					:import-status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"

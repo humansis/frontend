@@ -303,7 +303,7 @@ export default {
 			required: true,
 		},
 
-		status: {
+		importStatus: {
 			type: String,
 			default: "",
 		},
@@ -325,7 +325,7 @@ export default {
 
 	computed: {
 		finalisationStepActive() {
-			return this.status === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
 		totalEntries() {
@@ -361,20 +361,20 @@ export default {
 		},
 
 		finishedImport() {
-			if (!this.status) return false;
+			if (!this.importStatus) return false;
 
-			return this.status === IMPORT.STATUS.FINISH
-				|| this.status === IMPORT.STATUS.IMPORTING
-				|| this.status === IMPORT.STATUS.CANCEL
-				|| this.status === IMPORT.STATUS.AUTOMATICALLY_CANCELED;
+			return this.importStatus === IMPORT.STATUS.FINISH
+				|| this.importStatus === IMPORT.STATUS.IMPORTING
+				|| this.importStatus === IMPORT.STATUS.CANCEL
+				|| this.importStatus === IMPORT.STATUS.AUTOMATICALLY_CANCELED;
 		},
 
 		canCancelImport() {
-			return this.status
-				&& this.status !== IMPORT.STATUS.FINISH
-				&& this.status !== IMPORT.STATUS.CANCEL
-				&& this.status !== IMPORT.STATUS.AUTOMATICALLY_CANCELED
-				&& this.status !== IMPORT.STATUS.IMPORTING;
+			return this.importStatus
+				&& this.importStatus !== IMPORT.STATUS.FINISH
+				&& this.importStatus !== IMPORT.STATUS.CANCEL
+				&& this.importStatus !== IMPORT.STATUS.AUTOMATICALLY_CANCELED
+				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
 		},
 	},
 
