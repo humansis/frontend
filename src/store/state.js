@@ -1,3 +1,4 @@
+import { removeCookie } from "@/utils/cookie";
 import modalityTypeIcons from "@/assets/icons/svg/modalityTypes.json";
 import productCategoryIcons from "@/assets/icons/svg/productCategory.json";
 import sectorIcons from "@/assets/icons/svg/sectors.json";
@@ -6,9 +7,12 @@ import gitInfo from "@/gitInfo";
 
 function setPackageVersion() {
 	const oldAppVersion = JSON.parse(localStorage.getItem("vuex"))?.appVersion;
+
 	if (gitInfo.appVersion !== oldAppVersion) {
 		localStorage.removeItem("vuex");
+		removeCookie("token");
 	}
+
 	return gitInfo.appVersion;
 }
 
