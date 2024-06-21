@@ -303,7 +303,7 @@ export default {
 			required: true,
 		},
 
-		status: {
+		importStatus: {
 			type: String,
 			default: "",
 		},
@@ -317,7 +317,6 @@ export default {
 	data() {
 		return {
 			importStatistics: {},
-			importStatus: "",
 			changeStateButtonLoading: false,
 			notImportedRows: [],
 			isNotImportedRowsVisible: false,
@@ -326,7 +325,7 @@ export default {
 
 	computed: {
 		finalisationStepActive() {
-			return this.status === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
 		totalEntries() {
@@ -386,10 +385,6 @@ export default {
 
 		loadingChangeStateButton(value) {
 			this.changeStateButtonLoading = value;
-		},
-
-		status(value) {
-			this.importStatus = value;
 		},
 	},
 
