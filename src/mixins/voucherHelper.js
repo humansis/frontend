@@ -13,6 +13,7 @@ export default {
 			const projectIds = [];
 			const assistanceIds = [];
 			const beneficiaryIds = [];
+
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
 				this.table.data[key].beneficiary = this.$t("None");
@@ -43,7 +44,9 @@ export default {
 
 		async prepareBeneficiaryForTable(ids) {
 			const beneficiaries = await this.getBeneficiaries(ids);
+
 			if (!beneficiaries.length) return;
+
 			this.table.data.forEach((item, key) => {
 				this.table.data[key].beneficiary = this.prepareEntityForTable(
 					item.beneficiaryId,
@@ -56,17 +59,31 @@ export default {
 
 		async prepareProjectsForTable(ids) {
 			const projects = await this.getProjects(ids);
+
 			if (!projects.length) return;
+
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");
+				this.table.data[key].project = this.prepareEntityForTable(
+					item.projectId,
+					projects,
+					"name",
+					"None",
+				);
 			});
 		},
 
 		async prepareAssistancesForTable(ids) {
 			const assistances = await this.getAssistances(ids);
+
 			if (!assistances.length) return;
+
 			this.table.data.forEach((item, key) => {
-				this.table.data[key].assistance = this.prepareEntityForTable(item.assistanceId, assistances, "name", "None");
+				this.table.data[key].assistance = this.prepareEntityForTable(
+					item.assistanceId,
+					assistances,
+					"name",
+					"None",
+				);
 			});
 		},
 
@@ -85,9 +102,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getAssistances(ids) {
@@ -105,9 +121,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Assistances")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getProjects(ids) {
@@ -125,9 +140,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 	},
 };

@@ -426,20 +426,13 @@ export default {
 
 				checkResponseStatus(status, message);
 
-				if (id) {
-					this.$router.push({
-						name: "AssistanceCreationProgress",
-						params: {
-							projectId: this.$route.params.projectId,
-							assistanceId: id,
-						},
-					});
-				} else {
-					this.$router.push({
-						name: "Project",
-						params: { projectId: this.$route.params.projectId },
-					});
-				}
+				this.$router.push({
+					name: id ? "AssistanceCreationProgress" : "Project",
+					params: {
+						projectId: this.$route.params.projectId,
+						...(id && { assistanceId: id }),
+					},
+				});
 			} catch (e) {
 				Notification(`${this.$t("New Assistance")}: ${e.message || e}`, "error");
 			}

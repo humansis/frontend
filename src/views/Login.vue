@@ -2,7 +2,11 @@
 	<v-container fluid class="hero fill-height">
 		<v-row>
 			<v-col class="d-flex justify-center">
-				<v-card class="mx-auto px-6 py-8 login-box" max-width="600" width="100%">
+				<v-card
+					class="mx-auto px-6 py-8 login-box"
+					max-width="600"
+					width="100%"
+				>
 					<div class="logo">
 						<img src="@/assets/images/bms_logo_with_title.png" alt="logo Humansis">
 					</div>
@@ -233,9 +237,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("User countries")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getKeycloakLoginUrl() {

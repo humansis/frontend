@@ -20,16 +20,18 @@ export default {
 	methods: {
 		renameAdms() {
 			const adms = [...Object.keys(this.admNames)];
+
 			this.table.columns = this.table.columns.map((item) => {
 				const column = { ...item };
+
 				if (adms.includes(column.key)) {
 					column.label = this.admNames[column.key];
 				}
+
 				return column;
 			});
 		},
 
-		// Methods for Data Grid
 		async prepareProjectForTable(projectIds, hasLink = false) {
 			const projects = await this.getProjects(projectIds);
 
@@ -53,11 +55,13 @@ export default {
 
 		async prepareCommodityForTable(assistanceIds) {
 			const commodities = await this.getCommodities(assistanceIds);
+
 			this.table.data.forEach((item, key) => {
 				const commodity = this.prepareEntityForTable(item.commodityId, commodities);
 				this.table.data[key].commodity = commodity.modalityType;
 				this.table.data[key].unit = commodity.unit;
 			});
+
 			this.table.progress += 10;
 			this.reload();
 		},
@@ -73,9 +77,7 @@ export default {
 
 			this.table.data.forEach((item, key) => {
 				const { beneficiaryId } = item;
-				const beneficiary = item.type === "Institution"
-					? this.prepareEntityForTable(beneficiaryId, beneficiaries)
-					: this.prepareEntityForTable(beneficiaryId, beneficiaries);
+				const beneficiary = this.prepareEntityForTable(beneficiaryId, beneficiaries);
 
 				if (beneficiary) {
 					if (hasLink) {
@@ -108,12 +110,14 @@ export default {
 						: beneficiary.localFamilyName;
 				}
 			});
+
 			this.table.progress += 10;
 			this.reload();
 		},
 
 		async prepareAssistanceForTable(assistanceIds, hasLink = false) {
 			const assistances = await this.getAssistances(assistanceIds);
+
 			this.table.data.forEach((item, key) => {
 				const assistance = this.prepareEntityForTable(item.assistanceId, assistances);
 
@@ -127,27 +131,32 @@ export default {
 					this.table.data[key].assistance = assistance.name;
 				}
 			});
+
 			this.table.progress += 10;
 			this.reload();
 		},
 
 		async prepareVendorForTable(vendorIds) {
 			const vendors = await this.getVendors(vendorIds);
+
 			this.table.data.forEach((item, key) => {
 				const vendor = this.prepareEntityForTable(item.vendorId, vendors);
 				this.table.data[key].vendor = vendor.name;
 				this.table.data[key].vendorNo = vendor.vendorNo;
 			});
+
 			this.table.progress += 10;
 			this.reload();
 		},
 
 		async prepareProductForTable(productIds) {
 			const products = await this.getProducts(productIds);
+
 			this.table.data.forEach((item, key) => {
 				const product = this.prepareEntityForTable(item.productId, products);
 				this.table.data[key].product = product.name;
 			});
+
 			this.table.progress += 10;
 			this.reload();
 		},
@@ -167,8 +176,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Products")}: ${e.message || e}`, "error");
+				return [];
 			}
-			return [];
 		},
 
 		async getCommodities(ids) {
@@ -186,9 +195,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Commodities")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getVendors(ids) {
@@ -206,9 +214,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Vendors")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getAdm1s(ids) {
@@ -226,9 +233,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Adm1")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getAdm2s(ids) {
@@ -246,9 +252,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Adm2")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getAdm3s(ids) {
@@ -266,9 +271,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Adm3")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getAdm4s(ids) {
@@ -286,9 +290,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Adm4")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getAssistances(ids) {
@@ -306,9 +309,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Assistances")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getBeneficiaries(ids, filters) {
@@ -327,9 +329,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async getProjects(ids) {
@@ -345,9 +346,8 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async fetchProjects() {

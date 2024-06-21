@@ -10,7 +10,7 @@ export default {
 
 	methods: {
 		async getLocations(addresses) {
-			if (!addresses?.length) return null;
+			if (!addresses?.length) return [];
 
 			try {
 				const {
@@ -24,15 +24,15 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Locations")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return null;
 		},
 
 		mapLocationOnAddress(locations, addresses) {
 			if (!locations?.length) return [];
 
 			const addressesMapped = [];
+
 			addresses.forEach((address) => {
 				const location = locations.find((item) => item.locationId === address.locationId);
 				if (location) {
@@ -41,6 +41,7 @@ export default {
 					addressesMapped.push(addressMapped);
 				}
 			});
+
 			return addressesMapped;
 		},
 

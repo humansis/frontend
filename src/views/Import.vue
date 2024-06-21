@@ -26,10 +26,7 @@
 		</p>
 
 		<div v-if="importStatus" class="text-center mt-4">
-			<v-chip
-				variant="flat"
-				:class="importStatusClass"
-			>
+			<v-chip variant="flat" :class="importStatusClass">
 				<span>
 					{{ $t(importStatus) }}
 
@@ -376,21 +373,21 @@ export default {
 		async fetchImportFiles() {
 			const { importId } = this.$route.params;
 
-			if (importId) {
-				try {
-					const {
-						data: { data },
-						status,
-						message,
-					} = await ImportService.getFilesInImport(importId);
+			if (!importId) return;
 
-					checkResponseStatus(status, message);
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ImportService.getFilesInImport(importId);
 
-					this.importFiles = data;
-					this.checkImportFiles(data);
-				} catch (e) {
-					Notification(`${this.$t("Import Files")}: ${e.message || e}`, "error");
-				}
+				checkResponseStatus(status, message);
+
+				this.importFiles = data;
+				this.checkImportFiles(data);
+			} catch (e) {
+				Notification(`${this.$t("Import Files")}: ${e.message || e}`, "error");
 			}
 		},
 
@@ -426,20 +423,20 @@ export default {
 		async onFetchImportStatistics() {
 			const { importId } = this.$route.params;
 
-			if (importId) {
-				try {
-					const {
-						data,
-						status,
-						message,
-					} = await ImportService.getStatisticsInImport(importId);
+			if (!importId) return;
 
-					checkResponseStatus(status, message);
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await ImportService.getStatisticsInImport(importId);
 
-					this.statistics = data;
-				} catch (e) {
-					Notification(`${this.$t("Import statistics")}: ${e.message || e}`, "error");
-				}
+				checkResponseStatus(status, message);
+
+				this.statistics = data;
+			} catch (e) {
+				Notification(`${this.$t("Import statistics")}: ${e.message || e}`, "error");
 			}
 		},
 
@@ -538,23 +535,25 @@ export default {
 					importId,
 				});
 
-				if (status === 200) {
-					if (state === IMPORT.STATUS.CANCEL) {
-						Notification(this.$t("Import Canceled"), "success");
-						this.onChangeTab(4);
-					}
+				if (status >= 400 && status <= 500) {
+					Notification(message, "warning");
+				}
 
-					if (this.$route.name === "Import") {
-						Notification(this.$t(successMessage), "success");
+				if (status !== 200) return;
 
-						if (state !== IMPORT.STATUS.FINISH
+				if (state === IMPORT.STATUS.CANCEL) {
+					Notification(this.$t("Import Canceled"), "success");
+					this.onChangeTab(4);
+				}
+
+				if (this.$route.name === "Import") {
+					Notification(this.$t(successMessage), "success");
+
+					if (state !== IMPORT.STATUS.FINISH
 							&& state !== IMPORT.STATUS.IMPORTING
 							&& state !== IMPORT.STATUS.CANCEL) {
-							if (goNext) this.onChangeTab(this.activeStep + 1);
-						}
+						if (goNext) this.onChangeTab(this.activeStep + 1);
 					}
-				} else if (status >= 400 && status <= 500) {
-					Notification(message, "warning");
 				}
 			} catch (e) {
 				const type = state === IMPORT.STATUS.IMPORTING ? "warning" : "error";
