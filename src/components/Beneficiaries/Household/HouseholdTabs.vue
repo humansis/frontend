@@ -321,6 +321,12 @@ export default {
 			const modifiedSupportDateReceived = supportDateReceived
 				? this.$moment(supportDateReceived).format("YYYY-MM-DD")
 				: null;
+			const latitude = typeof this.household.latitude === "number"
+				? this.household.latitude
+				: null;
+			const longitude = typeof this.household.longitude === "number"
+				? this.household.longitude
+				: null;
 
 			const householdBody = {
 				iso3: this.country.iso3,
@@ -330,8 +336,8 @@ export default {
 				projectIds: getArrayOfIdsByParam(this.$refs.householdSummary.formModel.selectedProjects, "id"),
 				notes,
 				enumeratorName: this.$refs.householdSummary.formModel.enumerator,
-				longitude: this.household.longitude,
-				latitude: this.household.latitude,
+				longitude,
+				latitude,
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
