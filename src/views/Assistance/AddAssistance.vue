@@ -745,7 +745,7 @@ export default {
 				await this.fetchCommoditiesValue();
 			}
 
-			this.isCommoditySmartCard = commodities[0].modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
+			this.isCommoditySmartCard = commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
 		remoteAllowed(commodity) {

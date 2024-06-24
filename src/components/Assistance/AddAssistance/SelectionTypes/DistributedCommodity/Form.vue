@@ -217,7 +217,6 @@
 					:name="`product-category-${index}`"
 					hide-details="auto"
 					@blur="onValidate('allowedProductCategoryTypes')"
-					@input="checkAllowedProductCategoryTypes"
 				>
 					<template v-slot:label>
 						{{ $t(productCategoryType) }}
@@ -235,7 +234,6 @@
 			v-if="formModel.allowedProductCategoryTypes.includes(CASHBACK)"
 			v-model.number="formModel.cashbackLimit"
 			:error-messages="validationMsg('cashbackLimit')"
-			:disabled="isCashbackLimitDisabled"
 			label="Cashback Limit"
 			name="cashback-limit"
 			min="0.01"
@@ -243,7 +241,6 @@
 			class="mb-4"
 			hide-spin-buttons
 			@blur="onValidate('cashbackLimit')"
-			@input="checkCashbackLimit"
 		/>
 	</v-card-text>
 
@@ -428,7 +425,7 @@ export default {
 					...(this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK) && {
 						minValue: minValue(0.01),
 					}),
-					...(this.maxCashback && { maxValue: maxValue(this.maxCashback) }),
+					...(this.isMaxValidationForCashbackEnabled && { maxValue: maxValue(this.maxCashback) }),
 					...(this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK) && {
 						...this.decimalPartValidationRule(),
 					}),
@@ -558,40 +555,34 @@ export default {
 			];
 		},
 
-		isCashbackLimitDisabled() {
-			return this.formModel[this.valueOrQuantity] >= 1
-				&& this.formModel.cashbackLimit === this.formModel[this.valueOrQuantity]
-				&& this.formModel.allowedProductCategoryTypes.length === 1
-				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK);
-		},
-
 		isProjectTargetsWithModalityType() {
 			return this.project.targets.every((target) => target.modalityType);
-		},
-
-		cashbackLimitErrorMessage() {
-			return `Required minimum is 1, maximum is ${this.maxCashback}`;
 		},
 
 		maxCashback() {
 			let max = this.formModel[this.valueOrQuantity];
 
-			if (this.formModel.divisionNesFields) {
-				max = Math.max(
-					...Object.values(this.formModel.divisionNesFields).map((item) => Number(item)),
-				);
-			}
+			switch (this.formModel.division?.code) {
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
+					max = Math.max(
+						...this.formModel.payloadDivisionNwsFields.map(({ value }) => Number(value)),
+					);
 
-			if (this.formModel.divisionNwsFields) {
-				max = Math.max(
-					...Object.values(this.formModel.divisionNwsFields).map((item) => Number(item)),
-				);
-			}
+					break;
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
+					max = Math.max(
+						...this.formModel.payloadDivisionNesFields.map(({ value }) => Number(value)),
+					);
 
-			if (this.formModel.divisionCodFields) {
-				max = Math.max(
-					...Object.values(this.formModel.divisionCodFields).map((item) => Number(item)),
-				);
+					break;
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE:
+					max = Math.max(
+						...this.formModel.payloadDivisionCodFields.map(({ value }) => Number(value)),
+					);
+
+					break;
+				default:
+					break;
 			}
 
 			return max;
@@ -654,6 +645,13 @@ export default {
 			return this.formModel?.modalityType?.code === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
+		isMaxValidationForCashbackEnabled() {
+			return this.maxCashback
+				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK)
+				&& this.formModel.division?.code !== ASSISTANCE.COMMODITY
+					.DISTRIBUTION.PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD;
+		},
+
 		divisionNwsFields() {
 			return [
 				{ label: this.$t(`${this.valueOrQuantityLabel} (1 member)`), fieldName: "quantityNwsField1" },
@@ -714,30 +712,7 @@ export default {
 	methods: {
 		onCheckQuantityOrValue() {
 			if (this.displayedFields.allowedProductCategoryTypes
-				&& this.formModel.allowedProductCategoryTypes.length === 1
-				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK)) {
-				this.formModel.cashbackLimit = this.formModel[this.valueOrQuantity];
-			}
-
-			if (this.displayedFields.allowedProductCategoryTypes
 				&& !this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK)) {
-				this.formModel.cashbackLimit = null;
-			}
-		},
-
-		checkCashbackLimit() {
-			if (this.formModel.allowedProductCategoryTypes.length === 1
-				&& this.formModel.allowedProductCategoryTypes.includes(this.CASHBACK)
-				&& this.formModel[this.valueOrQuantity]
-			) {
-				this.formModel.cashbackLimit = this.formModel[this.valueOrQuantity];
-			}
-		},
-
-		checkAllowedProductCategoryTypes() {
-			if (this.formModel[this.valueOrQuantity] >= 1) {
-				this.formModel.cashbackLimit = this.formModel[this.valueOrQuantity];
-			} else {
 				this.formModel.cashbackLimit = null;
 			}
 		},
