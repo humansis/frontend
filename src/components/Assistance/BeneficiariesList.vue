@@ -90,7 +90,7 @@
 			<SmartCardInvalidateForm
 				:beneficiary-data="smartCardInvalidateModel"
 				:table-data="table.data"
-				@updateTable="table.data = $event"
+				@updateTable="updateTableAfterInvalidation"
 				@formClosed="smartCardInvalidateModal.isOpened = false"
 			/>
 		</Modal>
@@ -934,6 +934,11 @@ export default {
 			return this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
 				&& this.userCan.invalidateDistribution;
+		},
+
+		updateTableAfterInvalidation(updatedData) {
+			this.table.data = updatedData;
+			this.$emit("fetchAssistanceStatistics");
 		},
 
 		onSetSmartCardAsInvalid(tableIndex, bnfId, reliefPackage) {
