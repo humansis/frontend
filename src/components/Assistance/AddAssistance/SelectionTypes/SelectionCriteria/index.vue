@@ -633,9 +633,18 @@ export default {
 		},
 
 		onShowTotalBeneficiaries() {
-			this.beneficiariesData = this.groups.flatMap(
+			const uniqueBeneficiaries = new Map();
+			const beneficiaries = this.groups.flatMap(
 				(group) => group.beneficiaries?.data || [],
 			);
+
+			beneficiaries.forEach((item) => {
+				if (!uniqueBeneficiaries.has(item.id)) {
+					uniqueBeneficiaries.set(item.id, item);
+				}
+			});
+
+			this.beneficiariesData = Array.from(uniqueBeneficiaries.values());
 			this.detailModal.isOpened = true;
 		},
 
