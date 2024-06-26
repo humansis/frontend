@@ -20,6 +20,7 @@
 
 				<DataInput
 					v-model.number="formModel.latitude"
+					:error-messages="validationMsg('latitude')"
 					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Latitude"
@@ -27,10 +28,12 @@
 					class="mb-4"
 					hide-spin-buttons
 					optional
+					@update:modelValue="onValidate('latitude')"
 				/>
 
 				<DataInput
 					v-model.number="formModel.longitude"
+					:error-messages="validationMsg('longitude')"
 					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Longitude"
@@ -38,6 +41,7 @@
 					class="mb-4"
 					hide-spin-buttons
 					optional
+					@update:modelValue="onValidate('longitude')"
 				/>
 			</v-col>
 
@@ -240,7 +244,7 @@
 </template>
 
 <script>
-import { integer } from "@vuelidate/validators";
+import { integer, maxValue, minValue } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import CustomFieldsPanel from "@/components/Beneficiaries/Household/CustomFieldsPanel";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
@@ -284,6 +288,14 @@ export default {
 				livelihood: {
 					foodConsumptionScore: { integer },
 					copingStrategiesIndex: { integer },
+				},
+				latitude: {
+					minValue: minValue(-90),
+					maxValue: maxValue(90),
+				},
+				longitude: {
+					minValue: minValue(-180),
+					maxValue: maxValue(180),
 				},
 			},
 		};
