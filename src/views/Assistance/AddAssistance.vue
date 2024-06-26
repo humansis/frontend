@@ -417,6 +417,11 @@ export default {
 
 			const { dateExpiration, ...assistanceBody } = this.assistanceBody;
 
+			if (assistanceBody.type === ASSISTANCE.TYPE.ACTIVITY) {
+				assistanceBody.commodities = null;
+				assistanceBody.remoteDistributionAllowed = null;
+			}
+
 			try {
 				const {
 					data: { id },
