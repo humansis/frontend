@@ -236,7 +236,6 @@
 			:error-messages="validationMsg('cashbackLimit')"
 			label="Cashback Limit"
 			name="cashback-limit"
-			min="0.01"
 			type="number"
 			class="mb-4"
 			hide-spin-buttons
