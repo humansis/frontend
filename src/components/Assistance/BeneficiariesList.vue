@@ -931,7 +931,8 @@ export default {
 		},
 
 		isSetSmartCardAsInvalidVisible({ status }) {
-			return this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
+			return this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION
+				&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
 				&& this.userCan.invalidateDistribution;
 		},
