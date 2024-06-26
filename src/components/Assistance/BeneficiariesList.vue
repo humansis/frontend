@@ -199,6 +199,7 @@
 		item-selectable="selectable"
 		is-row-click-disabled
 		reset-sort-button
+		is-frontend-sort-disabled
 		@update:modelValue="onRowsCheck"
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
