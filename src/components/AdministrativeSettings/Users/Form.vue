@@ -296,7 +296,12 @@ export default {
 					const projectIdsCopy = [...this.formModel.projectIds];
 
 					this.options.projects = data;
-					this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, data, "id");
+					this.formModel.projectIds = getArrayOfCodeListByKey(
+						this.formModel.projectIds,
+						data,
+						"id",
+						true,
+					);
 					this.formModel.notUsedProjectIds = projectIdsCopy.filter(
 						(id) => !this.formModel.projectIds.map((obj) => obj.id).includes(id),
 					);
