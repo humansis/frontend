@@ -289,13 +289,17 @@ export default {
 						data: { data },
 						status,
 						message,
-					} = await ProjectService.getListOfProjects({});
+					} = await ProjectService.getShortListOfProjects();
 
 					checkResponseStatus(status, message);
 
-					this.options.projects = data;
+					const projectIdsCopy = [...this.formModel.projectIds];
 
+					this.options.projects = data;
 					this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, data, "id");
+					this.formModel.notUsedProjectIds = projectIdsCopy.filter(
+						(id) => !this.formModel.projectIds.map((obj) => obj.id).includes(id),
+					);
 				} catch (e) {
 					Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
 				}
