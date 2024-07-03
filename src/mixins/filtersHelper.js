@@ -6,6 +6,7 @@ export default {
 	methods: {
 		resetFilters() {
 			const filters = {};
+
 			Object.keys(this.filtersOptions).forEach((key) => {
 				const filterKey = this.filtersOptions[key]?.filterKey || key;
 				filters[filterKey] = FILTER.DEFAULT_FILTERS[normalizeFiltersOptions(filterKey)]

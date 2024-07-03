@@ -1,6 +1,7 @@
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import institutionHelper from "@/mixins/institutionHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -10,89 +11,137 @@ export default {
 	mixins: [institutionHelper],
 
 	methods: {
-		getTransactions(transactionIds) {
-			return AssistancesService
-				.getTransactionsForAssistance(
-					transactionIds,
-				).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Transactions")} ${e.message || e}`, "error");
-				});
+		async getTransactions(transactionIds) {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getTransactionsForAssistance(transactionIds);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Transactions")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
-		getTransactionStatuses() {
-			return AssistancesService
-				.getTransactionStatuses().then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Transaction Statuses")} ${e.message || e}`, "error");
-				});
+		async getTransactionStatuses() {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getTransactionStatuses();
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Transaction Statuses")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
-		getSmartCardDeposits(smartcardDepositIds) {
-			return AssistancesService
-				.getSmartCardDepositsForAssistance(smartcardDepositIds).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Smartcard Deposit")} ${e.message || e}`, "error");
-				});
+		async getSmartCardDeposits(smartcardDepositIds) {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getSmartCardDepositsForAssistance(smartcardDepositIds);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Smartcard Deposit")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
-		getBooklets(bookletIds) {
-			return AssistancesService
-				.getBookletsForAssistance(
-					bookletIds,
-				).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Booklets")} ${e.message || e}`, "error");
-				});
+		async getBooklets(bookletIds) {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getBookletsForAssistance(bookletIds);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Booklets")}: ${e.message || e}`, "error");
+				return [];
+			}
 		},
 
-		getBookletStatuses() {
-			return AssistancesService
-				.getBookletStatuses().then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Booklet Statuses")} ${e.message || e}`, "error");
-				});
+		async getBookletStatuses() {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getBookletStatuses();
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Booklet Statuses")}: ${e.message || e}`, "error");
+				return [];
+			}
 		},
 
 		async onAssignBookletToBeneficiary(booklet) {
 			this.assignVoucherModal.isWaiting = true;
+
 			let target = "";
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					target = "communities";
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					target = "institutions";
+
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
 				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					target = "beneficiaries";
+
+					break;
 			}
 
-			await AssistancesService.assignBookletInAssistance(
-				this.$route.params.assistanceId,
-				target,
-				booklet.beneficiaryId,
-				booklet.code,
-			).then(({ status }) => {
-				if (status === 200) {
-					Notification(
-						`${this.$t("Success for Beneficiary")} ${booklet.beneficiaryId}`,
-						"success",
-					);
-					this.onCloseAssignVoucherModal();
-				}
-			}).catch((e) => {
+			try {
+				const { status, message } = await AssistancesService.assignBookletInAssistance({
+					assistanceId: this.$route.params.assistanceId,
+					beneficiaryId: booklet.beneficiaryId,
+					bookletCode: booklet.code,
+					target,
+				});
+
+				checkResponseStatus(status, message);
+
 				Notification(
-					`${this.$t("Error for Beneficiary")} ${booklet.beneficiaryId} ${e.message || e}`,
+					`${this.$t("Success for Beneficiary")}: ${booklet.beneficiaryId}`,
+					"success",
+				);
+
+				this.onCloseAssignVoucherModal();
+			} catch (e) {
+				Notification(
+					`${this.$t("Error for Beneficiary")}: ${booklet.beneficiaryId} ${e.message || e}`,
 					"error",
 				);
 				this.onCloseAssignVoucherModal();
-			});
-
-			this.assignVoucherModal.isWaiting = false;
+			} finally {
+				this.assignVoucherModal.isWaiting = false;
+			}
 		},
 
 		setAssignedReliefPackages() {
@@ -110,15 +159,24 @@ export default {
 			this.table.progress = 100;
 		},
 
-		getReliefPackages(reliefPackageIds) {
-			return AssistancesService
-				.getReliefPackagesForAssistance(
+		async getReliefPackages(reliefPackageIds) {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getReliefPackagesForAssistance(
 					this.$route.params.assistanceId,
 					reliefPackageIds,
-				).then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Relief Packages")} ${e.message || e}`, "error");
-				});
+				);
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Relief Packages")}: ${e.message || e}`, "error");
+				return [];
+			}
 		},
 
 		preparePhoneForTable(phones) {
@@ -137,15 +195,8 @@ export default {
 					idNumbers += this.prepareColumnFormatForNationalIds(item.idNumber, item.idType);
 				});
 			}
-			return idNumbers;
-		},
 
-		async getAssistanceCommodities() {
-			await AssistancesService.getAssistanceCommodities(this.$route.params.assistanceId)
-				.then(({ data }) => { this.commodities = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Commodities")} ${e.message || e}`, "error");
-				});
+			return idNumbers;
 		},
 
 		onOpenAssignVoucherModal(id, canAssignVoucher) {
@@ -174,22 +225,28 @@ export default {
 			switch (this.assistance.target) {
 				case ASSISTANCE.TARGET.INSTITUTION:
 					this.showInstitutionDetail(beneficiary);
+
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
 				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					this.showBeneficiaryDetail(beneficiary);
+
+					break;
 			}
 		},
 
 		showEditModal({ id }) {
 			switch (this.assistance.target) {
 				case ASSISTANCE.TARGET.INSTITUTION:
+
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
 				case ASSISTANCE.TARGET.INDIVIDUAL:
 				default:
 					this.showBeneficiaryEdit(id);
+
+					break;
 			}
 		},
 
@@ -221,14 +278,24 @@ export default {
 					this.fetchInstitutionTypes(),
 				]);
 
-				const institution = await BeneficiariesService.getInstitution(
-					detailedInstitution.institution.id,
-					{ includeArchived: true },
-				);
+				try {
+					const {
+						data,
+						status,
+						message,
+					} = await BeneficiariesService.getInstitution({
+						id: detailedInstitution.institution.id,
+						filters: { includeArchived: true },
+					});
 
-				this.institutionModel = this.mapToModel(institution);
+					checkResponseStatus(status, message);
+
+					this.institutionModel = this.mapToModel(data);
+				} catch (e) {
+					Notification(`${this.$t("Institution")}: ${e.message || e}`, "error");
+				}
 			} catch (e) {
-				Notification(`${this.$t("Institution detail")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Institution detail")}: ${e.message || e}`, "error");
 			} finally {
 				this.institutionModal.isWaiting = false;
 			}
@@ -236,10 +303,12 @@ export default {
 
 		showBeneficiaryEdit(id) {
 			const beneficiary = this.table.data.find((item) => item.id === id);
+
 			this.beneficiaryModel = {
 				...beneficiary,
 				dateOfBirth: new Date(beneficiary.dateOfBirth),
 			};
+
 			this.beneficiaryModal = {
 				isOpened: true,
 				isEditing: true,
@@ -259,13 +328,6 @@ export default {
 			};
 		},
 
-		closeCommunityModal() {
-			this.communityModal = {
-				isOpened: false,
-				isEditing: false,
-			};
-		},
-
 		onRowsCheck() {
 			const selectedData = this.table.data.filter(
 				(item) => this.table.checkedRows.includes(item.id)
@@ -281,7 +343,9 @@ export default {
 		async onRandomSample() {
 			const size = Math.round(this.table.total * (this.randomSampleSize / 100));
 			const randomPage = this.rnd(1, this.table.total / size);
+
 			this.table.customPerPage = size;
+
 			await this.fetchData(randomPage, size);
 		},
 
@@ -294,11 +358,13 @@ export default {
 				isOpened: false,
 				isEditing: false,
 			};
+
 			await this.reloadBeneficiariesList();
 		},
 
 		async onPageChange(currentPage) {
 			this.table.currentPage = currentPage;
+
 			await this.reloadBeneficiariesList();
 		},
 
@@ -316,6 +382,7 @@ export default {
 			}
 
 			this.table.sortReset = false;
+
 			await this.reloadBeneficiariesList();
 		},
 
@@ -336,6 +403,7 @@ export default {
 
 		async onResetSort(sortColumn = "", sortDirection = "", forceFetch = false) {
 			this.table.sortReset = true;
+
 			if (this.table.sortColumn !== "" || this.table.sortDirection !== "") {
 				this.table.sortColumn = sortColumn;
 				this.table.sortDirection = sortDirection;

@@ -20,6 +20,7 @@
 
 				<DataInput
 					v-model.number="formModel.latitude"
+					:error-messages="validationMsg('latitude')"
 					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Latitude"
@@ -27,10 +28,12 @@
 					class="mb-4"
 					hide-spin-buttons
 					optional
+					@update:modelValue="onValidate('latitude')"
 				/>
 
 				<DataInput
 					v-model.number="formModel.longitude"
+					:error-messages="validationMsg('longitude')"
 					:data-cy="prepareComponentIdentifier()"
 					type="number"
 					label="Longitude"
@@ -38,6 +41,7 @@
 					class="mb-4"
 					hide-spin-buttons
 					optional
+					@update:modelValue="onValidate('longitude')"
 				/>
 			</v-col>
 
@@ -240,7 +244,7 @@
 </template>
 
 <script>
-import { integer } from "@vuelidate/validators";
+import { integer, maxValue, minValue } from "@vuelidate/validators";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import CustomFieldsPanel from "@/components/Beneficiaries/Household/CustomFieldsPanel";
 import TypeOfLocationForm from "@/components/Beneficiaries/Household/TypeOfLocationForm";
@@ -254,6 +258,7 @@ import customFieldsHelper from "@/mixins/customFieldsHelper";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import getters from "@/store/getters";
 
@@ -283,6 +288,14 @@ export default {
 				livelihood: {
 					foodConsumptionScore: { integer },
 					copingStrategiesIndex: { integer },
+				},
+				latitude: {
+					minValue: minValue(-90),
+					maxValue: maxValue(90),
+				},
+				longitude: {
+					minValue: minValue(-180),
+					maxValue: maxValue(180),
 				},
 			},
 		};
@@ -425,38 +438,73 @@ export default {
 		},
 
 		async fetchSupportReceivedTypes() {
-			await BeneficiariesService.getSupportReceivedTypes()
-				.then(({ data }) => { this.options.externalSupportReceivedType = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Support Received Types")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getSupportReceivedTypes();
+
+				checkResponseStatus(status, message);
+
+				this.options.externalSupportReceivedType = data;
+			} catch (e) {
+				Notification(`${this.$t("Support Received Types")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async fetchLivelihoods() {
-			await BeneficiariesService.getListOfLivelihoods()
-				.then(({ data }) => { this.options.livelihood = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Livelihoods")} ${e.message || e}`, "error");
-				});
-			this.livelihoodLoading = false;
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfLivelihoods();
+
+				checkResponseStatus(status, message);
+
+				this.options.livelihood = data;
+			} catch (e) {
+				Notification(`${this.$t("Livelihoods")}: ${e.message || e}`, "error");
+			} finally {
+				this.livelihoodLoading = false;
+			}
 		},
 
 		async fetchAssets() {
-			await BeneficiariesService.getListOfAssets()
-				.then(({ data }) => { this.options.assets = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Assets")} ${e.message || e}`, "error");
-				});
-			this.assetsLoading = false;
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfAssets();
+
+				checkResponseStatus(status, message);
+
+				this.options.assets = data;
+			} catch (e) {
+				Notification(`${this.$t("Assets")}: ${e.message || e}`, "error");
+			} finally {
+				this.assetsLoading = false;
+			}
 		},
 
 		async fetchShelterStatuses() {
-			await BeneficiariesService.getListOfShelterStatuses()
-				.then(({ data }) => { this.options.shelterStatuses = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Shelter Status")} ${e.message || e}`, "error");
-				});
-			this.shelterStatusLoading = false;
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfShelterStatuses();
+
+				checkResponseStatus(status, message);
+
+				this.options.shelterStatuses = data;
+			} catch (e) {
+				Notification(`${this.$t("Shelter Status")}: ${e.message || e}`, "error");
+			} finally {
+				this.shelterStatusLoading = false;
+			}
 		},
 
 		submit() {

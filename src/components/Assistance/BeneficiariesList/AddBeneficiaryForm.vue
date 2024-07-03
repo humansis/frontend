@@ -67,6 +67,7 @@ import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -127,7 +128,6 @@ export default {
 			let result = "";
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
 				case ASSISTANCE.TARGET.INSTITUTION:
 					result = "name";
 					break;
@@ -180,7 +180,6 @@ export default {
 			let result = "";
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
 				case ASSISTANCE.TARGET.INSTITUTION:
 					result = option.name;
 					break;
@@ -194,19 +193,35 @@ export default {
 		},
 
 		async fetchBeneficiariesByProject() {
-			const { projectId } = this.$route.params;
+			try {
+				const { projectId } = this.$route.params;
+				const isAssistanceRemoteSmartCard = this.assistance.remoteDistributionAllowed
+					&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
+				const filters = {
+					excludeAssistance: this.$route.params.assistanceId,
+					...(isAssistanceRemoteSmartCard && {
+						validSmartcard: true,
+					}),
+				};
 
-			await BeneficiariesService.getBeneficiariesByProject(
-				projectId,
-				this.target,
-				this.$route.params.assistanceId,
-			)
-				.then(({ data }) => {
-					this.options.beneficiaries = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Project Beneficiaries")} ${e.message || e}`, "error");
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getBeneficiariesByProject({
+					id: projectId,
+					target: this.target,
+					filters,
 				});
-			this.loading.beneficiaries = false;
+
+				checkResponseStatus(status, message);
+
+				this.options.beneficiaries = data;
+			} catch (e) {
+				Notification(`${this.$t("Project Beneficiaries")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.beneficiaries = false;
+			}
 		},
 
 		async removeBeneficiaryFromAssistance({ justification, removingId }) {
@@ -216,9 +231,6 @@ export default {
 			};
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					body.communityIds = [removingId];
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					body.institutionIds = [removingId];
 					break;
@@ -242,9 +254,6 @@ export default {
 			};
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					body.communityIds = getArrayOfIdsByParam(beneficiaries, "id");
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					body.institutionIds = getArrayOfIdsByParam(beneficiaries, "id");
 					break;
@@ -266,9 +275,6 @@ export default {
 			let assistanceTarget = "";
 
 			switch (target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					assistanceTarget = "communities";
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					assistanceTarget = "institutions";
 					break;
@@ -279,41 +285,43 @@ export default {
 			}
 
 			if (body.removed || !body.added) {
-				await BeneficiariesService.removeBeneficiaryFromAssistance(
-					this.$route.params.assistanceId,
-					assistanceTarget,
-					body,
-					this.beneficiaryEndpointVersion,
-				)
-					.then(({ data, status }) => {
-						if (status === 400) {
-							Notification(data, "warning");
-						} else {
-							Notification(successMessage, "success");
-						}
-					})
-					.catch((e) => {
-						Notification(`${this.$t("Beneficiary")} ${e.message || e}`, "error");
+				try {
+					const {
+						status,
+						message,
+					} = await BeneficiariesService.removeBeneficiaryFromAssistance({
+						assistanceId: this.$route.params.assistanceId,
+						target: assistanceTarget,
+						endpointVersion: this.beneficiaryEndpointVersion,
+						body,
 					});
+
+					checkResponseStatus(status, message);
+
+					Notification(successMessage, "success");
+				} catch (e) {
+					Notification(`${this.$t("Beneficiary")}: ${e.message || e}`, "error");
+				}
 			}
 
 			if (body.added) {
-				await BeneficiariesService.addBeneficiaryToAssistance(
-					this.$route.params.assistanceId,
-					assistanceTarget,
-					body,
-					this.beneficiaryEndpointVersion,
-				)
-					.then(({ data, status }) => {
-						if (status === 400) {
-							Notification(data, "warning");
-						} else {
-							Notification(successMessage, "success");
-						}
-					})
-					.catch((e) => {
-						Notification(`${this.$t("Beneficiary")} ${e}`, "error");
+				try {
+					const {
+						status,
+						message,
+					} = await BeneficiariesService.addBeneficiaryToAssistance({
+						assistanceId: this.$route.params.assistanceId,
+						target: assistanceTarget,
+						endpointVersion: this.beneficiaryEndpointVersion,
+						body,
 					});
+
+					checkResponseStatus(status, message);
+
+					Notification(successMessage, "success");
+				} catch (e) {
+					Notification(`${this.$t("Beneficiary")}: ${e}`, "error");
+				}
 			}
 
 			this.submitButtonLoading = false;

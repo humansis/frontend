@@ -317,49 +317,73 @@ export default {
 		},
 
 		async fetchAssistance() {
-			this.isAssistanceLoading = true;
+			try {
+				this.isAssistanceLoading = true;
 
-			AssistancesService.getDetailOfAssistance(
-				this.$route.params.assistanceId,
-			).then((data) => {
+				const {
+					data,
+					status,
+					message,
+				} = await AssistancesService.getDetailOfAssistance(
+					this.$route.params.assistanceId,
+				);
+
+				checkResponseStatus(status, message);
+
 				this.assistance = data;
 
 				if (this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION) {
 					this.commodities = data.commodities;
 				}
-			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-			}).finally(() => {
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
+			} finally {
 				this.isAssistanceLoading = false;
-			});
+			}
 		},
 
 		async onFetchAssistanceStatistics() {
-			this.isStatisticsLoading = true;
+			try {
+				this.isStatisticsLoading = true;
 
-			AssistancesService.getAssistanceStatistics(
-				this.$route.params.assistanceId,
-			).then((data) => {
+				const {
+					data,
+					status,
+					message,
+				} = await AssistancesService.getAssistanceStatistics(
+					this.$route.params.assistanceId,
+				);
+
+				checkResponseStatus(status, message);
+
 				this.statistics = data;
-			}).catch((e) => {
-				Notification(`${this.$t("Assistance Statistics")} ${e.message || e}`, "error");
-			}).finally(() => {
+			} catch (e) {
+				Notification(`${this.$t("Assistance Statistics")}: ${e.message || e}`, "error");
+			} finally {
 				this.isStatisticsLoading = false;
-			});
+			}
 		},
 
 		async fetchProject() {
-			this.isProjectLoading = true;
+			try {
+				this.isProjectLoading = true;
 
-			await ProjectService.getDetailOfProject(
-				this.$route.params.projectId,
-			).then(({ data }) => {
+				const {
+					data,
+					status,
+					message,
+				} = await ProjectService.getDetailOfProject(
+					this.$route.params.projectId,
+				);
+
+				checkResponseStatus(status, message);
+
 				this.project = data;
-			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-			}).finally(() => {
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
+			} finally {
 				this.isProjectLoading = false;
-			});
+			}
 		},
 
 		onRowsCheck(rows) {
@@ -470,67 +494,71 @@ export default {
 			const dateOfDistribution = this.assistance.dateDistribution;
 			const isAfter = this.$moment(now).isAfter(dateOfDistribution);
 
-			if (isAfter) {
+			if (!isAfter) return;
+
+			try {
 				this.startTransactionButtonLoading = true;
 
-				await AssistancesService
-					.sendVerificationEmailForTransactions(this.$route.params.assistanceId)
-					.then((response) => {
-						if (response.status === 204) this.transactionModal.isOpened = true;
-					})
-					.catch((e) => {
-						Notification(`${this.$t("Start Transaction")} ${e.message || e}`, "error");
-					});
+				const { status, message } = await AssistancesService
+					.sendVerificationEmailForTransactions(this.$route.params.assistanceId);
 
+				checkResponseStatus(status, message, 204);
+
+				this.transactionModal.isOpened = true;
+			} catch (e) {
+				Notification(`${this.$t("Start Transaction")}: ${e.message || e}`, "error");
+			} finally {
 				this.startTransactionButtonLoading = false;
-			} else {
-				Notification(
-					`${this.$t("Date of the assistance is in the future")}.`,
-					"error",
-				);
 			}
 		},
 
 		async onConfirmTransaction(code) {
-			this.transactionModal.isWaiting = true;
+			try {
+				this.transactionModal.isWaiting = true;
 
-			const body = {
-				code,
-			};
+				const {
+					status,
+					message,
+				} = await AssistancesService.createTransactionsForBeneficiaries(
+					this.$route.params.assistanceId,
+					{ code },
+				);
 
-			await AssistancesService.createTransactionsForBeneficiaries(
-				this.$route.params.assistanceId,
-				body,
-			).then(({ status }) => {
-				if (status === 204) {
-					Notification(this.$t("Successful Transaction"), "success");
+				checkResponseStatus(status, message, 204);
 
-					this.$refs.beneficiariesList.fetchData();
-					this.onFetchAssistanceStatistics();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Transactions")} ${e.message || e}`, "error");
-			});
+				Notification(this.$t("Successful Transaction"), "success");
 
-			this.transactionModal.isWaiting = false;
-			this.onCloseTransactionModal();
+				await this.$refs.beneficiariesList.fetchData();
+				await this.onFetchAssistanceStatistics();
+			} catch (e) {
+				Notification(`${this.$t("Transactions")}: ${e.message || e}`, "error");
+			} finally {
+				this.transactionModal.isWaiting = false;
+				this.onCloseTransactionModal();
+			}
 		},
 
 		async onCloseAssistance() {
 			const assistanceId = Number(this.$route.params.assistanceId);
 
-			await AssistancesService.updateAssistanceToStatusCompleted(
-				{ assistanceId, completed: true },
-			).then(({ status }) => {
-				if (status === 200) {
-					Notification(this.$t("Assistance Successfully Closed"), "success");
-					this.$router.push({ name: "Project",
-						params: { projectId: this.$route.params.projectId },
-					});
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-			});
+			try {
+				const {
+					status,
+					message,
+				} = await AssistancesService.updateAssistanceToStatusCompleted({
+					assistanceId,
+					completed: true,
+				});
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Assistance Successfully Closed"), "success");
+				this.$router.push({ name: "Project",
+					params: { projectId: this.$route.params.projectId },
+				});
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

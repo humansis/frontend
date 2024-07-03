@@ -7,7 +7,7 @@
 			ref="assistanceName"
 			:is-switch-disabled="isAssistanceValidated"
 			:data-for-assistance-name="dataForAssistanceName"
-			assistance-detail
+			is-assistance-detail
 		/>
 
 		<p
@@ -48,7 +48,14 @@
 			:is-clearable="false"
 			label="Round"
 			name="round"
+			class="mb-4"
 			@update:modelValue="onValuesForAssistanceName"
+		/>
+
+		<DataInput
+			v-model="formModel.eloNumber"
+			label="ELO number"
+			name="elo-number"
 		/>
 
 		<p
@@ -217,12 +224,15 @@ import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import validation from "@/mixins/validation";
 import { getCodeAndValueObject } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { isDateBeforeOrEqual } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
 export default {
 	name: "AssistanceForm",
+
+	emits: ["formSubmitted", "formClosed"],
 
 	components: {
 		DataTextarea,
@@ -396,13 +406,19 @@ export default {
 
 	methods: {
 		async fetchSubsectors() {
-			await SectorsService.getListOfSubSectors(this.formModel.sector)
-				.then(({ data }) => {
-					this.findSubsectorName(data);
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Subsectors")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await SectorsService.getListOfSubSectors(this.formModel.sector);
+
+				checkResponseStatus(status, message);
+
+				this.findSubsectorName(data);
+			} catch (e) {
+				Notification(`${this.$t("Subsectors")}: ${e.message || e}`, "error");
+			}
 		},
 
 		findSubsectorName(data) {
@@ -420,6 +436,7 @@ export default {
 			const data = {
 				id: this.formModel.id,
 				note: this.formModel.note,
+				eloNumber: this.formModel.eloNumber,
 				...(!this.isAssistanceValidated && {
 					name: this.formModel.name,
 					round: this.formModel.round?.code,

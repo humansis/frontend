@@ -3,7 +3,7 @@
 		<DataSelect
 			v-model="formModel.criteriaTarget"
 			:items="options.criteriaTargets"
-			:loading="criteriaTargetLoading"
+			:loading="loading.isCriteriaTarget"
 			:error-messages="validationMsg('criteriaTarget')"
 			label="Criteria Target"
 			name="criteria-target"
@@ -14,7 +14,7 @@
 		<DataSelect
 			v-model="formModel.criteria"
 			:items="options.criteria"
-			:loading="criteriaLoading"
+			:loading="loading.isCriteria"
 			:error-messages="validationMsg('criteria')"
 			label="Criteria"
 			name="criteria"
@@ -25,7 +25,7 @@
 		<DataSelect
 			v-model="formModel.condition"
 			:items="options.conditions"
-			:loading="criteriaConditionsLoading"
+			:loading="loading.isCriteriaConditions"
 			:error-messages="validationMsg('condition')"
 			label="Condition"
 			name="condition"
@@ -47,8 +47,8 @@
 				v-else-if="isValueMultiselect"
 				v-model="formModel.value"
 				:items="valueSelectOptions"
-				:loading="valueSelectLoading"
-				:disabled="valueDisabled"
+				:loading="loading.isValueSelect"
+				:disabled="isValueDisabled"
 				:error-messages="validationMsg('value')"
 				label="Value"
 				name="value"
@@ -167,6 +167,11 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		targetType: {
+			type: String,
+			required: true,
+		},
 	},
 
 	data() {
@@ -193,13 +198,14 @@ export default {
 				],
 			},
 			valueSelectOptions: [],
-			valueSelectLoading: false,
+			loading: {
+				isValueSelect: false,
+				isCriteriaTarget: false,
+				isCriteria: false,
+				isCriteriaConditions: false,
+			},
 			fieldTypeToDisplay: "",
-			criteriaTargetLoading: false,
-			criteriaLoading: false,
-			criteriaConditionsLoading: false,
-			advancedOptions: false,
-			valueDisabled: false,
+			isValueDisabled: false,
 		};
 	},
 
@@ -232,26 +238,33 @@ export default {
 	},
 
 	created() {
-		this.advancedOptions = false;
 		this.fetchCriteriaTargets();
 	},
 
 	methods: {
 		async fetchCriteriaTargets() {
-			this.criteriaTargetLoading = true;
+			try {
+				this.loading.isCriteriaTarget = true;
 
-			await AssistancesService.getAssistanceSelectionCriteriaTargets()
-				.then(({ data }) => { this.options.criteriaTargets = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Criteria Targets")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistanceSelectionCriteriaTargets();
 
-			this.criteriaTargetLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.criteriaTargets = data;
+			} catch (e) {
+				Notification(`${this.$t("Criteria Targets")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.isCriteriaTarget = false;
+			}
 		},
 
 		async fetchCriteriaFields(target) {
 			try {
-				this.criteriaLoading = true;
+				this.loading.isCriteria = true;
 
 				const {
 					data: { data },
@@ -267,70 +280,110 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Criteria Fields")}: ${e.message || e}`, "error");
 			} finally {
-				this.criteriaLoading = false;
+				this.loading.isCriteria = false;
 			}
 		},
 
 		async fetchCriteriaConditions(target, field) {
-			this.criteriaConditionsLoading = true;
+			try {
+				this.loading.isCriteriaConditions = true;
 
-			await AssistancesService.getAssistanceSelectionCriteriaConditions(target.code, field.code)
-				.then(({ data }) => {
-					this.options.conditions = data;
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getAssistanceSelectionCriteriaConditions(
+					target.code,
+					field.code,
+				);
 
-					if (data.length === 1 && data[0].code === "=") {
-						this.formModel.condition = { ...data[0] };
-					}
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Criteria Conditions")} ${e.message || e}`, "error");
-				});
+				checkResponseStatus(status, message);
 
-			this.criteriaConditionsLoading = false;
+				this.options.conditions = data;
+
+				if (data.length === 1 && data[0].code === "=") {
+					this.formModel.condition = { ...data[0] };
+				}
+			} catch (e) {
+				Notification(`${this.$t("Criteria Conditions")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.isCriteriaConditions = false;
+			}
 		},
 
 		async fetchResidenceStatuses() {
-			this.valueSelectLoading = true;
+			try {
+				this.loading.isValueSelect = true;
 
-			await BeneficiariesService.getListOfResidenceStatuses()
-				.then(({ data }) => {
-					this.valueSelectOptions = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Residency Statuses")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfResidenceStatuses();
 
-			this.valueSelectLoading = false;
+				checkResponseStatus(status, message);
+
+				this.valueSelectOptions = data;
+			} catch (e) {
+				Notification(`${this.$t("Residency Statuses")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.isValueSelect = false;
+			}
 		},
 
 		async fetchLivelihoods() {
-			this.valueSelectLoading = true;
+			try {
+				this.loading.isValueSelect = true;
 
-			await BeneficiariesService.getListOfLivelihoods()
-				.then(({ data }) => {
-					this.valueSelectOptions = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Livelihoods")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfLivelihoods();
 
-			this.valueSelectLoading = false;
+				checkResponseStatus(status, message);
+
+				this.valueSelectOptions = data;
+			} catch (e) {
+				Notification(`${this.$t("Livelihoods")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.isValueSelect = false;
+			}
 		},
 
 		async fetchLocationsTypes() {
-			this.valueSelectLoading = true;
+			try {
+				this.loading.isValueSelect = true;
 
-			await BeneficiariesService.getListOfLocationsTypes()
-				.then(({ data }) => { this.valueSelectOptions = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Location Types")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfLocationsTypes();
 
-			this.valueSelectLoading = false;
+				checkResponseStatus(status, message);
+
+				this.valueSelectOptions = data;
+			} catch (e) {
+				Notification(`${this.$t("Location Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.isValueSelect = false;
+			}
 		},
 
 		prepareDataForCriteria(selectionCriteria) {
-			this.options.criteria = selectionCriteria.sort((a, b) => {
+			let modifiedSelectionCriteria = selectionCriteria;
+
+			if ((this.targetType === ASSISTANCE.TARGET.INDIVIDUAL
+				&& this.formModel.criteriaTarget?.code === ASSISTANCE.CRITERIA_TARGET.HEAD)
+			|| (this.targetType === ASSISTANCE.TARGET.HOUSEHOLD
+					&& this.formModel.criteriaTarget?.code === ASSISTANCE.CRITERIA_TARGET.BENEFICIARY)) {
+				modifiedSelectionCriteria = modifiedSelectionCriteria.filter(
+					(criteria) => criteria.code !== ASSISTANCE.CRITERIA.HAS_VALID_SMART_CARD,
+				);
+			}
+
+			modifiedSelectionCriteria = modifiedSelectionCriteria.sort((a, b) => {
 				const alphaNumericOrder = a.value.localeCompare(b.value, undefined, {
 					numeric: true,
 					sensitivity: "base",
@@ -349,7 +402,7 @@ export default {
 				return alphaNumericOrder;
 			});
 
-			this.options.criteria = this.options.criteria.map((criteria) => {
+			modifiedSelectionCriteria = modifiedSelectionCriteria.map((criteria) => {
 				const value = criteria.fieldType === ASSISTANCE.CRITERIA_FIELD_TYPE.CUSTOM
 					? `${criteria.value} (${this.$t("Custom Field")})`
 					: criteria.value;
@@ -359,6 +412,8 @@ export default {
 					value,
 				};
 			});
+
+			this.options.criteria = modifiedSelectionCriteria;
 		},
 
 		presetValueBasedOnCriteria(criteria) {
@@ -366,17 +421,16 @@ export default {
 			// if any of these criteria is set, preset value to true and disable the field
 			if (criteriaWithPresetValue.includes(criteria.code)) {
 				[this.formModel.value] = this.options.boolean;
-				this.valueDisabled = true;
+				this.isValueDisabled = true;
 			} else {
-				this.valueDisabled = false;
+				this.isValueDisabled = false;
 			}
 		},
 
 		onSubmitForm() {
 			this.v$.$touch();
-			if (this.v$.$invalid) {
-				return;
-			}
+
+			if (this.v$.$invalid) return;
 
 			if (this.fieldTypeToDisplay === ASSISTANCE.FIELD_TYPE.LOCATION
 				&& this.$refs.locationForm.submitLocationForm()) {

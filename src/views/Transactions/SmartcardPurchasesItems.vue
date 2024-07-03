@@ -92,6 +92,7 @@ import grid from "@/mixins/grid";
 import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { EXPORT, TABLE } from "@/consts";
@@ -168,32 +169,44 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
-			this.table.progress = null;
+			try {
+				this.isLoadingList = true;
+				this.table.progress = null;
 
-			this.renameAdms();
-			this.setGridFiltersToUrl("purchases");
-			await TransactionService.getListOfSmartcardPurchasedItems(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+				this.renameAdms();
+				this.setGridFiltersToUrl("purchases");
+
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(({ data, totalCount }) => {
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await TransactionService.getListOfSmartcardPurchasedItems({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					filters: this.filters,
+					sort,
+				});
+
 				this.table.data = [];
+
+				checkResponseStatus(status, message);
+
 				this.table.progress = 10;
 				this.table.total = totalCount;
 				this.table.dataUpdated = true;
+
 				if (data.length > 0) {
 					this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
-				Notification(`${this.$t("Smartcard Purchases")} ${e.message || e}`, "error");
-			});
-
-			this.isLoadingList = false;
+			} catch (e) {
+				Notification(`${this.$t("Smartcard Purchases")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		onRedirectToTab(tab) {
@@ -246,18 +259,25 @@ export default {
 					this.exportControl.loading = true;
 
 					const filename = `Purchased items ${normalizeExportDate()}`;
-					const { data, status, message } = await TransactionService.exportSmartcardPurchasesItems(
+					const sort = this.table.sortColumn !== ""
+						? `${this.table.sortColumn}.${this.table.sortDirection}`
+						: "";
+					const {
+						data,
+						status,
+						message,
+					} = await TransactionService.exportSmartcardPurchasesItems({
+						page: this.table.currentPage,
+						size: this.perPage,
+						search: this.table.searchPhrase,
+						filters: this.filters,
 						format,
-						this.table.currentPage,
-						this.perPage,
-						this.table.sortColumn !== "" ? `${this.table.sortColumn}.${this.table.sortDirection}` : "",
-						this.table.searchPhrase,
-						this.filters,
-					);
+						sort,
+					});
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Smartcard Purchases")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export Smartcard Purchases")}: ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

@@ -1,6 +1,6 @@
 <template>
 	<!-- TODO Implement else -->
-	<div v-if="identityStepActive && status">
+	<div v-if="identityStepActive && importStatus">
 		<v-card class="pa-5">
 			<div>
 				<Loading v-if="isCheckingIdentity" is-large />
@@ -150,6 +150,7 @@
 import ImportService from "@/services/ImportService";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import Loading from "@/components/Loading";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
@@ -179,7 +180,7 @@ export default {
 			required: true,
 		},
 
-		status: {
+		importStatus: {
 			type: String,
 			default: "",
 		},
@@ -193,7 +194,6 @@ export default {
 			file: {},
 			changeStateButtonLoading: false,
 			resolveDuplicitiesLoading: false,
-			importStatus: "",
 			duplicities: [],
 			resolversAllLoading: false,
 			resolversAllActive: "",
@@ -225,18 +225,18 @@ export default {
 		},
 
 		identityStepActive() {
-			return this.status === IMPORT.STATUS.IDENTITY_CHECK
-				|| this.status === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
-				|| this.status === IMPORT.STATUS.IDENTITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK
+				|| this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_FAILED;
 		},
 
 		isCheckingIdentity() {
-			return this.status === IMPORT.STATUS.IDENTITY_CHECK;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK;
 		},
 
 		canResolveDuplicities() {
-			return this.status === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
-				|| this.status === IMPORT.STATUS.IDENTITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_FAILED;
 		},
 
 		totalEntries() {
@@ -302,10 +302,6 @@ export default {
 			this.changeStateButtonLoading = value;
 		},
 
-		status(value) {
-			this.importStatus = value;
-		},
-
 		duplicities() {
 			this.allFromSolved = true;
 		},
@@ -324,25 +320,36 @@ export default {
 			this.duplicities = value;
 		},
 
-		onChangeBulkDuplicitiesStatus(status) {
-			const { importId } = this.$route.params;
-			this.resolversAllLoading = true;
-			this.allFromSolved = false;
+		async onChangeBulkDuplicitiesStatus(duplicitiesStatus) {
+			try {
+				this.resolversAllLoading = true;
+				this.allFromSolved = false;
 
-			ImportService.changeBulkDuplicitiesStatus(importId, { status })
-				.then((response) => {
-					if (response.status === 202) {
-						this.resolversAllActive = status;
+				const { importId } = this.$route.params;
 
-						if (this.duplicitiesContentOpened) {
-							this.$refs.duplicityResolver.fetchData();
-						}
-						Notification(this.$t("Duplicities were resolved"), "success");
-					}
-				}).finally(() => {
-					this.resolversAllLoading = false;
-					this.$emit("updated");
+				const {
+					status,
+					message,
+				} = await ImportService.changeBulkDuplicitiesStatus({
+					body: { status: duplicitiesStatus },
+					importId,
 				});
+
+				checkResponseStatus(status, message);
+
+				this.resolversAllActive = duplicitiesStatus;
+
+				if (this.duplicitiesContentOpened) {
+					await this.$refs.duplicityResolver.fetchData();
+				}
+
+				Notification(this.$t("Duplicities were resolved"), "success");
+			} catch (e) {
+				Notification(`${this.$t("Change Duplicities")}: ${e.message || e}`, "error");
+			} finally {
+				this.resolversAllLoading = false;
+				this.$emit("updated");
+			}
 		},
 
 		onResolveDuplicities() {

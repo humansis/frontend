@@ -122,23 +122,27 @@
 						<DataInput
 							v-model="formModel.latitude"
 							:disabled="formDisabled"
+							:error-messages="validationMsg('latitude')"
 							label="Latitude"
 							name="latitude"
 							type="number"
 							class="mb-4"
 							hide-spin-buttons
 							optional
+							@update:modelValue="onValidate('latitude')"
 						/>
 
 						<DataInput
 							v-model="formModel.longitude"
 							:disabled="formDisabled"
+							:error-messages="validationMsg('longitude')"
 							label="Longitude"
 							name="longitude"
 							type="number"
 							class="mb-4"
 							hide-spin-buttons
 							optional
+							@update:modelValue="onValidate('longitude')"
 						/>
 
 						<h2 class="text-h6 font-weight-bold mb-2">{{ $t('Other') }}</h2>
@@ -402,7 +406,7 @@
 </template>
 
 <script>
-import { maxLength, required, requiredIf } from "@vuelidate/validators";
+import { maxLength, maxValue, minValue, required, requiredIf } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DataTextarea from "@/components/Inputs/DataTextarea";
@@ -445,6 +449,14 @@ export default {
 				nationalCardNumber: {
 					maxLength: maxLength(255),
 					required: requiredIf(this.formModel.nationalCardType),
+				},
+				latitude: {
+					minValue: minValue(-90),
+					maxValue: maxValue(90),
+				},
+				longitude: {
+					minValue: minValue(-180),
+					maxValue: maxValue(180),
 				},
 				nationalCardType: { required: requiredIf(this.formModel.nationalCardNumber) },
 				phone1: {

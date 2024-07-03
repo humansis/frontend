@@ -24,6 +24,7 @@ import DataGrid from "@/components/DataGrid";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, TABLE } from "@/consts";
 
@@ -59,7 +60,7 @@ export default {
 					{ key: "projectName", title: "Project", type: "link", sortable: false },
 					{ key: "assistanceName", title: "Assistance", type: "link", sortable: false },
 					{ key: "fullLocationNames", title: "Location", sortable: false },
-					{ key: "dateDistribution", title: "Assistance Date", type: "date" },
+					{ key: "dateDistribution", title: "Assistance Date", type: "datetime" },
 					{ key: "commodity", sortable: false },
 					{ key: "carrierNumber", title: "Card No.", sortable: false },
 					{ key: "amount", title: "Distributed", sortable: false },
@@ -80,27 +81,36 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await BeneficiariesService.getListOfDistributedItems(
-				this.$route.params.householdId,
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-			)
-				.then(async ({ data, totalCount }) => {
-					this.table.total = totalCount;
-					this.table.data = [];
-					if (totalCount > 0) {
-						await this.prepareDataForTable(data);
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Assistances")} ${e.message || e}`, "error");
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfDistributedItems({
+					id: this.$route.params.householdId,
+					page: this.table.currentPage,
+					size: this.perPage,
+					sort,
 				});
 
-			this.isLoadingList = false;
+				checkResponseStatus(status, message);
+
+				this.table.total = totalCount;
+				this.table.data = [];
+
+				if (totalCount > 0) {
+					await this.prepareDataForTable(data);
+				}
+			} catch (e) {
+				Notification(`${this.$t("Assistances")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		prepareDataForTable(data) {

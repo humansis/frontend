@@ -1,29 +1,13 @@
 <template>
-	<h2 class="text-h6 mt-5 text-left font-weight-bold">{{ title }}</h2>
+	<h2 class="text-h6 mt-5 text-left font-weight-bold">{{ $t(title) }}</h2>
 
-	<v-card
-		class="mx-auto mt-5"
-	>
+	<v-card class="mx-auto mt-5">
 		<v-card-text>
 			<DataSelect
-				v-if="visible.communities"
-				v-model="formModel.communities"
-				:items="options.communities"
-				:loading="loading.communities"
-				:error-messages="validationMsg('communities')"
-				label="Communities"
-				name="communities"
-				item-title="name"
-				item-value="id"
-				multiple
-				@update:modelValue="onTargetSelect('communities')"
-			/>
-
-			<DataSelect
-				v-if="visible.institutions"
+				v-if="visible.isInstitutions"
 				v-model="formModel.institutions"
 				:items="options.institutions"
-				:loading="loading.institutions"
+				:loading="loading.isInstitutions"
 				:error-messages="validationMsg('institutions')"
 				label="Institutions"
 				name="institutions"
@@ -39,11 +23,11 @@
 <script>
 import { requiredIf } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
-import CommunityService from "@/services/CommunityService";
 import InstitutionService from "@/services/InstitutionService";
 import DataSelect from "@/components/Inputs/DataSelect";
 import addressHelper from "@/mixins/addressHelper";
 import validation from "@/mixins/validation";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -60,9 +44,8 @@ export default {
 	validations() {
 		return {
 			formModel: {
-				communities: { required: requiredIf(this.visible?.communities),
-				},
-				institutions: { required: requiredIf(this.visible?.institutions),
+				institutions: {
+					required: requiredIf(this.visible?.isInstitutions),
 				},
 			},
 		};
@@ -87,110 +70,77 @@ export default {
 
 	data() {
 		return {
+			title: "Institutions",
 			formModel: {
-				communities: [],
 				institutions: [],
 			},
 			options: {
-				communities: [],
 				institutions: [],
 			},
 			loading: {
-				communities: true,
-				institutions: true,
+				isInstitutions: true,
 			},
 		};
 	},
 
-	computed: {
-		title() {
-			return this.visible?.communities ? this.$t("Communities") : this.$t("Institutions");
-		},
-	},
+	async mounted() {
+		await this.fetchInstitutions();
 
-	watch: {
-		visible: "fetchData",
-		isAssistanceDuplicated(value) {
-			if (value) {
-				const assistanceId = this.$route.query.duplicateAssistance;
+		if (this.isAssistanceDuplicated) {
+			const assistanceId = this.$route.query.duplicateAssistance;
 
-				this.fetchUsedInstitutions(assistanceId);
-			}
-		},
-	},
-
-	mounted() {
-		this.fetchData();
+			await this.fetchUsedInstitutions(assistanceId);
+		}
 	},
 
 	methods: {
-		submit() {
+		isFormValid() {
 			this.v$.$touch();
+
 			return !this.v$.$invalid;
 		},
 
 		async fetchData() {
-			if (this.visible?.communities) await this.fetchCommunities();
 			if (this.visible?.institutions) await this.fetchInstitutions();
 		},
 
 		async fetchInstitutions() {
-			await InstitutionService.getListOfInstitutions(
-				null,
-				null,
-				null,
-				null,
-				{ projects: [this.projectId] },
-			)
-				.then(({ data }) => {
-					this.options.institutions = data;
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await InstitutionService.getListOfInstitutions({
+					filters: { projects: [this.projectId] },
 				});
-			this.loading.institutions = false;
-		},
 
-		async fetchCommunities() {
-			await CommunityService.getListOfCommunities()
-				.then(async ({ data }) => {
-					this.options.communities = await this.prepareCommunitiesForSelect(data);
-				})
-				.catch((e) => {
-					Notification(`${this.$t("Communities")} ${e.message || e}`, "error");
-				});
-			this.loading.communities = false;
+				checkResponseStatus(status, message);
+
+				this.options.institutions = data;
+			} catch (e) {
+				Notification(`${this.$t("Institutions")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.isInstitutions = false;
+			}
 		},
 
 		async fetchUsedInstitutions(assistanceId) {
 			try {
-				const { data: { data } } = await AssistancesService.getListOfInstitutions(
-					assistanceId,
-				);
+				const {
+					data: { data },
+					status,
+					message,
+				} = await AssistancesService.getListOfInstitutions({
+					id: assistanceId,
+				});
+
+				checkResponseStatus(status, message);
 
 				this.prepareDuplicatedInstitutions(data);
 				this.onTargetSelect();
 			} catch (e) {
 				Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
 			}
-		},
-
-		async prepareCommunitiesForSelect(data) {
-			const filledData = [];
-			const addressesIds = [];
-
-			data.forEach((item, key) => {
-				filledData[key] = item;
-				addressesIds.push(item.addressId);
-			});
-
-			const mappedLocations = await this.getPreparedLocations(addressesIds);
-
-			filledData.forEach((item, key) => {
-				filledData[key].name = this.prepareEntityForTable(item.addressId, mappedLocations, "locationName");
-			});
-
-			return filledData;
 		},
 
 		prepareDuplicatedInstitutions(data) {
@@ -212,18 +162,13 @@ export default {
 				this.onValidate(field);
 			}
 
-			const communities = [];
 			const institutions = [];
-
-			if (this.formModel.communities.length) {
-				this.formModel.communities.forEach(({ id }) => communities.push(id));
-			}
 
 			if (this.formModel.institutions.length) {
 				this.formModel.institutions.forEach(({ id }) => institutions.push(id));
 			}
 
-			this.$emit("updatedData", { communities, institutions });
+			this.$emit("updatedData", { institutions });
 		},
 	},
 };

@@ -1,6 +1,6 @@
 <template>
 	<!-- TODO Implement else -->
-	<v-card v-if="integrityStepActive && status" class="pa-5">
+	<v-card v-if="integrityStepActive && importStatus" class="pa-5">
 		<div>
 			<Loading v-if="isCheckingIntegrity" is-large />
 
@@ -202,7 +202,7 @@
 									</h2>
 
 									<small>Upload date:
-										{{ $moment(uploadedDate).format("YYYY-MM-DD hh:mm") }}
+										{{ $moment.utc(uploadedDate).format("YYYY-MM-DD HH:mm") }}
 									</small>
 								</div>
 							</td>
@@ -343,6 +343,8 @@ import ImportService from "@/services/ImportService";
 import FileUpload from "@/components/Inputs/FileUpload";
 import Loading from "@/components/Loading";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
+import { checkResponseStatus } from "@/utils/fetcher";
+import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
@@ -369,7 +371,7 @@ export default {
 			required: true,
 		},
 
-		status: {
+		importStatus: {
 			type: String,
 			default: "",
 		},
@@ -399,7 +401,6 @@ export default {
 			startIntegrityCheckAgainLoading: false,
 			downloadAffectedRecordsLoading: false,
 			changeStateButtonLoading: false,
-			importStatus: this.status,
 			invalidFiles: [],
 			filesUpload: false,
 			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
@@ -408,13 +409,13 @@ export default {
 
 	computed: {
 		integrityStepActive() {
-			return this.status === IMPORT.STATUS.INTEGRITY_CHECK
-				|| this.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
-				|| this.status === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK
+				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		isCheckingIntegrity() {
-			return this.status === IMPORT.STATUS.INTEGRITY_CHECK;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK;
 		},
 
 		totalEntries() {
@@ -458,12 +459,12 @@ export default {
 		},
 
 		isIntegrityCheckFailed() {
-			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		isViolationMessageHide() {
-			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
-				|| this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK;
 		},
 
 		affectedRecordsClass() {
@@ -480,9 +481,8 @@ export default {
 			this.changeStateButtonLoading = value;
 		},
 
-		status(value) {
+		importStatus() {
 			this.getAffectedRecords();
-			this.importStatus = value;
 		},
 
 		amountIntegrityCorrect(newValue) {
@@ -499,37 +499,41 @@ export default {
 	},
 
 	methods: {
-		getAffectedRecords() {
-			const { importId } = this.$route.params;
+		async getAffectedRecords() {
+			try {
+				this.downloadAffectedRecordsLoading = true;
+				this.dropFiles = [];
 
-			this.downloadAffectedRecordsLoading = true;
-			this.dropFiles = [];
+				const { importId } = this.$route.params;
 
-			ImportService.getFilesWithInvalidEntriesFromImport(importId)
-				.then(({ data: { data } }) => {
-					this.invalidFiles = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Invalid Files")} ${e.message || e}`, "error");
-				}).finally(() => {
-					this.downloadAffectedRecordsLoading = false;
-				});
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ImportService.getFilesWithInvalidEntriesFromImport(importId);
+
+				checkResponseStatus(status, message);
+
+				this.invalidFiles = data;
+			} catch (e) {
+				Notification(`${this.$t("Invalid Files")}: ${e.message || e}`, "error");
+			} finally {
+				this.downloadAffectedRecordsLoading = false;
+			}
 		},
 
-		onDownloadAffectedFile(id, file) {
-			ImportService.downloadFileWithInvalidEntriesFromImport(id)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `${file}`;
-						link.click();
-					} else {
-						Notification(message, "warning");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Downloaded File")} ${e.message || e}`, "error");
-				});
+		async onDownloadAffectedFile(id, file) {
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await ImportService.downloadFileWithInvalidEntriesFromImport(id);
+
+				downloadFile(data, file, status, "", message);
+			} catch (e) {
+				Notification(`${this.$t("Downloaded File")}: ${e.message || e}`, "error");
+			}
 		},
 
 		onStartIdentityCheck() {
@@ -540,30 +544,35 @@ export default {
 			});
 		},
 
-		onStartIntegrityCheckAgain() {
+		async onStartIntegrityCheckAgain() {
+			if (this.dropFiles.length !== 1) return;
+
 			const { importId } = this.$route.params;
 
-			if (this.dropFiles.length === 1) {
+			try {
 				this.startIntegrityCheckAgainLoading = true;
 
-				ImportService.uploadFilesIntoImport(importId, this.dropFiles)
-					.then(({ status, message }) => {
-						if (status === 200) {
-							Notification(this.$t("Uploaded Successfully"), "success");
+				const {
+					status,
+					message,
+				} = await ImportService.uploadFilesIntoImport({
+					files: this.dropFiles,
+					importId,
+				});
 
-							this.filesUpload = false;
-							this.invalidFiles = [];
-						} else {
-							Notification(message, "warning");
-						}
-					}).catch((e) => {
-						Notification(`${this.$t("Upload")} ${e.message}`, "error");
-					}).finally(() => {
-						this.startIntegrityCheckAgainLoading = false;
-						setTimeout(() => {
-							this.getAffectedRecords();
-						}, 1500);
-					});
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Uploaded Successfully"), "success");
+
+				this.filesUpload = false;
+				this.invalidFiles = [];
+			} catch (e) {
+				Notification(`${this.$t("Upload")}: ${e.message}`, "error");
+			} finally {
+				this.startIntegrityCheckAgainLoading = false;
+				setTimeout(() => {
+					this.getAffectedRecords();
+				}, 1500);
 			}
 		},
 
@@ -572,7 +581,7 @@ export default {
 		},
 
 		getDateAndTime(date) {
-			return this.$moment(date).format("YYYY-MM-DD hh:mm");
+			return this.$moment.utc(date).format("YYYY-MM-DD HH:mm");
 		},
 
 		getParsedArray(violations) {

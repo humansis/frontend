@@ -22,7 +22,7 @@
 		>
 			<AssistanceMoveForm
 				:projects="projects"
-				@formClosed="onCloseAssistanceMoveModal"
+				@formClosed="assistanceMoveModal.isOpened = false"
 				@formSubmitted="onMoveAssistance"
 			/>
 		</Modal>
@@ -36,7 +36,7 @@
 				:form-model="assistanceModel"
 				:assistance="assistance"
 				:editing="assistanceModal.isEditing"
-				@formClosed="onCloseAssistanceModal"
+				@formClosed="assistanceModal.isOpened = false"
 				@formSubmitted="onEditAssistance"
 			/>
 		</Modal>
@@ -62,6 +62,7 @@ import Modal from "@/components/Inputs/Modal";
 import AssistancesList from "@/components/Projects/AssistancesList";
 import ProjectSummary from "@/components/Projects/ProjectSummary";
 import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -104,6 +105,7 @@ export default {
 				target: "",
 				note: "",
 				round: null,
+				eloNumber: "",
 			},
 		};
 	},
@@ -121,14 +123,6 @@ export default {
 			this.getListOfProjects();
 		},
 
-		onCloseAssistanceModal() {
-			this.assistanceModal.isOpened = false;
-		},
-
-		onCloseAssistanceMoveModal() {
-			this.assistanceMoveModal.isOpened = false;
-		},
-
 		onGoToAddAssistance() {
 			this.$router.push({
 				name: "AddAssistance",
@@ -137,68 +131,101 @@ export default {
 		},
 
 		async getListOfProjects() {
-			await ProjectService.getListOfProjects()
-				.then(({ data }) => {
-					this.filterProjects(data);
-				}).catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({});
+
+				checkResponseStatus(status, message);
+
+				this.filterProjects(data);
+			} catch (e) {
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async onMoveAssistance({ id }) {
-			await AssistancesService.moveAssistance(
-				this.assistance.id,
-				this.project.id,
-				id,
-			)
-				.then((response) => {
-					if (response.status === 202) {
-						Notification(this.$t("Assistance Successfully Moved"), "success");
-						this.$refs.assistancesList.fetchData();
-					}
-
-					if (response.status === 400) {
-						Notification(`${this.$t("Cannot move the assistance")}: ${response.message}`
-							|| `${this.$t("Error code 400")}`, "error");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
+			try {
+				const {
+					status,
+					message,
+				} = await AssistancesService.moveAssistance({
+					assistanceId: this.assistance.id,
+					originalProjectId: this.project.id,
+					targetProjectId: id,
 				});
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Assistance Successfully Moved"), "success");
+				await this.$refs.assistancesList.fetchData();
+			} catch (e) {
+				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
+			}
 		},
 
 		async onEditAssistance(
-			{ id, name, dateDistribution, dateExpiration, round, note, locationId },
+			{
+				id,
+				name,
+				dateDistribution,
+				dateExpiration,
+				round,
+				eloNumber,
+				note,
+				locationId,
+			},
 		) {
 			const formattedDateDistribution = dateDistribution
 				? this.$moment(dateDistribution).format("YYYY-MM-DD")
 				: null;
-
 			const formattedDateExpiration = dateExpiration
 				? this.$moment(dateExpiration).format("YYYY-MM-DD")
 				: null;
 
-			await AssistancesService.updateAssistance({
-				id, name, formattedDateDistribution, formattedDateExpiration, round, note, locationId,
-			})
-				.then((response) => {
-					if (response.status === 200) {
-						Notification(this.$t("Assistance Successfully Updated"), "success");
-						this.$refs.assistancesList.fetchData();
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
+			const assistanceBody = {
+				name,
+				round,
+				note: note?.length ? note : null,
+				locationId,
+				eloNumber: eloNumber?.length ? eloNumber : null,
+				...(formattedDateDistribution && { dateDistribution: formattedDateDistribution }),
+				...(formattedDateExpiration && { dateExpiration: formattedDateExpiration }),
+			};
+
+			try {
+				const {
+					status,
+					message,
+				} = await AssistancesService.updateAssistance({
+					id, assistanceBody,
 				});
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Assistance Successfully Updated"), "success");
+				await this.$refs.assistancesList.fetchData();
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async onRemoveAssistance(id) {
-			await AssistancesService.removeAssistance(id).then((response) => {
-				if (response.status === 204) {
-					Notification(this.$t("Assistance Successfully Deleted"), "success");
-					this.$refs.assistancesList.fetchData();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-			});
+			try {
+				const {
+					status,
+					message,
+				} = await AssistancesService.removeAssistance(id);
+
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("Assistance Successfully Deleted"), "success");
+				await this.$refs.assistancesList.fetchData();
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
+			}
 		},
 
 		onShowEdit(assistance) {
@@ -245,6 +272,7 @@ export default {
 				subsector,
 				type,
 				round,
+				eloNumber,
 				note,
 			},
 		) {
@@ -267,6 +295,7 @@ export default {
 				name,
 				projectId,
 				note,
+				eloNumber,
 				round: {
 					code: (round === this.$t("N/A") ? null : round),
 					value: round,

@@ -64,7 +64,7 @@
 			/>
 		</template>
 
-		<h4>{{ $t("Image") }}</h4>
+		<h4 :data-cy="identifierBuilder('image-text')">{{ $t("Image") }}</h4>
 
 		<FileUpload
 			v-if="!formDisabled"
@@ -92,7 +92,7 @@
 		<v-spacer />
 
 		<v-btn
-			:data-cy="identifierBuilder('close-input')"
+			:data-cy="identifierBuilder('close-button')"
 			class="text-none"
 			color="blue-grey-lighten-4"
 			variant="elevated"
@@ -103,7 +103,7 @@
 
 		<v-btn
 			v-if="!formDisabled"
-			:data-cy="identifierBuilder('submit-input')"
+			:data-cy="identifierBuilder(`${(submitButtonLabel)}-button`)"
 			color="primary"
 			class="text-none ml-3"
 			variant="elevated"
@@ -177,7 +177,7 @@ export default {
 
 	data() {
 		return {
-			dataCy: "products-form",
+			dataCy: "items-form",
 			options: {
 				currencies: CURRENCIES,
 			},

@@ -26,6 +26,7 @@ import MyOrganizationsService from "@/services/MyOrganizationsService";
 import MyOrganizationForm from "@/components/AdministrativeSettings/MyOrganizations/Form";
 import MyOrganizationsList from "@/components/AdministrativeSettings/MyOrganizations/List";
 import Modal from "@/components/Inputs/Modal";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -147,37 +148,62 @@ export default {
 		},
 
 		async updateMyOrganization(id, myOrganizationBody, image) {
-			this.myOrganizationModal.isWaiting = true;
+			try {
+				this.myOrganizationModal.isWaiting = true;
 
-			await MyOrganizationsService.updateMyOrganization(id, myOrganizationBody)
-				.then(async ({ data, status }) => {
-					if (status === 200) {
-						await this.uploadImage(data.id, image);
-						Notification(this.$t("My Organization Successfully Updated"), "success");
-						this.$refs.myOrganizationsList.fetchData();
-						this.onCloseMyOrganizationModal();
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Organization")} ${e.message || e}`, "error");
-					this.myOrganizationModal.isWaiting = false;
+				const {
+					data,
+					status,
+					message,
+				} = await MyOrganizationsService.updateMyOrganization({
+					body: myOrganizationBody,
+					id,
 				});
+
+				checkResponseStatus(status, message);
+
+				await this.uploadImage(data.id, image);
+				Notification(this.$t("My Organization Successfully Updated"), "success");
+				await this.$refs.myOrganizationsList.fetchData();
+				this.onCloseMyOrganizationModal();
+			} catch (e) {
+				Notification(`${this.$t("Organization")}: ${e.message || e}`, "error");
+			} finally {
+				this.myOrganizationModal.isWaiting = false;
+			}
 		},
 
 		async uploadImage(id, image) {
-			if (image) {
-				await MyOrganizationsService.uploadImage(id, image);
+			if (!image) return;
+
+			try {
+				const {
+					status,
+					message,
+				} = await MyOrganizationsService.uploadImage({
+					id,
+					image,
+				});
+
+				checkResponseStatus(status, message);
+			} catch (e) {
+				Notification(`${this.$t("Image upload")}: ${e.message || e}`, "error");
 			}
 		},
 
 		async onPrintMyOrganization() {
-			await MyOrganizationsService.printMyOrganization()
-				.then((response) => {
-					if (response.status === 200) {
-						Notification(this.$t("Download Is Starting"), "success");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Organization")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					status,
+					message,
+				} = await MyOrganizationsService.printMyOrganization();
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Download Is Starting"), "success");
+			} catch (e) {
+				Notification(`${this.$t("Organization")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

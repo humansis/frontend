@@ -90,7 +90,7 @@
 			<SmartCardInvalidateForm
 				:beneficiary-data="smartCardInvalidateModel"
 				:table-data="table.data"
-				@updateTable="table.data = $event"
+				@updateTable="updateTableAfterInvalidation"
 				@formClosed="smartCardInvalidateModal.isOpened = false"
 			/>
 		</Modal>
@@ -199,6 +199,7 @@
 		item-selectable="selectable"
 		is-row-click-disabled
 		reset-sort-button
+		is-frontend-sort-disabled
 		@update:modelValue="onRowsCheck"
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
@@ -495,12 +496,6 @@ export default {
 					checkableTable: false,
 				},
 				visibleColumns: [],
-				communityColumns: [
-					{ key: "id", title: "ID" },
-					{ key: "name" },
-					{ key: "contactGivenName", title: "Contact Name" },
-					{ key: "contactFamilyName" },
-				],
 				institutionEditColumns: [
 					{ key: "id", title: "ID", sortable: false },
 					{ key: "name" },
@@ -526,11 +521,6 @@ export default {
 			},
 			institutionModal: {
 				isOpened: false,
-				isWaiting: false,
-			},
-			communityModal: {
-				isOpened: false,
-				isEditing: false,
 				isWaiting: false,
 			},
 			inputDistributedModal: {
@@ -561,11 +551,6 @@ export default {
 				justification: null,
 			},
 			institutionModel: { ...INSTITUTION.DEFAULT_FORM_MODEL },
-			communityModel: {
-				addressStreet: null,
-				addressNumber: null,
-				addressPostCode: null,
-			},
 			randomSampleSize: 10,
 			assignVoucherModal: {
 				isOpened: false,
@@ -946,9 +931,15 @@ export default {
 		},
 
 		isSetSmartCardAsInvalidVisible({ status }) {
-			return this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
+			return this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION
+				&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
 				&& this.userCan.invalidateDistribution;
+		},
+
+		updateTableAfterInvalidation(updatedData) {
+			this.table.data = updatedData;
+			this.$emit("fetchAssistanceStatistics");
 		},
 
 		onSetSmartCardAsInvalid(tableIndex, bnfId, reliefPackage) {
@@ -992,40 +983,27 @@ export default {
 			this.isLoadingList = true;
 			this.table.progress = null;
 			this.table.data = [];
+
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					await AssistancesService.getListOfCommunities(
-						this.$route.params.assistanceId,
-						page || this.table.currentPage,
-						size || this.perPage,
-						this.table.sortColumn !== ""
-							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-							: "",
-						this.table.searchPhrase,
-					).then(async ({ data, totalCount }) => {
-						this.table.data = [];
-						this.table.progress = 0;
-						this.$emit("beneficiariesCounted", totalCount);
-						this.table.total = totalCount;
-						if (totalCount > 0) {
-							await this.prepareDataForTable(data);
-						}
-					}).catch((e) => {
-						Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
-					});
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					try {
-						const { data: { data, totalCount } } = await AssistancesService
-							.getListOfInstitutions(
-								this.$route.params.assistanceId,
-								page || this.table.currentPage,
-								size || this.perPage,
-								this.table.sortColumn !== ""
-									? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-									: "",
-								this.filters,
-							);
+						const sort = this.table.sortColumn !== ""
+							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+							: "";
+						const {
+							data: { data, totalCount },
+							status,
+							message,
+						} = await AssistancesService
+							.getListOfInstitutions({
+								id: this.$route.params.assistanceId,
+								page: page || this.table.currentPage,
+								size: size || this.perPage,
+								filters: this.filters,
+								sort,
+							});
+
+						checkResponseStatus(status, message);
 
 						this.table.data = [];
 						this.table.progress = 0;
@@ -1038,6 +1016,7 @@ export default {
 					} catch (e) {
 						Notification(`${this.$t("Institutions")} ${e.message || e}`, "error");
 					}
+
 					break;
 				case ASSISTANCE.TARGET.HOUSEHOLD:
 				case ASSISTANCE.TARGET.INDIVIDUAL:
@@ -1046,18 +1025,25 @@ export default {
 						const search = this.assistanceDetail
 							? { phrase: this.table.searchPhrase, field: this.table.searchField }
 							: this.table.searchPhrase;
+						const sort = this.table.sortColumn !== ""
+							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+							: "";
 
-						const { data: { data, totalCount } } = await AssistancesService
-							.getOptimizedListOfBeneficiaries(
-								this.$route.params.assistanceId,
-								page || this.table.currentPage,
-								size || this.perPage,
-								this.table.sortColumn !== ""
-									? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-									: "",
+						const {
+							data: { data, totalCount },
+							status,
+							message,
+						} = await AssistancesService
+							.getOptimizedListOfBeneficiaries({
+								id: this.$route.params.assistanceId,
+								page: page || this.table.currentPage,
+								size: size || this.perPage,
+								filters: this.filters,
+								sort,
 								search,
-								this.filters,
-							);
+							});
+
+						checkResponseStatus(status, message);
 
 						this.table.data = [];
 						this.table.progress = 0;
@@ -1068,7 +1054,7 @@ export default {
 							await this.prepareDataForTable(data);
 						}
 					} catch (e) {
-						Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
+						Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
 					} finally {
 						if (this.assistanceDetail) {
 							this.setGridFiltersToUrl("assistanceDetail", false, {
@@ -1087,9 +1073,6 @@ export default {
 			let additionalColumns = [];
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					baseColumns = this.table.communityColumns;
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					baseColumns = this.assistanceDetail
 						? this.institutionDetailColumns
@@ -1125,35 +1108,8 @@ export default {
 		async prepareDataForTable(data) {
 			this.table.progress += 25;
 			this.table.checkedRows = [];
-			let beneficiaryIds = [];
-			let beneficiaries = [];
-
-			const distributionItems = {
-				reliefPackages: [],
-			};
 
 			switch (this.assistance.target) {
-				case ASSISTANCE.TARGET.COMMUNITY:
-					beneficiaryIds = data.map((item) => item.communityId);
-					beneficiaries = await this.getCommunities(beneficiaryIds);
-
-					data.forEach((community, key) => {
-						const foundCommunity = beneficiaries.find(
-							(bnf) => bnf.id === community.communityId,
-						);
-
-						const item = { ...community, ...foundCommunity };
-						this.table.data[key] = item;
-
-						if (item.reliefPackages?.length) {
-							distributionItems.reliefPackages.push(...item.reliefPackages);
-						}
-					});
-
-					this.table.data = [...this.table.data];
-
-					this.table.progress += 55;
-					break;
 				case ASSISTANCE.TARGET.INSTITUTION:
 					data.forEach((item, key) => {
 						const { institution, reliefPackages } = item;
@@ -1175,9 +1131,9 @@ export default {
 							const status = reliefPackages.map((rp) => rp.state);
 							const toDistribute = reliefPackages.map((rp) => `${rp.toDistribute} ${rp.unit}`);
 							const distributed = reliefPackages.map((rp) => `${rp.distributed} ${rp.unit}`);
-							const lastModified = reliefPackages.map((rp) => this.$moment(
+							const lastModified = reliefPackages.map((rp) => this.$moment.utc(
 								rp.lastModified || rp.lastModified,
-							).format("YYYY-MM-DD hh:mm"));
+							).format("YYYY-MM-DD HH:mm"));
 							const isDistributed = reliefPackages.length && reliefPackages.every(
 								(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED,
 							);
@@ -1234,9 +1190,9 @@ export default {
 							(rp) => `${rp.spent ?? 0} ${rp.unit}`,
 						);
 						const lastModified = reliefPackages.map(
-							(rp) => (this.$moment(
+							(rp) => (this.$moment.utc(
 								rp.lastModified || rp.lastModified,
-							).format("YYYY-MM-DD hh:mm")),
+							).format("YYYY-MM-DD HH:mm")),
 						);
 						const phone = beneficiary.phones.length
 							? this.preparePhoneForTable(beneficiary.phones)
@@ -1282,13 +1238,14 @@ export default {
 			try {
 				this.isRecalculationLoading = true;
 
-				const { message, status } = await BeneficiariesService.recalculateReliefPackages(
+				const {
+					message,
+					status,
+				} = await BeneficiariesService.recalculateReliefPackages(
 					this.assistance.id,
 				);
 
-				if (status !== 200) {
-					throw new Error(message);
-				}
+				checkResponseStatus(status, message);
 
 				this.$emit("assistanceUpdated");
 				await this.reloadBeneficiariesList();
@@ -1296,7 +1253,7 @@ export default {
 
 				Notification(this.$t("Assistance Successfully Recalculated"), "success");
 			} catch (e) {
-				Notification(`${this.$t("Recalculation")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Recalculation")}: ${e.message || e}`, "error");
 			} finally {
 				this.isRecalculationLoading = false;
 			}
@@ -1322,7 +1279,7 @@ export default {
 				const updatedRow = {
 					status: [data.state],
 					distributed: [`${data.distributed} ${data.unit}`],
-					lastModified: [this.$moment(data.lastModified).format("YYYY-MM-DD hh:mm")],
+					lastModified: [this.$moment.utc(data.lastModified).format("YYYY-MM-DD HH:mm")],
 					selectable: true,
 				};
 
@@ -1341,31 +1298,42 @@ export default {
 			}
 		},
 
-		async getCommunities(ids) {
-			return BeneficiariesService.getCommunities(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Communities")} ${e.message || e}`, "error");
-				});
-		},
-
 		async getBeneficiaries(ids, filters) {
-			return BeneficiariesService.getBeneficiaries(ids, filters)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getBeneficiaries({
+					ids,
+					filters,
 				});
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async fetchBnfFile3Statistics(bnfFile3ExportId) {
 			try {
-				const { data } = await BeneficiariesService.getBnfFile3ExportStatistics(
+				const {
+					data,
+					status,
+					message,
+				} = await BeneficiariesService.getBnfFile3ExportStatistics(
 					bnfFile3ExportId,
 				);
 
+				checkResponseStatus(status, message);
+
 				this.bnfFile3Statistics = data;
 			} catch (e) {
-				Notification(`${this.$t("BNF File 3 Statistics")} ${e.message || e}`, "error");
+				Notification(`${this.$t("BNF File 3 Statistics")}: ${e.message || e}`, "error");
 			}
 		},
 
@@ -1441,57 +1409,71 @@ export default {
 			if (!this.changeButton) {
 				if (exportType === EXPORT.BNF_FILE_3.OPTION_NAME) {
 					try {
-						const { data, status, message } = await BeneficiariesService.exportBnf3File(
+						const {
+							data,
+							status,
+							message,
+						} = await BeneficiariesService.exportBnf3File({
+							bnfFile3Id: this.assistance.bnfFile3ExportId,
 							format,
-							this.assistance.bnfFile3ExportId,
-						);
+						});
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						Notification(`${this.$t("BNF File 3 Export")} ${e.message || e}`, "error");
+						Notification(`${this.$t("BNF File 3 Export")}: ${e.message || e}`, "error");
 					}
 				} else if (exportType === EXPORT.INSTITUTIONS) {
 					try {
 						const filters = { assistanceId: this.assistance.id };
-						const { data, status, message } = await InstitutionService.exportInstitutions(
+						const {
+							data,
+							status,
+							message,
+						} = await InstitutionService.exportInstitutions({
 							format,
-							null,
 							filters,
-						);
+						});
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						Notification(`${this.$t("Export")} ${e.message || e}`, "error");
+						Notification(`${this.$t("Institutions Export")}: ${e.message || e}`, "error");
 					}
 				} else {
 					try {
 						const sort = `${this.table.sortColumn?.sortKey
 							|| this.table.sortColumn}.${this.table.sortDirection}`;
-						const { data, status, message } = await BeneficiariesService
-							.exportAssistanceBeneficiaries(
-								format,
-								this.$route.params.assistanceId,
-								this.table.searchPhrase,
-								{ exportType },
-								sort,
-							);
+						const {
+							data,
+							status,
+							message,
+						} = await BeneficiariesService.exportAssistanceBeneficiaries({
+							assistanceId: this.$route.params.assistanceId,
+							search: this.table.searchPhrase,
+							format,
+							exportType,
+							sort,
+						});
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
-						Notification(`${this.$t("Export")} ${e.message || e}`, "error");
+						Notification(`${this.$t("Export")}: ${e.message || e}`, "error");
 					}
 				}
 			} else {
 				try {
-					const { data, status, message } = BeneficiariesService.exportBeneficiaries(
+					const {
+						data,
+						status,
+						message,
+					} = await BeneficiariesService.exportBeneficiaries({
+						ids: this.table.data,
+						idsParam: "id",
 						format,
-						this.table.data,
-						"id",
-					);
+					});
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export")}: ${e.message || e}`, "error");
 				}
 			}
 		},

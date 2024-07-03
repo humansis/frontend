@@ -285,6 +285,8 @@
 <script>
 import ImportService from "@/services/ImportService";
 import { normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
+import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
 export default {
@@ -301,7 +303,7 @@ export default {
 			required: true,
 		},
 
-		status: {
+		importStatus: {
 			type: String,
 			default: "",
 		},
@@ -315,7 +317,6 @@ export default {
 	data() {
 		return {
 			importStatistics: {},
-			importStatus: "",
 			changeStateButtonLoading: false,
 			notImportedRows: [],
 			isNotImportedRowsVisible: false,
@@ -324,7 +325,7 @@ export default {
 
 	computed: {
 		finalisationStepActive() {
-			return this.status === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
 		totalEntries() {
@@ -385,10 +386,6 @@ export default {
 		loadingChangeStateButton(value) {
 			this.changeStateButtonLoading = value;
 		},
-
-		status(value) {
-			this.importStatus = value;
-		},
 	},
 
 	mounted() {
@@ -404,13 +401,23 @@ export default {
 			});
 		},
 
-		fetchImportNotImportedRows() {
+		async fetchImportNotImportedRows() {
 			const { importId } = this.$route.params;
 
-			if (importId) {
-				ImportService.getNotImportedRowsInImport(importId).then(({ data }) => {
-					this.notImportedRows = data.data;
-				});
+			if (!importId) return;
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ImportService.getNotImportedRowsInImport(importId);
+
+				checkResponseStatus(status, message);
+
+				this.notImportedRows = data;
+			} catch (e) {
+				Notification(`${this.$t("Not imported rows")}: ${e.message || e}`, "error");
 			}
 		},
 

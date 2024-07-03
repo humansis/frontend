@@ -203,6 +203,15 @@ const routes = [
 									description: "",
 								},
 							},
+							{
+								path: "assistance/assistance-creation-progress/:assistanceId",
+								name: "AssistanceCreationProgress",
+								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/Assistance/AssistanceCreationProgress"),
+								meta: {
+									breadcrumb: "Assistance Creation Progress",
+									description: "This page shows the progress of creating the specific assistance.",
+								},
+							},
 						],
 					},
 				],
@@ -433,16 +442,6 @@ const routes = [
 					},
 				],
 			},
-			//  	{
-			//  		path: "logs",
-			//  		name: "Logs",
-			//  		component: () => import(/* webpackChunkName: "Logs" */ "@/views/Logs"),
-			//  		meta: {
-			//  			permissions: [],
-			//  			breadcrumb: () => i18n.t("Logs"),
-			//  			description: "",
-			//  		},
-			//  	},
 			{
 				path: "profile",
 				name: "Profile",

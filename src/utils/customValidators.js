@@ -13,7 +13,9 @@ export const isIdsListLengthValid = (idsList) => (
 export const isDecimalPartLengthValid = (value) => {
 	const floatValidation = /^-?\d+(\.\d{0,2})?$/;
 
-	return typeof value === "number" && floatValidation.test(value.toString());
+	if (typeof value !== "number") return true;
+
+	return floatValidation.test(value.toString());
 };
 
 export const isCustomFieldLabelValid = (value) => !value.includes("{") && !value.includes("}");

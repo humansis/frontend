@@ -24,6 +24,7 @@ import DataGrid from "@/components/DataGrid";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, TABLE } from "@/consts";
 
@@ -74,27 +75,36 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await BeneficiariesService.getListOfHouseholdPurchases(
-				this.$route.params.householdId,
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-			)
-				.then(async ({ data, totalCount }) => {
-					this.table.total = totalCount;
-					this.table.data = [];
-					if (totalCount > 0) {
-						await this.prepareDataForTable(data);
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Purchases")} ${e.message || e}`, "error");
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfHouseholdPurchases({
+					id: this.$route.params.householdId,
+					page: this.table.currentPage,
+					size: this.perPage,
+					sort,
 				});
 
-			this.isLoadingList = false;
+				checkResponseStatus(status, message);
+
+				this.table.total = totalCount;
+				this.table.data = [];
+
+				if (totalCount > 0) {
+					await this.prepareDataForTable(data);
+				}
+			} catch (e) {
+				Notification(`${this.$t("Purchases")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		prepareDataForTable(data) {

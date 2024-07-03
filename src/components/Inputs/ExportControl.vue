@@ -75,6 +75,11 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		dataCy: {
+			type: String,
+			default: "export",
+		},
 	},
 
 	data() {
@@ -82,7 +87,6 @@ export default {
 			selectedExportType: null,
 			selectedExportFormat: null,
 			selectedExportOptions: {},
-			dataCy: "export",
 		};
 	},
 

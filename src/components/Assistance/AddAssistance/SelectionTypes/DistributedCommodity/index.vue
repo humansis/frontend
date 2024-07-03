@@ -50,6 +50,7 @@
 				v-if="isPerHouseholdMembers(row.division) && isModalityCash"
 				v-html-secure="mapDivisionFields(row.divisionFields)"
 			/>
+
 			<template v-else>
 				{{ row.value }}
 			</template>
@@ -60,6 +61,7 @@
 				v-if="isPerHouseholdMembers(row.division) && isModalityInKind"
 				v-html-secure="mapDivisionFields(row.divisionFields)"
 			/>
+
 			<template v-else>
 				{{ row.quantity }}
 			</template>
@@ -86,18 +88,24 @@
 		{{ $t('Please Add One Distributed Commodity') }}.
 	</v-alert>
 
-	<p
-		v-for="({ modalityType, unit, value }, key) of calculatedCommodityValue"
-		:key="`calculated-commodity-item${key}`"
-		class="text-h6 text-right mt-5"
-	>
-		<strong class="is-size-4">
-			{{ value }}
-		</strong>
-		{{ unit }}
-		({{ $t(modalityType) }})
-		{{ $t("To Be Delivered") }}
-	</p>
+	<template v-if="!isCalculatedDataLoading">
+		<p
+			v-for="({ modalityType, unit, value }, key) of calculatedCommodityValue"
+			:key="`calculated-commodity-item${key}`"
+			class="text-h6 text-right mt-5"
+		>
+			<strong class="is-size-4">
+				{{ value }}
+			</strong>
+			{{ unit }}
+			({{ $t(modalityType) }})
+			{{ $t("To Be Delivered") }}
+		</p>
+	</template>
+
+	<template v-else>
+		<Loading custom-class="text-right mt-5 mr-12" is-small />
+	</template>
 </template>
 
 <script>
@@ -105,6 +113,7 @@ import DistributedCommodityForm from "@/components/Assistance/AddAssistance/Sele
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import Modal from "@/components/Inputs/Modal";
+import Loading from "@/components/Loading";
 import countryHelper from "@/mixins/countryHelper";
 import { generateColumns } from "@/utils/datagrid";
 import { ASSISTANCE } from "@/consts";
@@ -117,25 +126,17 @@ export default {
 		DistributedCommodityForm,
 		ButtonAction,
 		DataGrid,
+		Loading,
 	},
 
 	mixins: [countryHelper],
 
-	emits: [
-		"deliveredCommodityValue",
-		"updatedData",
-	],
+	emits: ["updatedData"],
 
 	props: {
 		commodity: {
 			type: Array,
 			default: () => [],
-		},
-
-		selectedBeneficiaries: {
-			type: Number,
-			required: true,
-			default: 0,
 		},
 
 		project: {
@@ -168,7 +169,7 @@ export default {
 			default: () => {},
 		},
 
-		isCommodityValueCalculating: {
+		isCalculatedDataLoading: {
 			type: Boolean,
 			default: false,
 		},
@@ -356,34 +357,32 @@ export default {
 	},
 
 	watch: {
-		table: {
-			deep: true,
-			handler() {
-				this.$emit("deliveredCommodityValue");
-			},
-		},
-
 		commodity(data) {
 			if (data.length) {
-				this.table.data = data;
-				this.dateExpiration = data[0]?.dateExpiration;
-
-				if (this.isAssistanceDuplicated) {
-					this.toggleColumnsVisibility();
-				}
+				this.prepareDataForTable(data);
 			}
 		},
 	},
 
-	updated() {
-		if (this.table.data.length) {
-			this.$emit("updatedData", this.preparedCommodities);
+	mounted() {
+		if (this.isAssistanceDuplicated && this.commodity?.length) {
+			this.prepareDataForTable(this.commodity);
 		}
 	},
 
 	methods: {
-		submit() {
+		isCommodityDataAvailable() {
 			return !!this.table.data.length;
+		},
+
+		prepareDataForTable(data) {
+			this.table.data = data;
+			this.dateExpiration = data[0]?.dateExpiration;
+
+			if (this.isAssistanceDuplicated) {
+				this.toggleColumnsVisibility();
+				this.$emit("updatedData", this.preparedCommodities);
+			}
 		},
 
 		getDivision(divisionString) {
@@ -455,12 +454,12 @@ export default {
 
 			this.toggleColumnsVisibility();
 
-			this.$emit("deliveredCommodityValue", this.preparedCommodities);
+			this.$emit("updatedData", this.preparedCommodities);
 		},
 
 		onRemoveCommodity(index) {
 			this.table.data.splice(index, 1);
-			this.$emit("deliveredCommodityValue", this.preparedCommodities);
+			this.$emit("updatedData", this.preparedCommodities);
 		},
 
 		mapDivisionFields(divisionFields) {
@@ -499,7 +498,7 @@ export default {
 		clearComponent() {
 			this.table.data = [];
 			this.formModel = { ...ASSISTANCE.DEFAULT_FORM_MODEL };
-			this.$emit("deliveredCommodityValue", this.preparedCommodities);
+			this.$emit("updatedData", this.preparedCommodities);
 		},
 	},
 };

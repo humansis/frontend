@@ -18,6 +18,7 @@
 				<DataInput
 					v-model="formModel.nameLocal.familyName"
 					:error-messages="validationMsg('nameLocal.familyName')"
+					:optional="isMembersForm"
 					:data-cy="prepareComponentIdentifier()"
 					label="Local family name"
 					name="local-family-name"
@@ -29,6 +30,7 @@
 					v-model="formModel.nameLocal.firstName"
 					:error-messages="validationMsg('nameLocal.firstName')"
 					:data-cy="prepareComponentIdentifier()"
+					:optional="isMembersForm"
 					label="Local given name"
 					name="local-given-name"
 					class="mb-4"
@@ -235,6 +237,7 @@
 					v-model="formModel.residencyStatus"
 					:items="options.residencyStatus"
 					:loading="residenceStatusesLoading"
+					:optional="isMembersForm"
 					:error-messages="validationMsg('residencyStatus')"
 					:data-cy="prepareComponentIdentifier()"
 					label="Residency status"
@@ -252,7 +255,7 @@
 						{{ $t('Smartcard number') }}
 					</h5>
 
-					<ul>
+					<ul class="ml-4">
 						<li
 							v-for="smartCardNumber in smartCardNumbersList"
 							:key="smartCardNumber.serialNumber"
@@ -317,27 +320,15 @@
 					</i>
 				</h4>
 
-				<div class="d-flex align-end">
-					<DataSelect
-						v-model="formModel.phone1.type"
-						:items="options.phoneType"
-						:loading="phoneTypesLoading"
-						:data-cy="prepareComponentIdentifier()"
-						label="Type phone 1"
-						name="phone1-type"
-						class="mb-4"
-					/>
-
-					<v-checkbox
-						v-model="formModel.phone1.proxy"
-						:label="$t('Proxy')"
-						:data-cy="identifierBuilder('proxy-phone-1-checkbox')"
-						name="phone1-proxy"
-						density="compact"
-						class="ml-2 mb-4"
-						hide-details
-					/>
-				</div>
+				<DataSelect
+					v-model="formModel.phone1.type"
+					:items="options.phoneType"
+					:loading="phoneTypesLoading"
+					:data-cy="prepareComponentIdentifier()"
+					label="Type phone 1"
+					name="phone1-type"
+					class="mb-4"
+				/>
 
 				<DataSelect
 					v-model="formModel.phone1.ext"
@@ -371,27 +362,15 @@
 					</i>
 				</h4>
 
-				<div class="d-flex align-end">
-					<DataSelect
-						v-model="formModel.phone2.type"
-						:items="options.phoneType"
-						:loading="phoneTypesLoading"
-						:data-cy="prepareComponentIdentifier()"
-						label="Type phone 2"
-						name="phone2-type"
-						class="mb-4"
-					/>
-
-					<v-checkbox
-						v-model="formModel.phone2.proxy"
-						:label="$t('Proxy')"
-						:data-cy="identifierBuilder('proxy-phone-2-checkbox')"
-						name="phone2-proxy"
-						density="compact"
-						class="ml-2 mb-4"
-						hide-details
-					/>
-				</div>
+				<DataSelect
+					v-model="formModel.phone2.type"
+					:items="options.phoneType"
+					:loading="phoneTypesLoading"
+					:data-cy="prepareComponentIdentifier()"
+					label="Type phone 2"
+					name="phone2-type"
+					class="mb-4"
+				/>
 
 				<DataSelect
 					v-model="formModel.phone2.ext"
@@ -462,6 +441,7 @@ import idHelper from "@/mixins/idHelper";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey, getObjectForCheckboxes } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
 
@@ -486,8 +466,8 @@ export default {
 		return {
 			formModel: {
 				nameLocal: {
-					familyName: { required },
-					firstName: { required },
+					familyName: { ...(!this.isMembersForm && { required }) },
+					firstName: { ...(!this.isMembersForm && { required }) },
 				},
 				personalInformation: {
 					gender: { required },
@@ -542,7 +522,7 @@ export default {
 						),
 					},
 				},
-				residencyStatus: { required },
+				residencyStatus: { ...(!this.isMembersForm && { required }) },
 				phone1: {
 					ext: {
 						required: requiredIf(this.formModel.phone1.phoneNo),
@@ -583,6 +563,11 @@ export default {
 		membersSmartCardNumbers: {
 			type: Array,
 			default: () => [],
+		},
+
+		isMembersForm: {
+			type: Boolean,
+			default: false,
 		},
 
 		dataCy: {
@@ -646,13 +631,11 @@ export default {
 				},
 				phone1: {
 					type: null,
-					proxy: false,
 					ext: null,
 					phoneNo: "",
 				},
 				phone2: {
 					type: null,
-					proxy: false,
 					ext: null,
 					phoneNo: "",
 				},
@@ -707,7 +690,7 @@ export default {
 
 	async mounted() {
 		if (this.isEditing) {
-			if (this.isHouseholdHead) {
+			if (this.isHouseholdHead && this.detailOfHousehold.householdHeadId) {
 				await this.fetchSmartCard(this.detailOfHousehold.householdHeadId);
 			}
 		}
@@ -727,12 +710,23 @@ export default {
 			if (this.isEditing) {
 				if (this.beneficiary) {
 					await this.mapDetailOfHouseholdToFormModel(this.beneficiary);
-				} else {
-					const data = await BeneficiariesService
-						.getBeneficiary(this.detailOfHousehold.householdHeadId);
+				} else if (this.detailOfHousehold.householdHeadId) {
+					try {
+						const {
+							data,
+							status,
+							message,
+						} = await BeneficiariesService.getBeneficiary(
+							this.detailOfHousehold.householdHeadId,
+						);
 
-					this.detailOfHouseholdHead = data;
-					await this.mapDetailOfHouseholdToFormModel(data);
+						checkResponseStatus(status, message);
+
+						this.detailOfHouseholdHead = data;
+						await this.mapDetailOfHouseholdToFormModel(data);
+					} catch (e) {
+						Notification(`${this.$t("Household ")}: ${e.message || e}`, "error");
+					}
 				}
 			}
 			this.$emit("loaded");
@@ -826,7 +820,6 @@ export default {
 			phones.forEach((phone, index) => {
 				preparedPhones[`phone${index + 1}`] = {
 					type: getArrayOfCodeListByKey([phone.type], this.options.phoneType, "code"),
-					proxy: phone.proxy,
 					ext: getArrayOfCodeListByKey([phone.prefix], this.options.phonePrefixes, "code"),
 					phoneNo: phone.number,
 				};
@@ -854,51 +847,91 @@ export default {
 		},
 
 		async fetchNationalCardTypes() {
-			await BeneficiariesService.getListOfTypesOfNationalIds()
-				.then(({ data }) => { this.options.idType = data; })
-				.catch((e) => {
-					Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfTypesOfNationalIds();
 
-			this.idTypeLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.idType = data;
+			} catch (e) {
+				Notification(`${this.$t("National IDs")}: ${e.message || e}`, "error");
+			} finally {
+				this.idTypeLoading = false;
+			}
 		},
 
 		async fetchPhoneTypes() {
-			await BeneficiariesService.getListOfTypesOfPhones()
-				.then(({ data }) => { this.options.phoneType = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Phone Types")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfTypesOfPhones();
 
-			this.phoneTypesLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.phoneType = data;
+			} catch (e) {
+				Notification(`${this.$t("Phone Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.phoneTypesLoading = false;
+			}
 		},
 
 		async fetchVulnerabilities() {
-			await BeneficiariesService.getListOfVulnerabilities()
-				.then(({ data }) => { this.options.vulnerabilities = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Vulnerabilities")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfVulnerabilities();
+
+				checkResponseStatus(status, message);
+
+				this.options.vulnerabilities = data;
+			} catch (e) {
+				Notification(`${this.$t("Vulnerabilities")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async fetchResidenceStatus() {
-			await BeneficiariesService.getListOfResidenceStatuses()
-				.then(({ data }) => { this.options.residencyStatus = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Residency Statuses")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfResidenceStatuses();
 
-			this.residenceStatusesLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.residencyStatus = data;
+			} catch (e) {
+				Notification(`${this.$t("Residency Statuses")}: ${e.message || e}`, "error");
+			} finally {
+				this.residenceStatusesLoading = false;
+			}
 		},
 
 		async fetchReferralTypes() {
-			await BeneficiariesService.getListOfReferralTypes()
-				.then(({ data }) => { this.options.referralType = data; })
-				.catch((e) => {
-					Notification(`${this.$t("Referral Types")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfReferralTypes();
 
-			this.referralTypeLoading = false;
+				checkResponseStatus(status, message);
+
+				this.options.referralType = data;
+			} catch (e) {
+				Notification(`${this.$t("Referral Types")}: ${e.message || e}`, "error");
+			} finally {
+				this.referralTypeLoading = false;
+			}
 		},
 
 		submit() {

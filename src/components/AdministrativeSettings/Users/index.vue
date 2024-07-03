@@ -41,6 +41,7 @@ import UsersList from "@/components/AdministrativeSettings/Users/List";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -71,6 +72,7 @@ export default {
 				position: "",
 				rights: [],
 				projectIds: [],
+				projectIdsCopy: [],
 				countries: [],
 				language: null,
 				phonePrefix: [],
@@ -126,6 +128,7 @@ export default {
 				position: "",
 				rights: [],
 				projectIds: [],
+				notUsedProjectIds: [],
 				roles: [],
 				countries: [],
 				language: null,
@@ -160,6 +163,7 @@ export default {
 				position,
 				rights,
 				projectIds,
+				notUsedProjectIds,
 				countries,
 				phonePrefix,
 				phoneNumber,
@@ -168,6 +172,9 @@ export default {
 				disabledProject,
 			} = userForm;
 
+			const preparedProjectIds = !disabledProject
+				? [...notUsedProjectIds, ...getArrayOfIdsByParam(projectIds, "id")]
+				: [];
 			const userBody = {
 				username: email,
 				email,
@@ -175,12 +182,13 @@ export default {
 				lastName,
 				position,
 				roles: [rights.code],
-				projectIds: !disabledProject ? getArrayOfIdsByParam(projectIds, "id") : [],
+				projectIds: preparedProjectIds,
 				countries: !disabledCountry ? getArrayOfIdsByParam(countries, "iso3") : [],
 				phonePrefix: phonePrefix?.code,
 				phoneNumber: phoneNumber || null,
 				language: language?.key || null,
 			};
+
 			if (this.userModal.isEditing && id) {
 				this.updateUser(id, userBody);
 			} else {
@@ -228,45 +236,64 @@ export default {
 		},
 
 		async createUser(userBody) {
-			this.userModal.isWaiting = true;
+			try {
+				this.userModal.isWaiting = true;
 
-			await UsersService.createUser(userBody).then((response) => {
-				if (response?.status === 200) {
-					Notification(this.$t("User Successfully Created"), "success");
-					this.$refs.usersList.fetchData();
-					this.onCloseUserModal();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("User")} ${e.message || e}`, "error");
+				const {
+					status,
+					message,
+				} = await UsersService.createUser(userBody);
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("User Successfully Created"), "success");
+				await this.$refs.usersList.fetchData();
+				this.onCloseUserModal();
+			} catch (e) {
+				Notification(`${this.$t("User")}: ${e.message || e}`, "error");
+			} finally {
 				this.userModal.isWaiting = false;
-			});
-			this.userModal.isWaiting = false;
+			}
 		},
 
 		async updateUser(id, userBody) {
-			this.userModal.isWaiting = true;
+			try {
+				this.userModal.isWaiting = true;
 
-			await UsersService.updateUser(id, userBody).then((response) => {
-				if (response?.status === 200) {
-					Notification(this.$t("User Successfully Updated"), "success");
-					this.$refs.usersList.fetchData();
-					this.onCloseUserModal();
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("User")} ${e.message || e}`, "error");
+				const {
+					status,
+					message,
+				} = await UsersService.updateUser({
+					body: userBody,
+					id,
+				});
+
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("User Successfully Updated"), "success");
+				await this.$refs.usersList.fetchData();
+				this.onCloseUserModal();
+			} catch (e) {
+				Notification(`${this.$t("User")}: ${e.message || e}`, "error");
+			} finally {
 				this.userModal.isWaiting = false;
-			});
+			}
 		},
 
 		async onRemoveUser(id) {
-			await UsersService.deleteUser(id).then((response) => {
-				if (response.status === 204) {
-					Notification(this.$t("User Successfully Deleted"), "success");
-					this.$refs.usersList.removeFromList(id);
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("User")} ${e.message || e}`, "error");
-			});
+			try {
+				const {
+					status,
+					message,
+				} = await UsersService.deleteUser(id);
+
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("User Successfully Deleted"), "success");
+				this.$refs.usersList.removeFromList(id);
+			} catch (e) {
+				Notification(`${this.$t("User")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

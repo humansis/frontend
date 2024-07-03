@@ -126,6 +126,7 @@ import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import EditNote from "@/components/Inputs/EditNote";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -183,11 +184,19 @@ export default {
 
 	methods: {
 		async fetchAssistance() {
-			this.isAssistanceLoading = true;
+			try {
+				this.isAssistanceLoading = true;
 
-			await AssistancesService.getDetailOfAssistance(
-				this.$route.params.assistanceId,
-			).then((data) => {
+				const {
+					data,
+					status,
+					message,
+				} = await AssistancesService.getDetailOfAssistance(
+					this.$route.params.assistanceId,
+				);
+
+				checkResponseStatus(status, message);
+
 				this.isTargetHouseholdOrIndividual = data.target === ASSISTANCE.TARGET.HOUSEHOLD
 					|| data.target === ASSISTANCE.TARGET.INDIVIDUAL;
 
@@ -196,49 +205,80 @@ export default {
 				if (this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION) {
 					this.commodities = data.commodities;
 				}
-			}).finally(() => {
+
+				if (this.assistance.state.code !== ASSISTANCE.STATUS.NEW) {
+					await this.$router.push({
+						name: "AssistanceDetail",
+						params: { assistanceId: this.assistance.id },
+
+					});
+				}
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
+			} finally {
 				this.isAssistanceLoading = false;
-			});
+			}
 		},
 
 		async fetchProject() {
-			this.isProjectLoading = true;
+			try {
+				this.isProjectLoading = true;
 
-			await ProjectService.getDetailOfProject(
-				this.$route.params.projectId,
-			).then(({ data }) => {
+				const {
+					data,
+					status,
+					message,
+				} = await ProjectService.getDetailOfProject(
+					this.$route.params.projectId,
+				);
+
+				checkResponseStatus(status, message);
+
 				this.project = data;
-			}).finally(() => {
+			} catch (e) {
+				Notification(`${this.$t("Project")}: ${e.message || e}`, "error");
+			} finally {
 				this.isProjectLoading = false;
-			});
+			}
 		},
 
 		async fetchAssistanceStatistics() {
-			this.isStatisticsLoading = true;
+			try {
+				this.isStatisticsLoading = true;
 
-			await AssistancesService.getAssistanceStatistics(
-				this.$route.params.assistanceId,
-			).then((data) => {
+				const {
+					data,
+					status,
+					message,
+				} = await AssistancesService.getAssistanceStatistics(
+					this.$route.params.assistanceId,
+				);
+
+				checkResponseStatus(status, message);
+
 				this.statistics = data;
-			}).finally(() => {
+			} catch (e) {
+				Notification(`${this.$t("Assistance Statistics")}: ${e.message || e}`, "error");
+			} finally {
 				this.isStatisticsLoading = false;
-			});
-		},
-
-		updateBeneficiariesTable(beneficiariesTable) {
-			this.beneficiariesData = beneficiariesTable;
+			}
 		},
 
 		async onValidateAssistance() {
 			const assistanceId = Number(this.$route.params.assistanceId);
-			this.validateAssistanceButtonLoading = true;
 
-			await AssistancesService.updateAssistanceStatusValidated(
-				{ assistanceId, validated: true },
-			).then(({ status, message }) => {
-				if (status !== 200) {
-					throw new Error(message);
-				}
+			try {
+				this.validateAssistanceButtonLoading = true;
+
+				const {
+					status,
+					message,
+				} = await AssistancesService.updateAssistanceStatusValidated({
+					assistanceId,
+					validated: true,
+				});
+
+				checkResponseStatus(status, message);
 
 				Notification(this.$t("Assistance Successfully Validated and Locked"), "success");
 
@@ -248,11 +288,11 @@ export default {
 						assistanceId: this.$route.params.assistanceId,
 					},
 				});
-			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-			});
-
-			this.validateAssistanceButtonLoading = false;
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
+			} finally {
+				this.validateAssistanceButtonLoading = false;
+			}
 		},
 
 		onFetchUpdatedData() {

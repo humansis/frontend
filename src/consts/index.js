@@ -1,5 +1,6 @@
 import ASSISTANCE from "./assistance";
 import CONFIG from "./config";
+import COUNTRY_SETTINGS from "./countrySettings";
 import CURRENCIES from "./currencies";
 import EXPORT from "./export";
 import FILTER from "./filter";
@@ -11,7 +12,6 @@ import PHONE from "./phone";
 import ROLE from "./role";
 import SCORING from "./scoring";
 import TABLE from "./table";
-import COUNTRY_SETTINGS from "./countrySettings";
 
 export {
 	ASSISTANCE,

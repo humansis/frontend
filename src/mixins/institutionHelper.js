@@ -3,6 +3,7 @@ import BeneficiariesService from "@/services/BeneficiariesService";
 import InstitutionService from "@/services/InstitutionService";
 import ProjectService from "@/services/ProjectService";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
 
@@ -161,59 +162,93 @@ export default {
 
 		async createInstitution(institutionBody) {
 			try {
-				const { status, message } = await InstitutionService.createInstitution(
+				const {
+					status,
+					message,
+				} = await InstitutionService.createInstitution(
 					institutionBody,
 				);
 
-				if (status === 200) {
-					Notification(this.$t("Institution Successfully Created"), "success");
-					await this.$router.push({ name: "Institutions" });
-				} else {
-					Notification(message, "error");
-				}
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Institution Successfully Created"), "success");
+				await this.$router.push({ name: "Institutions" });
 			} catch (e) {
-				Notification(`${this.$t("Create Institution")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Create Institution")}: ${e.message || e}`, "error");
 			}
 		},
 
 		async updateInstitution(id, institutionBody) {
 			try {
-				const { status, message } = await InstitutionService.updateInstitution(
+				const {
+					status,
+					message,
+				} = await InstitutionService.updateInstitution({
+					body: institutionBody,
 					id,
-					institutionBody,
-				);
+				});
 
-				if (status === 200) {
-					Notification(this.$t("Institution Successfully Updated"), "success");
-					await this.$router.push({ name: "Institutions" });
-				} else {
-					Notification(message, "error");
-				}
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Institution Successfully Updated"), "success");
+				await this.$router.push({ name: "Institutions" });
 			} catch (e) {
-				Notification(`${this.$t("Update Institution")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Update Institution")}: ${e.message || e}`, "error");
 			}
 		},
 
 		async fetchInstitution() {
 			try {
-				const institution = await BeneficiariesService.getInstitution(
-					this.$route.params.institutionId,
-				);
+				const {
+					data,
+					status,
+					message,
+				} = await BeneficiariesService.getInstitution({
+					id: this.$route.params.institutionId,
+				});
 
-				this.formModel = this.mapToModel(institution);
+				checkResponseStatus(status, message);
+
+				this.formModel = this.mapToModel(data);
 			} catch (e) {
-				Notification(`${this.$t("Institution")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Institution")}: ${e.message || e}`, "error");
+			}
+		},
+
+		async fetchInstitutions(ids, filters) {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getInstitutions({
+					ids,
+					filters,
+				});
+
+				checkResponseStatus(status, message);
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Institutions")}: ${e.message || e}`, "error");
+				return [];
 			}
 		},
 
 		async fetchPhoneTypes() {
 			try {
 				this.phoneTypesLoading = true;
-				const { data } = await BeneficiariesService.getListOfTypesOfPhones();
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfTypesOfPhones();
+
+				checkResponseStatus(status, message);
 
 				this.options.phoneTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("Phone Types")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Phone Types")}: ${e.message || e}`, "error");
 			} finally {
 				this.phoneTypesLoading = false;
 			}
@@ -222,11 +257,18 @@ export default {
 		async fetchSupportReceivedTypes() {
 			try {
 				this.externalSupportReceivedLoading = true;
-				const { data } = await BeneficiariesService.getSupportReceivedTypes();
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getSupportReceivedTypes();
+
+				checkResponseStatus(status, message);
 
 				this.options.externalReceivedTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("Support Received Types")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Support Received Types")}: ${e.message || e}`, "error");
 			} finally {
 				this.externalSupportReceivedLoading = false;
 			}
@@ -235,11 +277,18 @@ export default {
 		async fetchNationalCardTypes() {
 			try {
 				this.nationalCardTypesLoading = true;
-				const { data } = await BeneficiariesService.getListOfTypesOfNationalIds();
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfTypesOfNationalIds();
+
+				checkResponseStatus(status, message);
 
 				this.options.nationalCardTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("National IDs")} ${e.message || e}`, "error");
+				Notification(`${this.$t("National IDs")}: ${e.message || e}`, "error");
 			} finally {
 				this.nationalCardTypesLoading = false;
 			}
@@ -248,11 +297,18 @@ export default {
 		async fetchProjects() {
 			try {
 				this.projectsLoading = true;
-				const { data } = await ProjectService.getListOfProjects();
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getListOfProjects({});
+
+				checkResponseStatus(status, message);
 
 				this.options.projects = data;
 			} catch (e) {
-				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
 			} finally {
 				this.projectsLoading = false;
 			}
@@ -261,11 +317,18 @@ export default {
 		async fetchInstitutionTypes() {
 			try {
 				this.institutionTypesLoading = true;
-				const { data } = await InstitutionService.getListOfInstitutionTypes();
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await InstitutionService.getListOfInstitutionTypes();
+
+				checkResponseStatus(status, message);
 
 				this.options.institutionTypes = data;
 			} catch (e) {
-				Notification(`${this.$t("Institution Types")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Institution Types")}: ${e.message || e}`, "error");
 			} finally {
 				this.institutionTypesLoading = false;
 			}
@@ -274,12 +337,18 @@ export default {
 		async fetchInstitutionIdNames() {
 			try {
 				if (!this.institutionIdNames?.idNumber1) {
-					const { data } = await InstitutionService.getInstitutionIdNames();
+					const {
+						data,
+						status,
+						message,
+					} = await InstitutionService.getInstitutionIdNames();
+
+					checkResponseStatus(status, message);
 
 					this.storeInstitutionIdNames(data);
 				}
 			} catch (e) {
-				Notification(`${this.$t("Institution Id Names")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Institution Id Names")}: ${e.message || e}`, "error");
 			}
 		},
 	},

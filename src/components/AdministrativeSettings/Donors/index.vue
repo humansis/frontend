@@ -39,6 +39,7 @@ import DonorForm from "@/components/AdministrativeSettings/Donors/Form";
 import DonorsList from "@/components/AdministrativeSettings/Donors/List";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -171,55 +172,83 @@ export default {
 		},
 
 		async createDonor(donorBody, image) {
-			this.donorModal.isWaiting = true;
+			try {
+				this.donorModal.isWaiting = true;
 
-			await DonorService.createDonor(donorBody)
-				.then(async ({ data, status }) => {
-					if (status === 200) {
-						await this.uploadImage(data.id, image);
-						Notification(this.$t("Donor Successfully Created"), "success");
-						this.$refs.donorsList.fetchData();
-						this.closeDonorModal();
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Donor")} ${e.message || e}`, "error");
-					this.donorModal.isWaiting = false;
-				});
+				const {
+					data,
+					status,
+					message,
+				} = await DonorService.createDonor(donorBody);
+
+				checkResponseStatus(status, message);
+
+				await this.uploadImage(data.id, image);
+				Notification(this.$t("Donor Successfully Created"), "success");
+				await this.$refs.donorsList.fetchData();
+				this.closeDonorModal();
+			} catch (e) {
+				Notification(`${this.$t("Donor")}: ${e.message || e}`, "error");
+			} finally {
+				this.donorModal.isWaiting = false;
+			}
 		},
 
 		async updateDonor(id, donorBody, image) {
-			this.donorModal.isWaiting = true;
+			try {
+				this.donorModal.isWaiting = true;
 
-			await DonorService.updateDonor(id, donorBody)
-				.then(async ({ data, status }) => {
-					if (status === 200) {
-						await this.uploadImage(data.id, image);
-						Notification(this.$t("Donor Successfully Updated"), "success");
-						this.$refs.donorsList.fetchData();
-						this.closeDonorModal();
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Donor")} ${e.message || e}`, "error");
-					this.donorModal.isWaiting = false;
-				});
+				const {
+					data,
+					status,
+					message,
+				} = await DonorService.updateDonor(id, donorBody);
+
+				checkResponseStatus(status, message);
+
+				await this.uploadImage(data.id, image);
+				Notification(this.$t("Donor Successfully Updated"), "success");
+				await this.$refs.donorsList.fetchData();
+				this.closeDonorModal();
+			} catch (e) {
+				Notification(`${this.$t("Donor")}: ${e.message || e}`, "error");
+			} finally {
+				this.donorModal.isWaiting = false;
+			}
 		},
 
 		async uploadImage(id, image) {
-			if (image) {
-				await DonorService.uploadImage(id, image);
+			if (!image) return;
+
+			try {
+				const {
+					status,
+					message,
+				} = await DonorService.uploadImage({
+					id,
+					image,
+				});
+
+				checkResponseStatus(status, message);
+			} catch (e) {
+				Notification(`${this.$t("Image upload")}: ${e.message || e}`, "error");
 			}
 		},
 
 		async removeDonor(id) {
-			await DonorService.deleteDonor(id)
-				.then((response) => {
-					if (response.status === 204) {
-						Notification(this.$t("Donor successfully removed"), "success");
-						this.$refs.donorsList.removeFromList(id);
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Donor")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					status,
+					message,
+				} = await DonorService.deleteDonor(id);
+
+				checkResponseStatus(status, message, 204);
+
+				Notification(this.$t("Donor successfully removed"), "success");
+				this.$refs.donorsList.removeFromList(id);
+			} catch (e) {
+				Notification(`${this.$t("Donor")}: ${e.message || e}`, "error");
+			}
 		},
 	},
 };

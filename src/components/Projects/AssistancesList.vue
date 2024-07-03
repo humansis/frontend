@@ -24,6 +24,7 @@
 	</v-alert>
 
 	<DataGrid
+		ref="assistancesList"
 		v-show="isAssistanceTableVisible"
 		v-model:items-per-page="perPage"
 		v-model:sort-by="sortValue"
@@ -35,55 +36,15 @@
 		:custom-key-sort="customSort"
 		:no-data-text="$t('No data available')"
 		is-row-click-disabled
+		reset-filters-button
 		reset-sort-button
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
 		@search="onSearch"
+		@resetFilters="onResetFilters"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCES)"
 	>
-		<template v-slot:tableControls>
-			<ExportControl
-				v-if="!upcoming"
-				:disabled="!table.data.length"
-				:available-export-formats="exportControl.formats"
-				:available-export-types="exportControl.types"
-				:is-export-loading="exportControl.loading"
-				:location="exportControl.location"
-				@export="onExportAssistances"
-			/>
-
-			<v-btn
-				:class="filterButtonNew"
-				icon-left="sticky-note"
-				variant="tonal"
-				prepend-icon="sticky-note"
-				@click="onStatusFilter('new')"
-			>
-				{{ $t('New') }}
-			</v-btn>
-
-			<v-btn
-				:class="filterButtonValidated"
-				icon-left="spinner"
-				variant="tonal"
-				prepend-icon="spinner"
-				@click="onStatusFilter('validated')"
-			>
-				{{ $t('Validated') }}
-			</v-btn>
-
-			<v-btn
-				:class="filterButtonClosed"
-				icon-left="check"
-				variant="tonal"
-				prepend-icon="check"
-				@click="onStatusFilter('closed')"
-			>
-				{{ $t('Closed') }}
-			</v-btn>
-		</template>
-
 		<template v-if="!upcoming" v-slot:actions="{ row }">
 			<ButtonAction
 				v-if="!row.validated && userCan.editDistribution"
@@ -158,6 +119,83 @@
 				</v-list>
 			</v-menu>
 		</template>
+
+		<template v-slot:tableControls>
+			<ExportControl
+				v-if="!upcoming"
+				:disabled="!table.data.length"
+				:available-export-formats="exportControl.formats"
+				:available-export-types="exportControl.types"
+				:is-export-loading="exportControl.loading"
+				:location="exportControl.location"
+				@export="onExportAssistances"
+			/>
+
+			<v-btn
+				v-if="!upcoming"
+				:append-icon="isAdvancedSearchVisible ? 'arrow-up' : 'arrow-down'"
+				color="blue-grey-lighten-4"
+				variant="elevated"
+				class="ml-4 text-none"
+				@click="onAdvancedSearchToggle"
+			>
+				{{ $t('Advanced Search') }}
+			</v-btn>
+
+			<v-btn
+				:class="filterButtonCreating"
+				icon-left="sticky-note"
+				variant="tonal"
+				prepend-icon="sticky-note"
+				@click="onStatusFilter('creating')"
+			>
+				{{ $t('Creating') }}
+			</v-btn>
+
+			<v-btn
+				:class="filterButtonNew"
+				icon-left="sticky-note"
+				variant="tonal"
+				prepend-icon="sticky-note"
+				@click="onStatusFilter('new')"
+			>
+				{{ $t('New') }}
+			</v-btn>
+
+			<v-btn
+				:class="filterButtonValidated"
+				icon-left="spinner"
+				variant="tonal"
+				prepend-icon="spinner"
+				@click="onStatusFilter('validated')"
+			>
+				{{ $t('Validated') }}
+			</v-btn>
+
+			<v-btn
+				:class="filterButtonClosed"
+				icon-left="check"
+				variant="tonal"
+				prepend-icon="check"
+				@click="onStatusFilter('closed')"
+			>
+				{{ $t('Closed') }}
+			</v-btn>
+		</template>
+
+		<template v-slot:advancedControls>
+			<v-expansion-panels v-model="visiblePanels">
+				<v-expansion-panel value="advancedSearch" eager>
+					<v-expansion-panel-text>
+						<AssistancesFilter
+							ref="assistancesFilter"
+							@filtersChanged="onFiltersChange"
+							@search="onSearch(table.searchPhrase)"
+						/>
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+			</v-expansion-panels>
+		</template>
 	</DataGrid>
 </template>
 
@@ -166,16 +204,20 @@ import AssistancesService from "@/services/AssistancesService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
+import AssistancesFilter from "@/components/Projects/AssistancesFilter";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
+import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
 
 const customSort = { progress: () => {} };
 const statusTags = [
+	{ code: ASSISTANCE.STATUS.CREATING, class: "status creating" },
 	{ code: ASSISTANCE.STATUS.NEW, class: "status new" },
 	{ code: ASSISTANCE.STATUS.VALIDATED, class: "status validated" },
 	{ code: ASSISTANCE.STATUS.CLOSED, class: "status closed" },
@@ -190,12 +232,14 @@ export default {
 		ButtonAction,
 		DataGrid,
 		ExportControl,
+		AssistancesFilter,
 	},
 
 	mixins: [
 		permissions,
 		grid,
 		baseHelper,
+		urlFiltersHelper,
 	],
 
 	props: {
@@ -231,14 +275,11 @@ export default {
 				types: [EXPORT.ASSISTANCE_OVERVIEW],
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
+			visiblePanels: [],
 			exportLoading: false,
-			selectedFilters: ["new", "validated"],
-			statusActive: {
-				new: true,
-				validated: true,
-				closed: false,
-			},
-			filters: { states: ["new", "validated"] },
+			selectedFilters: [...ASSISTANCE.DEFAULT_SELECTED_STATUS],
+			statusActive: { ...ASSISTANCE.DEFAULT_SELECTED_STATUS_BUTTONS },
+			filters: { states: [...ASSISTANCE.DEFAULT_SELECTED_STATUS] },
 			isLoadingList: false,
 			table: {
 				data: [],
@@ -273,6 +314,13 @@ export default {
 	},
 
 	computed: {
+		filterButtonCreating() {
+			return [
+				"text-none ml-3 status creating",
+				{ "is-selected": this.statusActive.creating },
+			];
+		},
+
 		filterButtonNew() {
 			return [
 				"text-none ml-3 status new",
@@ -292,6 +340,10 @@ export default {
 				"text-none ml-3 status closed",
 				{ "is-selected": this.statusActive.closed },
 			];
+		},
+
+		isAdvancedSearchVisible() {
+			return this.visiblePanels.includes("advancedSearch");
 		},
 
 		isAssistanceDetailAllowed() {
@@ -336,47 +388,66 @@ export default {
 		},
 
 		async fetchProjectAssistances() {
-			await AssistancesService.getListOfProjectAssistances(
-				this.$route.params.projectId,
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+			try {
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(async ({ data, totalCount }) => {
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await AssistancesService.getListOfProjectAssistances({
+					id: this.$route.params.projectId,
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					filters: this.filters,
+					sort,
+				});
+
+				checkResponseStatus(status, message);
+
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
+
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
-				Notification(`${this.$t("Assistance")} ${e.message || e}`, "error");
-			});
+			} catch (e) {
+				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async fetchUpcomingAssistances() {
-			await AssistancesService.getListOfAssistances(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+			try {
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				true,
-				null,
-				this.filters,
-			).then(({ data, totalCount }) => {
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await AssistancesService.getListOfAssistances({
+					page: this.table.currentPage,
+					size: this.perPage,
+					upcoming: true,
+					filters: this.filters,
+					sort,
+				});
+
+				checkResponseStatus(status, message);
+
 				this.table.data = [];
 				this.table.progress = 0;
 				this.table.total = totalCount;
+
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
-				Notification(`${this.$t("Upcoming Assistances")} ${e.message || e}`, "error");
-			});
+			} catch (e) {
+				Notification(`${this.$t("Upcoming Assistances")}: ${e.message || e}`, "error");
+			}
 		},
 
 		prepareDataForTable(data) {
@@ -466,15 +537,24 @@ export default {
 		},
 
 		getRouteNameToAssistance({ state: { code } }) {
-			return code === ASSISTANCE.STATUS.CLOSED
-			|| code === ASSISTANCE.STATUS.VALIDATED
-				? "AssistanceDetail"
-				: "AssistanceEdit";
+			switch (code) {
+				case ASSISTANCE.STATUS.CLOSED:
+				case ASSISTANCE.STATUS.VALIDATED:
+					return "AssistanceDetail";
+				case ASSISTANCE.STATUS.CREATING:
+					return "AssistanceCreationProgress";
+				default:
+					return "AssistanceEdit";
+			}
 		},
 
 		assistanceProgress(data) {
 			return (data.state.code === ASSISTANCE.STATUS.NEW && this.$t("N/A"))
 				|| `${Math.trunc(data.progress * 100)} %`;
+		},
+
+		onAdvancedSearchToggle() {
+			this.visiblePanels = this.isAdvancedSearchVisible ? [] : ["advancedSearch"];
 		},
 
 		onGoToDetail(id) {
@@ -489,7 +569,14 @@ export default {
 		onGoToUpdate(id) {
 			const assistance = this.table.data.find((item) => item.id === id);
 
-			if (this.upcoming) {
+			if (assistance.state.code === ASSISTANCE.STATUS.CREATING) {
+				this.$router.push({
+					name: "AssistanceCreationProgress",
+					params: {
+						assistanceId: assistance.id,
+					},
+				});
+			} else if (this.upcoming) {
 				this.showDetail(assistance);
 			} else {
 				this.$router.push({
@@ -510,13 +597,26 @@ export default {
 				this.selectedFilters.push(filter);
 			}
 
-			this.onFiltersChange({ states: this.selectedFilters });
+			this.onStatusFiltersChange({ states: this.selectedFilters });
 		},
 
-		async onFiltersChange(selectedFilters) {
-			this.filters = selectedFilters;
+		async onStatusFiltersChange(selectedFilters) {
+			this.filters = { ...this.filters, ...selectedFilters };
 			this.table.currentPage = 1;
 			await this.fetchData();
+		},
+
+		onResetFilters() {
+			this.resetSearch(
+				{
+					tableRef: "assistancesList",
+					filtersRef: "assistancesFilter",
+				},
+				false,
+			);
+			this.statusActive = { ...ASSISTANCE.DEFAULT_SELECTED_STATUS_BUTTONS };
+			this.selectedFilters = [...ASSISTANCE.DEFAULT_SELECTED_STATUS];
+			this.onStatusFiltersChange({ states: this.selectedFilters });
 		},
 
 		onDuplicate(id) {
@@ -537,15 +637,19 @@ export default {
 						...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
 					};
 					const filename = `Assistance overview ${normalizeExportDate()}`;
-					const { data, status, message } = await AssistancesService.exportAssistances(
+					const {
+						data,
+						status,
+						message,
+					} = await AssistancesService.exportAssistances({
+						projectId: this.$route.params.projectId,
 						format,
-						this.$route.params.projectId,
 						filters,
-					);
+					});
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Assistances")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export Assistances")}: ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

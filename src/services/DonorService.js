@@ -1,54 +1,49 @@
-import { download, fetcher, idsToUri, upload } from "@/utils/fetcher";
+import { download, fetcher, upload } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	async getListOfDonors(page, size, sort, search = null, ids = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `donors?${pageText + sizeText + sortText + fulltext + idsText}`,
+	getListOfDonors({ page, size, sort, search, ids }) {
+		return fetcher({
+			uri: `donors${queryBuilder({ page, size, sort, search, ids })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async createDonor(body) {
-		const { data, status } = await fetcher({ uri: "donors", method: "POST", body });
-		return { data, status };
+	createDonor(body) {
+		return fetcher({
+			uri: "donors",
+			method: "POST",
+			body,
+		});
 	},
 
-	async updateDonor(id, body) {
-		const { data, status } = await fetcher({ uri: `donors/${id}`, method: "PUT", body });
-		return { data, status };
+	updateDonor(id, body) {
+		return fetcher({
+			uri: `donors/${id}`,
+			method: "PUT",
+			body,
+		});
 	},
 
-	async deleteDonor(id) {
-		const { data, status } = await fetcher({ uri: `donors/${id}`, method: "DELETE" });
-		return { data, status };
+	deleteDonor(id) {
+		return fetcher({
+			uri: `donors/${id}`, method: "DELETE",
+		});
 	},
 
-	async getDetailOfDonor(id) {
-		const { data: { data, totalCount } } = await fetcher({ uri: `donors/${id}` });
-		return { data, totalCount };
+	exportDonors(format) {
+		return download({
+			uri: `donors/exports${queryBuilder({ format })}`,
+		});
 	},
 
-	async exportDonors(format) {
-		const formatText = format ? `type=${format}` : "";
-
-		return download({ uri: `donors/exports?${formatText}` });
-	},
-
-	async uploadImage(id, image) {
+	uploadImage({ id, image }) {
 		const formData = new FormData();
 		formData.append("file", image[0]);
 
-		const { data, status } = await upload({
+		return upload({
 			uri: `donors/${id}/images`,
 			method: "POST",
 			body: formData,
 		});
-		return { data, status };
 	},
 };

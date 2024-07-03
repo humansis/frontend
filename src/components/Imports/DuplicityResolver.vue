@@ -93,6 +93,7 @@ import DataGrid from "@/components/DataGrid";
 import Loading from "@/components/Loading";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
 
@@ -198,41 +199,60 @@ export default {
 	methods: {
 		async getTotalCountOfDuplicities() {
 			const { importId } = this.$route.params;
-			this.isTotalCountLoading = true;
 
-			await ImportService.getDuplicitiesInImport(
-				importId,
-				null,
-				1,
-			).then(({ data: { totalCount } }) => {
+			try {
+				this.isTotalCountLoading = true;
+
+				const {
+					data: { totalCount },
+					status,
+					message,
+				} = await ImportService.getDuplicitiesInImport({
+					importId,
+					size: 1,
+				});
+
+				checkResponseStatus(status, message);
+
 				this.totalCountOfDuplicities = totalCount;
-			}).catch((e) => {
-				Notification(`${this.$t("Duplicities")} ${e.message || e}`, "error");
-			});
-			this.isTotalCountLoading = false;
+			} catch (e) {
+				Notification(`${this.$t("Duplicities")}: ${e.message || e}`, "error");
+			} finally {
+				this.isTotalCountLoading = false;
+			}
 		},
 
 		async fetchData() {
-			this.isExportLoading = true;
-			const { importId } = this.$route.params;
+			try {
+				this.isExportLoading = true;
+				const { importId } = this.$route.params;
 
-			await ImportService.getDuplicitiesInImport(
-				importId,
-				this.table.currentPage,
-				this.perPage,
-				this.filters,
-			).then(({ data: { data, totalCount } }) => {
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await ImportService.getDuplicitiesInImport({
+					importId,
+					page: this.table.currentPage,
+					size: this.perPage,
+					filter: this.filters,
+				});
+
 				this.table.data = [];
+
+				checkResponseStatus(status, message);
+
 				this.table.total = totalCount;
+
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}
-			}).catch((e) => {
-				Notification(`${this.$t("Duplicities")} ${e.message || e}`, "error");
-			});
-			this.isExportLoading = false;
-
-			this.$emit("loaded");
+			} catch (e) {
+				Notification(`${this.$t("Duplicities")}: ${e.message || e}`, "error");
+			} finally {
+				this.isExportLoading = false;
+				this.$emit("loaded");
+			}
 		},
 
 		prepareDataForTable(data) {
@@ -428,33 +448,37 @@ export default {
 
 			this.table.data[duplicityKey].disabled = true;
 
-			await ImportService.resolveImportItemDuplicity(queueId, state, acceptedDuplicityId)
-				.then(({ status }) => {
-					if (status === 202) {
-						if (state === IMPORT.ITEM_STATUS.TO_LINK) {
-							this.table.data[duplicityKey].state = IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
-						}
-
-						if (state === IMPORT.ITEM_STATUS.TO_UPDATE) {
-							this.table.data[duplicityKey].state = IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
-						}
-
-						Notification(this.$t("Solved"), "success");
-					}
-
-					if (status === 400) {
-						Notification(`${this.$t("Not Solved")}`, "warning");
-					}
-				}).catch((e) => {
-					if (e.message) {
-						if (duplicityKey !== null) {
-							this.table.data[duplicityKey][button] = false;
-						}
-
-						this.table.data[duplicityKey].disabled = false;
-					}
-					Notification(`${this.$t("Duplicity resolve")} ${e.message || e}}`, "error");
+			try {
+				const {
+					status,
+					message,
+				} = await ImportService.resolveImportItemDuplicity({
+					queueId,
+					state,
+					acceptedDuplicityId,
 				});
+
+				checkResponseStatus(status, message);
+
+				if (state === IMPORT.ITEM_STATUS.TO_LINK) {
+					this.table.data[duplicityKey].state = IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
+				}
+
+				if (state === IMPORT.ITEM_STATUS.TO_UPDATE) {
+					this.table.data[duplicityKey].state = IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
+				}
+
+				Notification(this.$t("Solved"), "success");
+			} catch (e) {
+				if (e.message) {
+					if (duplicityKey !== null) {
+						this.table.data[duplicityKey][button] = false;
+					}
+
+					this.table.data[duplicityKey].disabled = false;
+				}
+				Notification(`${this.$t("Duplicity resolve")} ${e.message || e}`, "error");
+			}
 
 			this.table.data = this.table.data.map((item) => ({
 				...item,

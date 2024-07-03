@@ -1,4 +1,4 @@
-import { download, fetcher, filtersToUri, idsToUri } from "@/utils/fetcher";
+import { download, fetcher } from "@/utils/fetcher";
 import { queryBuilder } from "@/utils/helpers";
 
 export default {
@@ -6,28 +6,10 @@ export default {
 		return { enabled: true, name: "Default", id: null, identifier: "Default" };
 	},
 
-	async getListOfAssistances(page, size, sort, upcoming, search = null, filter = null) {
-		const fulltext = search ? `&fulltext=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const upcomingText = page ? `&upcoming=${upcoming}` : "";
-		const filtersUri = filter ? filtersToUri(filter) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances?${pageText + sizeText + upcomingText + sortText + filtersUri + fulltext}`,
+	getListOfAssistances({ page, size, sort, upcoming, search, filters }) {
+		return fetcher({
+			uri: `assistances${queryBuilder({ page, size, sort, upcoming, search, filters })}`,
 		});
-		return { data, totalCount };
-	},
-
-	async getListOfProjectAssistancesByType(type, projectId = null) {
-		const projectText = projectId ? `&filter[projects][]=${projectId}` : "";
-		const typeText = projectId ? `&filter[type]=${type}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances?${projectText + typeText}`,
-		});
-		return { data, totalCount };
 	},
 
 	getShortListOfAssistance({ filters }) {
@@ -36,36 +18,28 @@ export default {
 		});
 	},
 
-	async getAssistances(ids) {
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances?${idsText}`,
+	getAssistances(ids) {
+		return fetcher({
+			uri: `assistances${queryBuilder({ ids })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async getTargetTypes(type) {
-		const filter = type ? `&filter[type]=${type}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/targets?${filter}`,
+	getTargetTypes(filters) {
+		return fetcher({
+			uri: `assistances/targets${queryBuilder({ filters })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async getAssistanceTypes(subsector) {
-		const filter = subsector ? `&filter[subsector]=${subsector}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/types?${filter}`,
+	getAssistanceTypes(filters) {
+		return fetcher({
+			uri: `assistances/types${queryBuilder({ filters })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async getAssistanceSelectionCriteriaTargets() {
-		const { data: { data, totalCount } } = await fetcher({ uri: "selection-criteria/targets" });
-		return { data, totalCount };
+	getAssistanceSelectionCriteriaTargets() {
+		return fetcher({
+			uri: "selection-criteria/targets",
+		});
 	},
 
 	getAssistanceSelectionCriteriaFields(targetCode) {
@@ -74,32 +48,22 @@ export default {
 		});
 	},
 
-	async getAssistanceSelectionCriteriaConditions(targetCode, fieldCode) {
-		const { data: { data, totalCount } } = await fetcher(
-
-			{ uri: `selection-criteria/targets/${targetCode}/fields/${fieldCode}/conditions` },
-		);
-		return { data, totalCount };
-	},
-
-	async getListOfProjectAssistances(id, page, size, sort, search = null, filter = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-		const filtersUri = filter ? filtersToUri(filter) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `projects/${id}/assistances?${pageText + sizeText + sortText + fulltext + filtersUri}`,
+	getAssistanceSelectionCriteriaConditions(targetCode, fieldCode) {
+		return fetcher({
+			uri: `selection-criteria/targets/${targetCode}/fields/${fieldCode}/conditions`,
 		});
-		return { data, totalCount };
 	},
 
-	async getDetailOfAssistance(id) {
-		const { data } = await fetcher({
+	getListOfProjectAssistances({ id, page, size, sort, search, filters }) {
+		return fetcher({
+			uri: `projects/${id}/assistances${queryBuilder({ page, size, sort, search, filters })}`,
+		});
+	},
+
+	getDetailOfAssistance(id) {
+		return fetcher({
 			uri: `assistances/${id}`,
 		});
-		return data;
 	},
 
 	getScoringTypes(page, size, filters = null) {
@@ -158,78 +122,47 @@ export default {
 		return download({ uri: `scoring-blueprints/${scoringId}/content` });
 	},
 
-	async createAssistance(body) {
-		const { data, status, message } = await fetcher({ uri: "assistances", method: "POST", body });
-		return { data, status, message };
-	},
-
-	async calculationCommodities(body) {
-		const { data, status } = await fetcher({
-			uri: "assistances/commodities", method: "POST", body,
+	createAssistance(body) {
+		return fetcher({
+			uri: "assistances",
+			method: "POST",
+			body,
 		});
-		return { data, status };
 	},
 
-	async calculationOfBeneficiaries(body) {
-		const { data, status } = await fetcher({
-			uri: "assistances/beneficiaries", method: "POST", body,
+	assistancePrecalculate(body) {
+		return fetcher({
+			uri: "assistances/precalculate",
+			method: "POST",
+			body,
 		});
-		return { data, status };
 	},
 
-	async calculationOfBeneficiariesScores(body) {
-		const { data, status } = await fetcher({
-			uri: "assistances/vulnerability-scores", method: "POST", body, version: 2,
+	getAssistanceCreationProgress(id) {
+		return fetcher({
+			uri: `assistances/${id}/creation-progress`,
 		});
-		return { data, status };
 	},
 
-	async getAssistanceCommodities(id) {
-		const { data: { data }, totalCount } = await fetcher({
-			uri: `assistances/${id}/commodities`,
+	getCommodities(ids) {
+		return fetcher({
+			uri: `assistances/commodities${queryBuilder({ ids })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async getCommodities(ids) {
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const { data: { data }, totalCount } = await fetcher({
-			uri: `assistances/commodities?${idsText}`,
-		});
-		return { data, totalCount };
-	},
-
-	async getStatistics(ids) {
-		const idsText = ids ? idsToUri(ids) : "";
-
-		const { data: { data }, totalCount } = await fetcher({
-			uri: `assistances/statistics?${idsText}`,
-		});
-		return { data, totalCount };
-	},
-
-	async getAssistanceStatistics(assistanceId) {
-		const { data } = await fetcher({
+	getAssistanceStatistics(assistanceId) {
+		return fetcher({
 			uri: `assistances/${assistanceId}/statistics`,
 		});
-
-		return data;
 	},
 
-	async getListOfBeneficiaries(id, page, size, sort, search = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/assistances-beneficiaries?${pageText + sizeText + sortText + fulltext}`,
+	getListOfBeneficiaries({ id, page, size, sort, search }) {
+		return fetcher({
+			uri: `assistances/${id}/assistances-beneficiaries${queryBuilder({ page, size, sort, search })}`,
 		});
-		return { data, totalCount };
 	},
 
-	getOptimizedListOfBeneficiaries(id, page, size, sort, search = null, filters = null) {
+	getOptimizedListOfBeneficiaries({ id, page, size, sort, search, filters }) {
 		let fulltext = "";
 
 		if (search?.field?.length && search.phrase?.length) {
@@ -246,32 +179,17 @@ export default {
 		});
 	},
 
-	async getListOfCommunities(id, page, size, sort, search = null) {
-		const fulltext = search ? `&filter[fulltext]=${search}` : "";
-		const sortText = sort ? `&sort[]=${sort}` : "";
-		const pageText = page ? `&page=${page}` : "";
-		const sizeText = size ? `&size=${size}` : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${id}/assistances-communities?${pageText + sizeText + sortText + fulltext}`,
-		});
-		return { data, totalCount };
-	},
-
-	getListOfInstitutions(id, page, size, sort, filters) {
+	getListOfInstitutions({ id, page, size, sort, filters }) {
 		return fetcher({
 			uri: `assistances/${id}/assistances-institutions${queryBuilder({ page, sort, size, filters })}`,
 			version: 2,
 		});
 	},
 
-	async getReliefPackagesForAssistance(assistanceId, reliefPackageIds) {
-		const idsText = reliefPackageIds ? idsToUri(reliefPackageIds) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `assistances/${assistanceId}/relief-packages?${idsText}`,
+	getReliefPackagesForAssistance(assistanceId, ids) {
+		return fetcher({
+			uri: `assistances/${assistanceId}/relief-packages${queryBuilder({ ids })}`,
 		});
-		return { data, totalCount };
 	},
 
 	updateReliefPackage(body) {
@@ -282,13 +200,12 @@ export default {
 		});
 	},
 
-	async updateReliefPackagesWithNumberIds(id, body) {
-		const { data, status, message } = await fetcher({
+	updateReliefPackagesWithNumberIds(id, body) {
+		return fetcher({
 			uri: `assistances/${id}/relief-packages/distribute`,
 			method: "PATCH",
 			body,
 		});
-		return { data, status, message };
 	},
 
 	revertDistributionOfReliefPackage(id) {
@@ -306,74 +223,62 @@ export default {
 		});
 	},
 
-	async getSmartCardDepositsForAssistance(smartcardDepositIds) {
-		const idsText = smartcardDepositIds ? idsToUri(smartcardDepositIds) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `smartcard-deposits?${idsText}`,
+	getSmartCardDepositsForAssistance(ids) {
+		return fetcher({
+			uri: `smartcard-deposits${queryBuilder({ ids })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async getTransactionsForAssistance(transactionIds) {
-		const idsText = transactionIds ? idsToUri(transactionIds) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `transactions?${idsText}`,
+	getTransactionsForAssistance(ids) {
+		return fetcher({
+			uri: `transactions${queryBuilder({ ids })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async getTransactionStatuses() {
-		const { data: { data, totalCount } } = await fetcher({
+	getTransactionStatuses() {
+		return fetcher({
 			uri: "transactions/statuses",
 		});
-		return { data, totalCount };
 	},
 
-	async getBookletsForAssistance(bookletIds) {
-		const idsText = bookletIds ? idsToUri(bookletIds) : "";
-
-		const { data: { data, totalCount } } = await fetcher({
-			uri: `booklets?${idsText}`,
+	getBookletsForAssistance(ids) {
+		return fetcher({
+			uri: `booklets${queryBuilder({ ids })}`,
 		});
-		return { data, totalCount };
 	},
 
-	async getBookletStatuses() {
-		const { data: { data, totalCount } } = await fetcher({
+	getBookletStatuses() {
+		return fetcher({
 			uri: "booklets/statuses",
 		});
-		return { data, totalCount };
 	},
 
-	async assignBookletInAssistance(assistanceId, target, beneficiaryId, bookletCode) {
-		const { data, status } = await fetcher({
+	assignBookletInAssistance({ assistanceId, target, beneficiaryId, bookletCode }) {
+		return fetcher({
 			uri: `assistances/${assistanceId}/${target}/${beneficiaryId}/booklets/${bookletCode}`,
 			method: "PUT",
 		});
-		return { data, status };
 	},
 
-	async sendVerificationEmailForTransactions(assistanceId) {
-		const { data, status } = await fetcher({
-			uri: `assistances/${assistanceId}/transactions/emails`, method: "POST",
+	sendVerificationEmailForTransactions(assistanceId) {
+		return fetcher({
+			uri: `assistances/${assistanceId}/transactions/emails`,
+			method: "POST",
 		});
-		return { data, status };
 	},
 
-	async createTransactionsForBeneficiaries(assistanceId, body) {
-		const { data, status } = await fetcher({
-			uri: `assistances/${assistanceId}/transactions`, method: "POST", body,
+	createTransactionsForBeneficiaries(assistanceId, body) {
+		return fetcher({
+			uri: `assistances/${assistanceId}/transactions`,
+			method: "POST",
+			body,
 		});
-		return { data, status };
 	},
 
-	async getListOfModalities() {
-		const { data: { data, totalCount } } = await fetcher({
+	getListOfModalities() {
+		return fetcher({
 			uri: `modalities`,
 		});
-		return { data, totalCount };
 	},
 
 	getListOfModalitiesWithTypes() {
@@ -383,23 +288,27 @@ export default {
 		});
 	},
 
-	async getListOfModalityTypes(code) {
-		const { data: { data, totalCount } } = await fetcher({ uri: `modalities/${code}/types` });
-		return { data, totalCount };
+	getListOfModalityTypes(code) {
+		return fetcher({
+			uri: `modalities/${code}/types`,
+		});
 	},
 
-	async getListOfAllModalityTypes() {
-		const { data: { data, totalCount } } = await fetcher({ uri: `modalities/types` });
-		return { data, totalCount };
+	getListOfAllModalityTypes() {
+		return fetcher({
+			uri: `modalities/types`,
+		});
 	},
 
 	async removeAssistance(id) {
-		const { data, status } = await fetcher({ uri: `assistances/${id}`, method: "DELETE" });
-		return { data, status };
+		return fetcher({
+			uri: `assistances/${id}`,
+			method: "DELETE",
+		});
 	},
 
-	async moveAssistance(assistanceId, originalProjectId, targetProjectId) {
-		const { status, message } = await fetcher({
+	moveAssistance({ assistanceId, originalProjectId, targetProjectId }) {
+		return fetcher({
 			uri: `assistances/${assistanceId}/move`,
 			method: "POST",
 			body: {
@@ -407,95 +316,63 @@ export default {
 				targetProjectId,
 			},
 		});
-		return { status, message };
 	},
 
-	async updateAssistance({
-		id,
-		name,
-		formattedDateDistribution,
-		formattedDateExpiration,
-		round,
-		note,
-		locationId,
-	}) {
-		const { data, status } = await fetcher({
+	updateAssistance({ id, assistanceBody }) {
+		return fetcher({
 			uri: `assistances/${id}`,
 			method: "PATCH",
-			body: {
-				name,
-				...(formattedDateDistribution && { dateDistribution: formattedDateDistribution }),
-				...(formattedDateExpiration && { dateExpiration: formattedDateExpiration }),
-				round,
-				note,
-				locationId,
-			},
+			body: assistanceBody,
 		});
-		return { data, status };
 	},
 
-	async updateAssistanceStatusValidated({ assistanceId, validated }) {
-		const { data, status, message } = await fetcher({
+	updateAssistanceStatusValidated({ assistanceId, validated }) {
+		return fetcher({
 			uri: `assistances/${assistanceId}`,
 			method: "PATCH",
 			body: {
 				validated,
 			},
 		});
-		return { data, status, message };
 	},
 
-	async updateAssistanceNote({ assistanceId, note }) {
-		const { data, status } = await fetcher({
+	updateAssistanceNote({ assistanceId, note }) {
+		return fetcher({
 			uri: `assistances/${assistanceId}`,
 			method: "PATCH",
 			body: {
 				note,
 			},
 		});
-		return { data, status };
 	},
 
-	async updateAssistanceToStatusCompleted({ assistanceId, completed }) {
-		const { data, status } = await fetcher({
+	updateAssistanceToStatusCompleted({ assistanceId, completed }) {
+		return fetcher({
 			uri: `assistances/${assistanceId}`,
 			method: "PATCH",
 			body: {
 				completed,
 			},
 		});
-		return { data, status };
 	},
 
-	async getSelectionCriteria(id) {
-		const { data: { data, totalCount }, message } = await fetcher({
+	getSelectionCriteria(id) {
+		return fetcher({
 			uri: `assistances/${id}/selection-criteria`,
 		});
-		return { data, totalCount, message };
 	},
 
-	async exportAssistances(format, projectId, filters) {
-		const formatText = format ? `type=${format}` : "";
-		const filtersUri = filters ? filtersToUri(filters) : "";
-
+	exportAssistances({ format, projectId, filters }) {
 		return download({
-			uri: `projects/${projectId}/assistances/exports?${formatText + filtersUri}`,
+			uri: `projects/${projectId}/assistances/exports${queryBuilder({ format, filters })}`,
 		});
 	},
 
-	async exportVulnerabilityScores(format, body) {
-		const formatText = format ? `type=${format}` : "";
-
+	exportVulnerabilityScores({ format, body }) {
 		return download({
-			uri: `assistances/vulnerability-scores/exports?${formatText}`,
+			uri: `assistances/vulnerability-scores/exports${queryBuilder({ format })}`,
 			method: "POST",
 			body,
 		});
-	},
-
-	async exportAssistance(format, assistanceId) {
-		const formatText = format ? `type=${format}` : "";
-
-		return download({ uri: `assistances/${assistanceId}/exports?${formatText}` });
 	},
 };

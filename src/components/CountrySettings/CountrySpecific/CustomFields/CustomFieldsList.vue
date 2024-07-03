@@ -6,9 +6,11 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:data-cy="dataCy"
 		class="custom-fields-table"
 		reset-sort-button
 		is-search-visible
+		is-frontend-sort-disabled
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
 		@update:sortBy="onSort"
@@ -16,8 +18,9 @@
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS)"
 		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-slot:actions="{ row }">
+		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
@@ -25,6 +28,7 @@
 
 			<ButtonAction
 				v-if="userCan.editCustomField"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
@@ -32,6 +36,7 @@
 
 			<!--	TODO Uncomment in next version (when BE is ready) -->
 			<!--	<ButtonAction-->
+			<!--		:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"-->
 			<!--		icon="trash"-->
 			<!--		tooltip-text="Delete"-->
 			<!--		icon-color="red"-->
@@ -63,6 +68,7 @@ import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
@@ -79,11 +85,12 @@ export default {
 		DataGrid,
 	},
 
-	mixins: [grid, permissions],
+	mixins: [grid, permissions, identifierBuilder],
 
 	data() {
 		return {
 			TABLE,
+			dataCy: "custom-fields-table",
 			isLoadingList: false,
 			exportControl: {
 				loading: false,
@@ -119,18 +126,21 @@ export default {
 			try {
 				this.isLoadingList = true;
 
+				const sort = this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "";
 				const {
 					data: { data, totalCount },
 					status,
 					message,
-				} = await CustomFieldsService.getListOfCustomFields(
-					this.table.currentPage,
-					this.perPage,
-					this.table.sortColumn !== ""
-						? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-						: "",
-					this.table.searchPhrase,
-				);
+				} = await CustomFieldsService.getListOfCustomFields({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					sort,
+				});
+
+				this.table.data = [];
 
 				checkResponseStatus(status, message);
 
@@ -139,7 +149,7 @@ export default {
 					this.table.total = totalCount;
 				}
 			} catch (e) {
-				Notification(`${this.$t("Custom Fields:")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Custom Fields")}: ${e.message || e}`, "error");
 			} finally {
 				this.isLoadingList = false;
 			}
@@ -151,11 +161,15 @@ export default {
 					this.exportControl.loading = true;
 
 					const filename = `Custom Fields ${normalizeExportDate()}`;
-					const { data, status, message } = await CustomFieldsService.exportCustomFields(format);
+					const {
+						data,
+						status,
+						message,
+					} = await CustomFieldsService.exportCustomFields(format);
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Custom Fields:")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export Custom Fields")}: ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

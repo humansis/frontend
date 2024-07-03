@@ -1,96 +1,76 @@
-import { fetcher, idsToUri } from "@/utils/fetcher";
+import { fetcher } from "@/utils/fetcher";
+import { queryBuilder } from "@/utils/helpers";
 
 export default {
-	async getListOfAdm1() {
-		const { data: { data, totalCount } } = await fetcher({ uri: `adm1` });
-		return { data, totalCount };
+	getListOfAdm1() {
+		return fetcher({
+			uri: `adm1`,
+		});
 	},
 
-	async getDetailOfAdm1(id) {
-		const { data } = await fetcher({ uri: `adm1/${id}` });
-		return { data };
+	getListOfAdm2(id) {
+		return fetcher({
+			uri: id
+				? `adm1/${id}/adm2`
+				: "adm2",
+		});
 	},
 
-	async getDetailOfAdm2(id) {
-		const { data } = await fetcher({ uri: `adm2/${id}` });
-		return { data };
+	getListOfAdm3(id) {
+		return fetcher({
+			uri: id
+				? `adm2/${id}/adm3`
+				: "adm3",
+		});
 	},
 
-	async getDetailOfAdm3(id) {
-		const { data } = await fetcher({ uri: `adm3/${id}` });
-		return { data };
+	getListOfAdm4(id) {
+		return fetcher({
+			uri: id
+				? `adm3/${id}/adm4`
+				: "adm4",
+		});
 	},
 
-	async getDetailOfAdm4(id) {
-		const { data } = await fetcher({ uri: `adm4/${id}` });
-		return { data };
+	getLocation(id) {
+		return fetcher({
+			uri: `locations/${id}`,
+		});
 	},
 
-	async getListOfAdm2(id) {
-		const { data: { data, totalCount } } = id
-			? await fetcher({ uri: `adm1/${id}/adm2` })
-			: await fetcher({ uri: "adm2" });
-
-		return { data, totalCount };
+	getLocations({ ids, param }) {
+		return fetcher({
+			uri: `locations${queryBuilder({ ids, param })}`,
+		});
 	},
 
-	async getListOfAdm3(id) {
-		const { data: { data, totalCount } } = id
-			? await fetcher({ uri: `adm2/${id}/adm3` })
-			: await fetcher({ uri: "adm3" });
-
-		return { data, totalCount };
+	getAdm1s({ ids, param }) {
+		return fetcher({
+			uri: `adm1${queryBuilder({ ids, param })}`,
+		});
 	},
 
-	async getListOfAdm4(id) {
-		const { data: { data, totalCount } } = id
-			? await fetcher({ uri: `adm3/${id}/adm4` })
-			: await fetcher({ uri: "adm4" });
-		return { data, totalCount };
+	getAdm2s({ ids, param }) {
+		return fetcher({
+			uri: `adm2${queryBuilder({ ids, param })}`,
+		});
 	},
 
-	async getLocation(id) {
-		const { data } = await fetcher({ uri: `locations/${id}` });
-		return data;
+	getAdm3s({ ids, param }) {
+		return fetcher({
+			uri: `adm3${queryBuilder({ ids, param })}`,
+		});
 	},
 
-	async getLocations(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
-
-		const { data } = await fetcher({ uri: `locations?${idsText}` });
-		return data;
+	getAdm4s({ ids, param }) {
+		return fetcher({
+			uri: `adm4${queryBuilder({ ids, param })}`,
+		});
 	},
 
-	async getAdm1s(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
-
-		const { data } = await fetcher({ uri: `adm1?${idsText}` });
-		return data;
-	},
-
-	async getAdm2s(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
-
-		const { data } = await fetcher({ uri: `adm2?${idsText}` });
-		return data;
-	},
-
-	async getAdm3s(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
-
-		const { data } = await fetcher({ uri: `adm3?${idsText}` });
-		return data;
-	},
-
-	async getAdm4s(ids, param = null) {
-		const idsText = ids ? idsToUri(ids, param) : "";
-
-		const { data } = await fetcher({ uri: `adm4?${idsText}` });
-		return data;
-	},
-
-	async getAdmNames() {
-		const data = await fetcher({ uri: `adms` });
-		return data;
+	getAdmNames() {
+		return fetcher({
+			uri: `adms`,
+		});
 	},
 };

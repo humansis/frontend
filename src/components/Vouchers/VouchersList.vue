@@ -120,6 +120,7 @@ import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import voucherHelper from "@/mixins/voucherHelper";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile, getBookletStatus } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { EXPORT, TABLE } from "@/consts";
@@ -193,29 +194,42 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
-			this.table.progress = null;
+			try {
+				this.isLoadingList = true;
+				this.table.progress = null;
 
-			await BookletsService.getListOfBooklets(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(({ data, totalCount }) => {
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await BookletsService.getListOfBooklets({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					filters: this.filters,
+					sort,
+				});
+
 				this.table.data = [];
 				this.table.progress = 0;
+
+				checkResponseStatus(status, message);
+
 				this.table.total = totalCount;
 				this.table.dataUpdated = true;
-				if (totalCount > 0) {
-					this.prepareDataForTable(data);
-				}
-			});
 
-			this.setGridFiltersToUrl("vouchers", false);
-			this.isLoadingList = false;
+				if (totalCount > 0) {
+					await this.prepareDataForTable(data);
+				}
+			} catch (e) {
+				Notification(`${this.$t("Vouchers")} ${e.message || e}`, "error");
+			} finally {
+				this.setGridFiltersToUrl("vouchers", false);
+				this.isLoadingList = false;
+			}
 		},
 
 		onAdvancedSearchToggle() {
@@ -238,14 +252,18 @@ export default {
 					}
 
 					const filename = `Vouchers ${normalizeExportDate()}`;
-					const { data, status, message } = await BookletsService.exportBooklets(
+					const {
+						data,
+						status,
+						message,
+					} = await BookletsService.exportBooklets({
 						format,
 						ids,
-					);
+					});
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Booklets")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export Booklets")}: ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}
@@ -258,44 +276,40 @@ export default {
 		},
 
 		async onPrintSelection() {
-			this.printSelectionLoading = true;
-
 			const ids = this.table.checkedRows.map((id) => id);
 
-			await BookletsService.exportQRVouchers(ids)
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `Booklets.pdf`;
-						link.click();
-					} else {
-						Notification(message, "warning");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Print Booklet")} ${e.message || e}`, "error");
-				});
-			this.printSelectionLoading = false;
+			try {
+				this.printSelectionLoading = true;
+
+				const {
+					data,
+					status,
+					message,
+				} = await BookletsService.exportQRVouchers(ids);
+
+				downloadFile(data, "Booklets", status, "pdf", message);
+			} catch (e) {
+				Notification(`${this.$t("Print Booklet")}: ${e.message || e}`, "error");
+			} finally {
+				this.printSelectionLoading = false;
+			}
 		},
 
 		async onPrintBooklets({ code, id }) {
-			Notification(`${this.$t("Your Voucher Download is Starting")}`, "success");
+			try {
+				Notification(`${this.$t("Your Voucher Download is Starting")}`, "success");
 
-			await BookletsService.exportQRVouchers([id])
-				.then(({ data, status, message }) => {
-					if (status === 200) {
-						const blob = new Blob([data], { type: data.type });
-						const link = document.createElement("a");
-						link.href = window.URL.createObjectURL(blob);
-						link.download = `Booklet-${code}.pdf`;
-						link.click();
-					} else {
-						Notification(message, "warning");
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Print Booklet")} ${e.message || e}`, "error");
-				});
+				const filename = `Booklet-${code}}`;
+				const {
+					data,
+					status,
+					message,
+				} = await BookletsService.exportQRVouchers([id]);
+
+				downloadFile(data, filename, status, "pdf", message);
+			} catch (e) {
+				Notification(`${this.$t("Print Booklet")}: ${e.message || e}`, "error");
+			}
 		},
 
 		onResetFilters() {

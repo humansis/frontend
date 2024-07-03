@@ -1,5 +1,6 @@
 import { mapState } from "vuex";
 import LocationsService from "@/services/LocationsService";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { copyObject } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 
@@ -24,14 +25,21 @@ export default {
 		},
 
 		async fetchProvinces() {
-			await LocationsService.getListOfAdm1()
-				.then(({ data }) => {
-					this.filtersOptions.adm1.data = data;
-					this.filtersOptions.adm1.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t(this.admNames.adm1)} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getListOfAdm1();
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.adm1.data = data;
+			} catch (e) {
+				Notification(`${this.$t(this.admNames.adm1)}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.adm1.loading = false;
+			}
 		},
 
 		fillParentProvinces() {
@@ -49,15 +57,21 @@ export default {
 		},
 
 		async fetchDistricts() {
-			this.filtersOptions.adm2.loading = true;
-			await LocationsService.getListOfAdm2()
-				.then(({ data }) => {
-					this.filtersOptions.adm2.data = data;
-					this.filtersOptions.adm2.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t(this.admNames.adm2)} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getListOfAdm2();
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.adm2.data = data;
+			} catch (e) {
+				Notification(`${this.$t(this.admNames.adm2)}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.adm2.loading = false;
+			}
 		},
 
 		fillParentDistricts() {
@@ -75,15 +89,23 @@ export default {
 		},
 
 		async fetchCommunes() {
-			this.filtersOptions.adm3.loading = true;
-			await LocationsService.getListOfAdm3()
-				.then(({ data }) => {
-					this.filtersOptions.adm3.data = data;
-					this.filtersOptions.adm3.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t(this.admNames.adm3)} ${e.message || e}`, "error");
-				});
+			try {
+				this.filtersOptions.adm3.loading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getListOfAdm3();
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.adm3.data = data;
+			} catch (e) {
+				Notification(`${this.$t(this.admNames.adm3)}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.adm3.loading = false;
+			}
 		},
 
 		fillParentCommunes() {
@@ -101,15 +123,23 @@ export default {
 		},
 
 		async fetchVillages() {
-			this.filtersOptions.adm4.loading = true;
-			await LocationsService.getListOfAdm4()
-				.then(({ data }) => {
-					this.filtersOptions.adm4.data = data;
-					this.filtersOptions.adm4.loading = false;
-				})
-				.catch((e) => {
-					Notification(`${this.$t(this.admNames.adm4)} ${e.message || e}`, "error");
-				});
+			try {
+				this.filtersOptions.adm4.loading = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getListOfAdm4();
+
+				checkResponseStatus(status, message);
+
+				this.filtersOptions.adm4.data = data;
+			} catch (e) {
+				Notification(`${this.$t(this.admNames.adm4)}: ${e.message || e}`, "error");
+			} finally {
+				this.filtersOptions.adm4.loading = false;
+			}
 		},
 
 		async setDefaultLocationsFilter() {
@@ -159,40 +189,40 @@ export default {
 		},
 
 		filterAdmChildren(filterName) {
-			if (filterName && filterName.includes("adm")) {
-				const admNum = parseInt(filterName.slice(-1), 10);
-				if (!this.selectedFiltersOptions[filterName]) {
-					for (let i = admNum; i <= 4; i += 1) {
-						if (this.filtersOptions[`adm${i}`] && this.filtersOptionsCopy[`adm${i}`]) {
-							this.filtersOptions[`adm${i}`].data = copyObject(this.filtersOptionsCopy[`adm${i}`].data);
-						}
-					}
-					return;
-				}
+			if (!filterName || !filterName.includes("adm")) return;
 
-				// Filter children options according to parent(s)
-				for (let i = admNum; i <= 3; i += 1) {
-					const selectedAdm = this.selectedFiltersOptions[`adm${i}`];
-					const admFilterSelected = (!Array.isArray(selectedAdm) && selectedAdm !== null)
+			const admNum = parseInt(filterName.slice(-1), 10);
+
+			if (!this.selectedFiltersOptions[filterName]) {
+				for (let i = admNum; i <= 4; i += 1) {
+					if (this.filtersOptions[`adm${i}`] && this.filtersOptionsCopy[`adm${i}`]) {
+						this.filtersOptions[`adm${i}`].data = copyObject(this.filtersOptionsCopy[`adm${i}`].data);
+					}
+				}
+				return;
+			}
+
+			for (let i = admNum; i <= 3; i += 1) {
+				const selectedAdm = this.selectedFiltersOptions[`adm${i}`];
+				const admFilterSelected = (!Array.isArray(selectedAdm) && selectedAdm !== null)
 						|| (Array.isArray(selectedAdm) && selectedAdm.length);
 
-					if (admFilterSelected) {
-						// Copy array so it is not affected by .filter function
-						const filtersCopy = this.filtersOptionsCopy[`adm${i + 1}`].data.slice(0);
-						this.filtersOptions[`adm${i + 1}`].data = filtersCopy.filter((adm) => (
-							adm.parentId === selectedAdm.id
-						));
+				if (admFilterSelected) {
+					const filtersCopy = this.filtersOptionsCopy[`adm${i + 1}`].data.slice(0);
 
-						for (let j = i + 1; j <= 3; j += 1) {
-							const filtersCopy2 = this.filtersOptionsCopy[`adm${j + 1}`].data.slice(0);
-							this.filtersOptions[`adm${j + 1}`].data = filtersCopy2.filter((adm) => {
-								if (this.filtersOptions[`adm${j}`].data[0]) {
-									const parentIdsList = this.filtersOptions[`adm${j}`].data.map((item) => item.id);
-									return parentIdsList?.includes(adm.parentId);
-								}
-								return null;
-							});
-						}
+					this.filtersOptions[`adm${i + 1}`].data = filtersCopy.filter((adm) => (
+						adm.parentId === selectedAdm.id
+					));
+
+					for (let j = i + 1; j <= 3; j += 1) {
+						const filtersCopy2 = this.filtersOptionsCopy[`adm${j + 1}`].data.slice(0);
+						this.filtersOptions[`adm${j + 1}`].data = filtersCopy2.filter((adm) => {
+							if (!this.filtersOptions[`adm${j}`].data[0]) return null;
+
+							const parentIdsList = this.filtersOptions[`adm${j}`].data.map((item) => item.id);
+
+							return parentIdsList?.includes(adm.parentId);
+						});
 					}
 				}
 			}

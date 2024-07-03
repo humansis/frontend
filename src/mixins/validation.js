@@ -16,6 +16,7 @@ export default {
 
 		onValidate(field, object) {
 			const validation = this.getValidation(field, object);
+
 			validation.$touch();
 		},
 

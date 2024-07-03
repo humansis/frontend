@@ -29,6 +29,7 @@ import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -64,17 +65,24 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await OrganizationServiceService.getListOfOrganizationServices()
-				.then(({ data, totalCount }) => {
-					this.table.data = data;
-					this.table.total = totalCount;
-				}).catch((e) => {
-					Notification(`${this.$t("Organizations")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await OrganizationServiceService.getListOfOrganizationServices();
 
-			this.isLoadingList = false;
+				checkResponseStatus(status, message);
+
+				this.table.data = data;
+				this.table.total = totalCount;
+			} catch (e) {
+				Notification(`${this.$t("Organizations")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 	},
 };

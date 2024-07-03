@@ -110,6 +110,8 @@ import ImportsFilter from "@/components/Imports/ImportsFilter";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
+import { Notification } from "@/utils/UI";
 import { IMPORT, TABLE } from "@/consts";
 
 const customSort = { status: () => {} };
@@ -232,27 +234,39 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await ImportService.getListOfImports(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(({ data, totalCount }) => {
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await ImportService.getListOfImports({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					filters: this.filters,
+					sort,
+				});
+
 				this.table.data = [];
 				this.table.progress = 0;
+
+				checkResponseStatus(status, message);
+
 				this.table.total = totalCount;
 
 				if (totalCount > 0) {
 					this.prepareDataForTable(data);
 				}
-			});
-
-			this.isLoadingList = false;
+			} catch (e) {
+				Notification(`${this.$t("Imports")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		onStatusFilter(filter, propName) {

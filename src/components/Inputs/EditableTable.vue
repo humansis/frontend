@@ -211,11 +211,6 @@ export default {
 
 		rowConfirmed(data) {
 			this.$emit("tableChanged", { ...data, index: this.table.index });
-
-			Notification(
-				this.$t(`${this.contentName} Successfully ${data.isCreate ? "Created" : "Edited"}`),
-				"success",
-			);
 			this.editableTableModal.isOpened = false;
 		},
 
@@ -246,8 +241,6 @@ export default {
 		onDeleteRow(index) {
 			this.table.data.splice(index, 1);
 			this.$emit("rowRemoved");
-
-			Notification(this.$t(`${this.contentName} Successfully Deleted`), "success");
 		},
 
 		closeProjectTargetModal() {

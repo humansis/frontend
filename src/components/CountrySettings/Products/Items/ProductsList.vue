@@ -54,6 +54,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
+				data-cy="items-export"
 				@export="onExportProducts"
 			/>
 		</template>
@@ -69,6 +70,7 @@ import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { EXPORT, TABLE } from "@/consts";
@@ -95,7 +97,7 @@ export default {
 		return {
 			TABLE,
 			isLoadingList: false,
-			dataCy: "products-table",
+			dataCy: "items-table",
 			exportControl: {
 				loading: false,
 				location: "products",
@@ -126,24 +128,33 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await ProductService.getListOfProducts(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
-				this.prepareDataForTable(response.data);
-			}).catch((e) => {
-				Notification(`${this.$t("Products")} ${e.message || e}`, "error");
-			});
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await ProductService.getListOfProducts({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					sort,
+				});
 
-			this.isLoadingList = false;
+				checkResponseStatus(status, message);
+
+				this.table.data = data;
+				this.table.total = totalCount;
+				this.prepareDataForTable(data);
+			} catch (e) {
+				Notification(`${this.$t("Products")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		prepareDataForTable(data) {
@@ -170,11 +181,15 @@ export default {
 					this.exportControl.loading = true;
 
 					const filename = `Products ${normalizeExportDate()}`;
-					const { data, status, message } = await ProductService.exportProducts(format);
+					const {
+						data,
+						status,
+						message,
+					} = await ProductService.exportProducts(format);
 
 					downloadFile(data, filename, status, format, message);
 				} catch (e) {
-					Notification(`${this.$t("Export Products")} ${e.message || e}`, "error");
+					Notification(`${this.$t("Export Products")}: ${e.message || e}`, "error");
 				} finally {
 					this.exportControl.loading = false;
 				}

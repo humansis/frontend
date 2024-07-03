@@ -5,6 +5,7 @@
 		:loading="isLoadingList"
 		:items="table.data"
 		:custom-key-sort="customSort"
+		:data-cy="prepareComponentIdentifier('redeemed-batches-table')"
 		is-row-click-disabled
 		is-default-footer-visible
 	>
@@ -23,7 +24,9 @@ import SmartcardService from "@/services/SmartcardService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 const customSort = {
@@ -43,7 +46,7 @@ export default {
 		ButtonAction,
 	},
 
-	mixins: [grid],
+	mixins: [grid, identifierBuilder],
 
 	props: {
 		projects: {
@@ -85,23 +88,30 @@ export default {
 
 	methods: {
 		async fetchBatches() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await SmartcardService.getSmartcardRedemptionBatches([this.vendorId])
-				.then(({ data, totalCount }) => {
-					this.table.total = totalCount;
-					this.prepareDataForTable(data);
-				}).catch((e) => {
-					Notification(`${this.$t("Batches")} ${e.message || e}`, "error");
-				});
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await SmartcardService.getSmartcardRedemptionBatches([this.vendorId]);
 
-			this.isLoadingList = false;
+				checkResponseStatus(status, message);
+
+				this.table.total = totalCount;
+				this.prepareDataForTable(data);
+			} catch (e) {
+				Notification(`${this.$t("Batches")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
-				this.table.data[key].date = this.$moment(item.date).format("DD-MM-YYYY HH:mm");
+				this.table.data[key].date = this.$moment(item.date).format("YYYY-MM-DD HH:mm");
 				this.table.data[key].total = this.formatPrice(item.value, item.currency);
 				this.table.data[key].project = this.projects
 					.find((project) => project.id === item.projectId)?.name;

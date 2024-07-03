@@ -120,7 +120,6 @@
 					:disabled="!householdsSelects"
 					:data-cy="`table-row-${index + 1}-show-detail-button`"
 					icon="search"
-					icon-color="primary"
 					label="Show Detail"
 					tooltip-text="Detail"
 					@actionConfirmed="onShowHouseholdDetail(householdId)"
@@ -258,6 +257,7 @@ import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import validation from "@/mixins/validation";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { EXPORT, TABLE } from "@/consts";
@@ -399,45 +399,66 @@ export default {
 		},
 
 		async fetchStandardData() {
-			await BeneficiariesService.getListOfHouseholds(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+			try {
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-				this.filters,
-			).then(async ({ totalCount, data }) => {
+					: "";
+
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfHouseholds({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					filters: this.filters,
+					sort,
+				});
 				this.table.data = [];
 				this.table.progress = 0;
+
+				checkResponseStatus(status, message);
+
 				this.table.total = totalCount;
 				this.table.dataUpdated = true;
+
 				if (data.length > 0) {
 					await this.prepareDataForTable(data);
 				}
+			} catch (e) {
+				Notification(`${this.$t("Households")}: ${e.message || e}`, "error");
+			} finally {
 				this.isLoading.households = false;
-			}).catch((e) => {
-				Notification(`${this.$t("Households")} ${e.message || e}`, "error");
-			});
+			}
 		},
 
 		async fetchBulkSearchData() {
 			try {
-				const { data: { result: { data, totalCount }, notFoundIds } } = await BeneficiariesService
-					.getListOfHouseholdByBulkSearch(
-						this.table.currentPage,
-						this.perPage,
-						this.table.sortColumn !== ""
-							? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-							: "",
-						{
+				const sort = this.table.sortColumn !== ""
+					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
+					: "";
+
+				const {
+					data: { result: { data, totalCount }, notFoundIds },
+					status,
+					message,
+				} = await BeneficiariesService
+					.getListOfHouseholdByBulkSearch({
+						page: this.table.currentPage,
+						size: this.perPage,
+						body: {
 							searchBy: this.bulkSearch.searchBy,
 							searchIds: this.arrayIds,
 						},
-					);
+						sort,
+					});
 
 				this.table.data = [];
 				this.table.progress = 0;
+
+				checkResponseStatus(status, message);
+
 				this.table.total = totalCount;
 				this.table.dataUpdated = true;
 				this.bulkSearch.notFoundIds = notFoundIds.join(" ");
@@ -446,9 +467,10 @@ export default {
 				if (data.length > 0) {
 					await this.prepareDataForTable(data);
 				}
-				this.isLoading.households = false;
 			} catch (e) {
-				Notification(`${this.$t("Bulk Search")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Bulk Search")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoading.households = false;
 			}
 		},
 
@@ -471,11 +493,15 @@ export default {
 							searchBy: this.bulkSearch.searchBy,
 							searchIds: this.bulkSearch.ids.split(" "),
 						};
-						const { data, status, message } = await BeneficiariesService.exportBulkSearchHouseholds(
+						const {
+							data,
+							status,
+							message,
+						} = await BeneficiariesService.exportBulkSearchHouseholds({
 							format,
 							ids,
 							body,
-						);
+						});
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
@@ -496,12 +522,16 @@ export default {
 							...this.filters,
 							...(this.table.searchPhrase && { fulltext: this.table.searchPhrase }),
 						};
-						const { data, status, message } = await BeneficiariesService.exportHouseholds(
+						const {
+							data,
+							status,
+							message,
+						} = await BeneficiariesService.exportHouseholds({
 							format,
 							ids,
 							filters,
 							sort,
-						);
+						});
 
 						downloadFile(data, filename, status, format, message);
 					} catch (e) {
@@ -546,17 +576,25 @@ export default {
 					(household) => household.routeParams.householdId,
 				);
 
-				await BeneficiariesService
-					.addHouseholdsToProject(this.selectedProject.id, householdsIds)
-					.then(() => {
-						this.table.checkedRows = [];
-						this.isActionsButtonVisible = false;
-						Notification(this.$t("Beneficiaries Successfully Added to a Project"), "success");
-						this.fetchData();
-					})
-					.catch((e) => {
-						Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
+				try {
+					const {
+						status,
+						message,
+					} = await BeneficiariesService.addHouseholdsToProject({
+						projectId: this.selectedProject.id,
+						ids: householdsIds,
 					});
+
+					checkResponseStatus(status, message, 204);
+
+					this.table.checkedRows = [];
+					this.isActionsButtonVisible = false;
+
+					Notification(this.$t("Beneficiaries Successfully Added to a Project"), "success");
+					await this.fetchData();
+				} catch (e) {
+					Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
+				}
 
 				this.addToProjectModal.isOpened = false;
 				this.table.checkedRows = [];
@@ -569,12 +607,19 @@ export default {
 			this.isLoading.projects = true;
 
 			try {
-				const { data: { data } } = await ProjectService.getShortListOfProjects();
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getShortListOfProjects();
+
+				checkResponseStatus(status, message);
 
 				this.options.projects = data;
-				this.isLoading.projects = false;
 			} catch (e) {
-				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
+				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoading.projects = false;
 			}
 		},
 
@@ -593,6 +638,9 @@ export default {
 
 				this.table.data[key] = {
 					...item,
+					vulnerabilities: item.householdHeadId
+						? item.vulnerabilities
+						: null,
 					householdId: id,
 					address,
 					members: item.beneficiaryIds.length,
@@ -622,7 +670,8 @@ export default {
 			const vulnerabilitiesList = await this.getVulnerabilities();
 
 			this.table.progress += 10;
-			await this.table.data.forEach(async (item, key) => {
+
+			const modifiedTable = await Promise.all(this.table.data.map(async (item, key) => {
 				const {
 					nationalIds,
 				} = await this.prepareBeneficiaries(
@@ -631,17 +680,25 @@ export default {
 					beneficiaries,
 					key,
 				);
-				const vulnerabilities = this.table.data[key].vulnerabilities || [];
-				this.table.data[key].vulnerabilities = vulnerabilitiesList?.filter(
-					({ code }) => code === vulnerabilities.find(
-						(vulnerability) => vulnerability === code,
-					),
-				);
-				this.table.data[key].nationalIds = nationalIds;
-				this.table.data[key].supportDateReceived = item.supportDateReceived
-					? new Date(item.supportDateReceived)
+
+				const preparedVulnerabilities = item.vulnerabilities
+					? vulnerabilitiesList?.filter(
+						({ code }) => item.vulnerabilities.includes(code),
+					)
 					: null;
-			});
+
+				return {
+					...item,
+					vulnerabilities: preparedVulnerabilities,
+					nationalIds,
+					supportDateReceived: item.supportDateReceived
+						? new Date(item.supportDateReceived)
+						: null,
+				};
+			}));
+
+			this.table.data = [...modifiedTable];
+
 			this.table.progress += 5;
 			this.table.data.forEach((item, key) => {
 				let idsText = "";
@@ -680,16 +737,33 @@ export default {
 		},
 
 		async getVulnerabilities() {
-			return BeneficiariesService.getListOfVulnerabilities()
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Vulnerabilities")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getListOfVulnerabilities();
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Vulnerabilities")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async getProjects(ids) {
 			try {
-				const { data: { data } } = await ProjectService.getShortListOfProjects(ids);
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ProjectService.getShortListOfProjects(ids);
+
+				checkResponseStatus(status, message);
+
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
@@ -699,11 +773,21 @@ export default {
 		},
 
 		async getBeneficiaries(ids) {
-			return BeneficiariesService.getBeneficiaries(ids)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Beneficiaries")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await BeneficiariesService.getBeneficiaries({ ids });
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
+			}
+
+			return [];
 		},
 
 		async prepareBeneficiaries(id, householdHeadId, beneficiaries, tableIndex) {
@@ -714,9 +798,10 @@ export default {
 				nationalIds: [],
 			};
 			const beneficiary = beneficiaries.find((item) => item.id === householdHeadId);
-			const { nationalIds } = beneficiary;
 
 			if (beneficiary) {
+				const { nationalIds } = beneficiary;
+
 				this.table.data[tableIndex].givenName = this.prepareName(
 					beneficiary.localGivenName,
 					beneficiary.enGivenName,
@@ -779,27 +864,37 @@ export default {
 					await Promise.all(checkedRows.map(async (household) => {
 						const { householdId } = household.routeParams;
 
-						await BeneficiariesService.removeHousehold(householdId).then((response) => {
-							if (response.status === 204) {
-								success += `${this.$t("Success for Household")} ${householdId}. `;
-							}
-						}).catch((e) => {
-							error += `${this.$t("Error for Household")} ${householdId} ${e.message || e}. `;
-						});
+						try {
+							const {
+								status,
+								message,
+							} = await BeneficiariesService.removeHousehold(householdId);
+
+							checkResponseStatus(status, message, 204);
+
+							success += `${this.$t("Success for Household")} ${householdId}. `;
+						} catch (e) {
+							error += `${this.$t("Error for Household")}: ${householdId} ${e.message || e}. `;
+						}
 					}));
 
 					if (error) Notification(error, "error");
 					if (success) Notification(success, "success");
 				}
 			} else {
-				await BeneficiariesService.removeHousehold(id).then((response) => {
-					if (response.status === 204) {
-						Notification(this.$t("Household Successfully Deleted"), "success");
-						this.fetchData();
-					}
-				}).catch((e) => {
-					Notification(`${this.$t("Household")} ${e.message || e}`, "error");
-				});
+				try {
+					const {
+						status,
+						message,
+					} = await BeneficiariesService.removeHousehold(id);
+
+					checkResponseStatus(status, message, 204);
+
+					Notification(this.$t("Household Successfully Deleted"), "success");
+					await this.fetchData();
+				} catch (e) {
+					Notification(`${this.$t("Household")}> ${e.message || e}`, "error");
+				}
 			}
 
 			this.table.checkedRows = [];

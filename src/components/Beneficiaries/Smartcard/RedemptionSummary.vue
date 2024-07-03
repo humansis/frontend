@@ -106,7 +106,7 @@ export default {
 			data.forEach((item, key) => {
 				this.table.data[key] = {
 					...item,
-					date: this.$moment(item.dateOfPurchase).format("DD-MM-YYYY HH:mm"),
+					date: this.$moment(item.dateOfPurchase).format("YYYY-MM-DD HH:mm"),
 					amount: this.formatPrice(item.amount, this.redemptionCurrency),
 					localName: `${item.localGivenName} (${item.localFamilyName})`,
 				};

@@ -38,6 +38,7 @@ import HouseholdAssistancesList from "@/components/Beneficiaries/Household/House
 import HouseholdPurchasesList from "@/components/Beneficiaries/Household/HouseholdPurchasesList";
 import addressHelper from "@/mixins/addressHelper";
 import grid from "@/mixins/grid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 
@@ -70,20 +71,36 @@ export default {
 		},
 
 		async fetchHousehold() {
-			await BeneficiariesService.getDetailOfHousehold(this.$route.params.householdId)
-				.then((data) => {
-					this.household = data;
-					this.prepareData(data);
-				}).catch((e) => {
-					Notification(`${this.$t("Household")} ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await BeneficiariesService.getDetailOfHousehold(this.$route.params.householdId);
+
+				checkResponseStatus(status, message);
+
+				this.household = data;
+				await this.prepareData(data);
+			} catch (e) {
+				Notification(`${this.$t("Household")}: ${e.message || e}`, "error");
+			}
 		},
 
 		async prepareData(household) {
-			BeneficiariesService.getBeneficiary(household.householdHeadId)
-				.then((data) => {
-					this.householdHead = data;
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await BeneficiariesService.getBeneficiary(household.householdHeadId);
+
+				checkResponseStatus(status, message);
+
+				this.householdHead = data;
+			} catch (e) {
+				Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
+			}
 
 			const address = this.getAddressTypeAndId(household);
 

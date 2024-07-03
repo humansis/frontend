@@ -72,6 +72,7 @@ export const BookletStatusArray = [
 	{ code: "3", value: t("Deactivated") },
 ];
 
+// TODO remove this function in other places and check functionality
 export const copyObject = (obj) => JSON.parse(JSON.stringify(obj));
 
 export const deepEqual = (x, y) => {
@@ -91,10 +92,11 @@ export const splitBySpace = (str) => str.split(/\s+/);
 
 export const downloadFile = (data, filename, status, format, responseMessage) => {
 	if (status === 200) {
+		const fileExtension = format ? `.${format}` : "";
 		const blob = new Blob([data], { type: data.type });
 		const link = document.createElement("a");
 		link.href = window.URL.createObjectURL(blob);
-		link.download = `${filename}.${format}`;
+		link.download = `${filename}${fileExtension}`;
 		link.click();
 	} else {
 		Notification(responseMessage, status === 400 ? "warning" : "error");

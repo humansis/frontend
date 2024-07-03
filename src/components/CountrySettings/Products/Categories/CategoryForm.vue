@@ -16,6 +16,7 @@
 		<v-radio-group
 			v-model="formModel.type"
 			:error-messages="validationMsg('type')"
+			:data-cy="identifierBuilder('type-select')"
 			class="category-types radio-group"
 			@update:modelValue="onValidate('type')"
 		>
@@ -68,6 +69,7 @@
 		<v-spacer />
 
 		<v-btn
+			:data-cy="identifierBuilder('close-button')"
 			class="text-none"
 			color="blue-grey-lighten-4"
 			variant="elevated"
@@ -78,6 +80,7 @@
 
 		<v-btn
 			v-if="!formDisabled"
+			:data-cy="identifierBuilder(`${(submitButtonLabel)}-button`)"
 			color="primary"
 			class="text-none ml-3"
 			variant="elevated"

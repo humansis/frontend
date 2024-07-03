@@ -1,6 +1,7 @@
 import LocationsService from "@/services/LocationsService";
 import baseHelper from "@/mixins/baseHelper";
 import { getUniqueIds } from "@/utils/customValidators";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 
@@ -8,19 +9,30 @@ export default {
 	mixins: [baseHelper],
 
 	methods: {
-		getLocations(addresses) {
-			if (!addresses?.length) return null;
-			return LocationsService.getLocations(addresses)
-				.then(({ data }) => data)
-				.catch((e) => {
-					Notification(`${this.$t("Locations")} ${e.message || e}`, "error");
-				});
+		async getLocations(addresses) {
+			if (!addresses?.length) return [];
+
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await LocationsService.getLocations({ ids: addresses });
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("Locations")}: ${e.message || e}`, "error");
+				return [];
+			}
 		},
 
 		mapLocationOnAddress(locations, addresses) {
 			if (!locations?.length) return [];
 
 			const addressesMapped = [];
+
 			addresses.forEach((address) => {
 				const location = locations.find((item) => item.locationId === address.locationId);
 				if (location) {
@@ -29,6 +41,7 @@ export default {
 					addressesMapped.push(addressMapped);
 				}
 			});
+
 			return addressesMapped;
 		},
 

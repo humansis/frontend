@@ -31,11 +31,11 @@
 
 					<v-col>
 						<v-btn
-							v-if="countOfCriteriaBeneficiaries"
+							v-if="beneficiariesCount"
 							class="text-none"
 							@click="onShowDetail"
 						>
-							{{ countOfCriteriaBeneficiaries }} {{ $t(targetType) }}
+							{{ beneficiariesCount }} {{ $t(targetType) }}
 						</v-btn>
 					</v-col>
 
@@ -58,6 +58,7 @@ import LocationsService from "@/services/LocationsService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import { generateColumns } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -79,7 +80,7 @@ export default {
 			required: true,
 		},
 
-		count: {
+		beneficiariesCount: {
 			type: Number,
 			default: 0,
 		},
@@ -125,10 +126,6 @@ export default {
 	computed: {
 		groupName() {
 			return `${this.$t("Group")} ${(this.groupId + 1)}`;
-		},
-
-		countOfCriteriaBeneficiaries() {
-			return this.count;
 		},
 
 		criteriaGroups() {
@@ -186,13 +183,19 @@ export default {
 		},
 
 		async fetchLocation(id) {
-			await LocationsService.getLocation(id)
-				.then((data) => {
-					this.criteriaLocation = data?.code;
-				})
-				.catch((e) => {
-					Notification(`Location ${e.message || e}`, "error");
-				});
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await LocationsService.getLocation(id);
+
+				checkResponseStatus(status, message);
+
+				this.criteriaLocation = data?.code;
+			} catch (e) {
+				Notification(`${this.$t("Location")}: ${e.message || e}`, "error");
+			}
 		},
 
 		onRemove(index) {
@@ -209,7 +212,7 @@ export default {
 		},
 
 		onShowDetail() {
-			if (this.countOfCriteriaBeneficiaries) {
+			if (this.beneficiariesCount) {
 				this.$emit("showDetail", this.data);
 			}
 		},

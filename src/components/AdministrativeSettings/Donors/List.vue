@@ -64,6 +64,7 @@ import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { EXPORT, TABLE } from "@/consts";
@@ -113,23 +114,32 @@ export default {
 
 	methods: {
 		async fetchData() {
-			this.isLoadingList = true;
+			try {
+				this.isLoadingList = true;
 
-			await DonorService.getListOfDonors(
-				this.table.currentPage,
-				this.perPage,
-				this.table.sortColumn !== ""
+				const sort = this.table.sortColumn !== ""
 					? `${this.table.sortColumn?.sortKey || this.table.sortColumn}.${this.table.sortDirection}`
-					: "",
-				this.table.searchPhrase,
-			).then((response) => {
-				this.table.data = response.data;
-				this.table.total = response.totalCount;
-			}).catch((e) => {
-				Notification(`${this.$t("Donors")} ${e.message || e}`, "error");
-			});
+					: "";
+				const {
+					data: { data, totalCount },
+					status,
+					message,
+				} = await DonorService.getListOfDonors({
+					page: this.table.currentPage,
+					size: this.perPage,
+					search: this.table.searchPhrase,
+					sort,
+				});
 
-			this.isLoadingList = false;
+				checkResponseStatus(status, message);
+
+				this.table.data = data;
+				this.table.total = totalCount;
+			} catch (e) {
+				Notification(`${this.$t("Donors")}: ${e.message || e}`, "error");
+			} finally {
+				this.isLoadingList = false;
+			}
 		},
 
 		async onExportDonors(exportType, format) {

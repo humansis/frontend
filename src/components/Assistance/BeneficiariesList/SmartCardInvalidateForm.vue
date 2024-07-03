@@ -111,7 +111,7 @@ export default {
 				const updatedRow = {
 					status: [data.state],
 					distributed: [`${data.distributed} ${data.unit}`],
-					lastModified: [this.$moment(data.lastModified).format("YYYY-MM-DD hh:mm")],
+					lastModified: [this.$moment.utc(data.lastModified).format("YYYY-MM-DD HH:mm")],
 					selectable: true,
 				};
 

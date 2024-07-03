@@ -140,6 +140,7 @@ import Members from "@/components/Beneficiaries/Household/Members";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
 
@@ -317,6 +318,15 @@ export default {
 				notes,
 				currentLocation,
 			} = this.household;
+			const modifiedSupportDateReceived = supportDateReceived
+				? this.$moment(supportDateReceived).format("YYYY-MM-DD")
+				: null;
+			const latitude = typeof this.household.latitude === "number"
+				? this.household.latitude
+				: null;
+			const longitude = typeof this.household.longitude === "number"
+				? this.household.longitude
+				: null;
 
 			const householdBody = {
 				iso3: this.country.iso3,
@@ -326,8 +336,8 @@ export default {
 				projectIds: getArrayOfIdsByParam(this.$refs.householdSummary.formModel.selectedProjects, "id"),
 				notes,
 				enumeratorName: this.$refs.householdSummary.formModel.enumerator,
-				longitude: this.household.longitude,
-				latitude: this.household.latitude,
+				longitude,
+				latitude,
 				beneficiaries: this.mapBeneficiariesForBody(
 					[this.householdHead, ...this.householdMembers],
 				),
@@ -335,7 +345,7 @@ export default {
 				foodConsumptionScore: foodConsumptionScore || null,
 				copingStrategiesIndex: copingStrategiesIndex || null,
 				debtLevel: debtLevel || null,
-				supportDateReceived: supportDateReceived ? supportDateReceived.toISOString() : null,
+				supportDateReceived: modifiedSupportDateReceived,
 				supportReceivedTypes: getArrayOfIdsByParam(externalSupportReceivedType, "code"),
 				supportOrganizationName,
 				incomeSpentOnFood: incomeSpentOnFood || null,
@@ -378,33 +388,46 @@ export default {
 		},
 
 		async updateHousehold(id, householdBody) {
-			this.saveButtonLoading = true;
+			try {
+				this.saveButtonLoading = true;
 
-			await BeneficiariesService.updateHousehold(id, householdBody).then((response) => {
-				if (response.status === 200) {
-					Notification(this.$t("Household Successfully Updated"), "success");
-					this.$router.push({ name: "Households" });
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Household")} ${e.message || e}`, "error");
-			});
+				const {
+					status,
+					message,
+				} = await BeneficiariesService.updateHousehold({
+					id,
+					body: householdBody,
+				});
 
-			this.saveButtonLoading = false;
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Household Successfully Updated"), "success");
+				this.$router.push({ name: "Households" });
+			} catch (e) {
+				Notification(`${this.$t("Household")}: ${e.message || e}`, "error");
+			} finally {
+				this.saveButtonLoading = false;
+			}
 		},
 
 		async createHousehold(householdBody) {
-			this.saveButtonLoading = true;
+			try {
+				this.saveButtonLoading = true;
 
-			await BeneficiariesService.createHousehold(householdBody).then((response) => {
-				if (response.status === 200) {
-					Notification(this.$t("Household Successfully Created"), "success");
-					this.$router.push({ name: "Households" });
-				}
-			}).catch((e) => {
-				Notification(`${this.$t("Household")} ${e.message || e}`, "error");
-			});
+				const {
+					status,
+					message,
+				} = await BeneficiariesService.createHousehold(householdBody);
 
-			this.saveButtonLoading = false;
+				checkResponseStatus(status, message);
+
+				Notification(this.$t("Household Successfully Created"), "success");
+				await this.$router.push({ name: "Households" });
+			} catch (e) {
+				Notification(`${this.$t("Household")}: ${e.message || e}`, "error");
+			} finally {
+				this.saveButtonLoading = false;
+			}
 		},
 
 		prepareSummaryMembers(members) {
@@ -513,16 +536,21 @@ export default {
 			const beneficiariesData = [];
 
 			if (beneficiaries.length) {
-				beneficiaries.forEach((beneficiary) => {
+				beneficiaries.forEach((beneficiary, index) => {
 					const customFieldValues = this.prepareCustomFieldValuesForHousehold(
 						beneficiary.customFieldValues,
 					);
 
+					const { familyName, firstName } = beneficiary.nameLocal;
+
+					const localFamilyName = familyName || this.householdHead.nameLocal.familyName;
+					const localGivenName = firstName || `Member${index}`;
+
 					const preparedBeneficiary = {
 						id: beneficiary.beneficiaryId,
 						dateOfBirth: beneficiary.personalInformation.dateOfBirth.toISOString(),
-						localFamilyName: beneficiary.nameLocal.familyName,
-						localGivenName: beneficiary.nameLocal.firstName,
+						localFamilyName,
+						localGivenName,
 						localParentsName: beneficiary.nameLocal.parentsName,
 						enFamilyName: beneficiary.nameEnglish.familyName,
 						enGivenName: beneficiary.nameEnglish.firstName,
@@ -530,7 +558,7 @@ export default {
 						gender: beneficiary.personalInformation.gender.code,
 						customFieldValues,
 						phones: [],
-						residencyStatus: beneficiary.residencyStatus.code,
+						residencyStatus: beneficiary.residencyStatus?.code,
 						isHead: beneficiary.isHead,
 						vulnerabilityCriteria: this.mapVulnerabilities(beneficiary.vulnerabilities),
 					};
@@ -574,7 +602,6 @@ export default {
 							prefix: beneficiary.phone1.ext.code,
 							number: beneficiary.phone1.phoneNo,
 							type: beneficiary.phone1.type.code,
-							proxy: beneficiary.phone1.proxy,
 						});
 					}
 					if (beneficiary.phone2.phoneNo !== "") {
@@ -582,7 +609,6 @@ export default {
 							prefix: beneficiary.phone2.ext.code,
 							number: beneficiary.phone2.phoneNo,
 							type: beneficiary.phone2.type.code,
-							proxy: beneficiary.phone2.proxy,
 						};
 						preparedBeneficiary.phones.push(phone2);
 					}

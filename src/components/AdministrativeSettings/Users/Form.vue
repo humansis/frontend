@@ -44,7 +44,7 @@
 		<DataSelect
 			v-model="formModel.rights"
 			:items="options.rights"
-			:loading="rolesLoading"
+			:loading="loading.isRoles"
 			:disabled="formDisabled"
 			:error-messages="validationMsg('rights')"
 			label="Rights"
@@ -58,7 +58,7 @@
 			v-show="!formModel.disabledProject"
 			v-model="formModel.projectIds"
 			:items="options.projects"
-			:loading="projectsLoading"
+			:loading="loading.isProjects"
 			:disabled="formDisabled || formModel.disabledProject"
 			:error-messages="validationMsg('projectIds')"
 			label="Project"
@@ -74,7 +74,7 @@
 			v-show="!formModel.disabledCountry"
 			v-model="formModel.countries"
 			:items="options.countries"
-			:loading="countriesLoading"
+			:loading="loading.isCountries"
 			:disabled="formDisabled || formModel.disabledCountry"
 			:multiple="!isOnlyOneCountry"
 			:hint="countryHint"
@@ -157,6 +157,7 @@ import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import validation from "@/mixins/validation";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { PHONE, ROLE } from "@/consts";
 
@@ -212,9 +213,11 @@ export default {
 				languages: [],
 			},
 			mapping: true,
-			countriesLoading: true,
-			projectsLoading: true,
-			rolesLoading: true,
+			loading: {
+				isCountries: false,
+				isProjects: false,
+				isRoles: false,
+			},
 			isOnlyOneCountry: false,
 		};
 	},
@@ -278,47 +281,92 @@ export default {
 		},
 
 		async fetchProjects() {
-			if (!this.formDisabled) {
-				await ProjectService.getListOfProjects()
-					.then(({ data }) => {
-						this.options.projects = data;
+			this.loading.isProjects = true;
 
-						this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, data, "id");
-					}).catch((e) => {
-						Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-					});
+			if (!this.formDisabled) {
+				try {
+					const {
+						data: { data },
+						status,
+						message,
+					} = await ProjectService.getShortListOfProjects();
+
+					checkResponseStatus(status, message);
+
+					const projectIdsCopy = [...this.formModel.projectIds];
+
+					this.options.projects = data;
+					this.formModel.projectIds = getArrayOfCodeListByKey(
+						this.formModel.projectIds,
+						data,
+						"id",
+						true,
+					);
+					this.formModel.notUsedProjectIds = projectIdsCopy.filter(
+						(id) => !this.formModel.projectIds.map((obj) => obj.id).includes(id),
+					);
+				} catch (e) {
+					Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+				}
 			} else if (this.formModel.id) {
-				await UsersService.getListOfUsersProjects(this.formModel.id).then(({ data }) => {
+				try {
+					const {
+						data: { data },
+						status,
+						message,
+					} = await UsersService.getListOfUsersProjects(this.formModel.id);
+
+					checkResponseStatus(status, message);
+
 					this.formModel.projectIds = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-				});
+				} catch (e) {
+					Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
+				}
 			}
 
-			this.projectsLoading = false;
+			this.loading.isProjects = false;
 		},
 
 		async fetchRoles() {
-			await SystemService.getRoles()
-				.then(({ data }) => {
-					this.options.rights = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Roles")} ${e.message || e}`, "error");
-				});
-			this.formModel.rights = getArrayOfCodeListByKey(this.formModel.roles, this.options.rights, "code");
-			this.rolesLoading = false;
+			try {
+				this.loading.isRoles = true;
+
+				const {
+					data: { data },
+					status,
+					message,
+				} = await SystemService.getRoles();
+
+				checkResponseStatus(status, message);
+
+				this.options.rights = data;
+			} catch (e) {
+				Notification(`${this.$t("Roles")}: ${e.message || e}`, "error");
+			} finally {
+				this.formModel.rights = getArrayOfCodeListByKey(this.formModel.roles, this.options.rights, "code");
+				this.loading.isRoles = false;
+			}
 		},
 
 		async fetchCountries() {
-			await CountriesService.getListOfCountries()
-				.then(({ data }) => {
-					this.options.countries = data;
-				}).catch((e) => {
-					Notification(`${this.$t("Countries")} ${e.message || e}`, "error");
-				});
+			try {
+				this.loading.isCountries = true;
 
-			this.formModel.countries = getArrayOfCodeListByKey(this.formModel.countries, this.options.countries, "iso3");
-			this.countriesLoading = false;
+				const {
+					data: { data },
+					status,
+					message,
+				} = await CountriesService.getListOfCountries();
+
+				checkResponseStatus(status, message);
+
+				this.options.countries = data;
+				this.formModel.countries = getArrayOfCodeListByKey(this.formModel.countries, this.options.countries, "iso3");
+			} catch (e) {
+				Notification(`${this.$t("Countries")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.isCountries = false;
+			}
 		},
 
 		mapSelects() {

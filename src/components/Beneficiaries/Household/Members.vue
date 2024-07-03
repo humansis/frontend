@@ -7,7 +7,7 @@
 		>
 			<v-expansion-panel
 				v-for="(member, index) of members"
-				:key="index"
+				:key="generateUniqueKey(member)"
 				eager
 			>
 				<v-expansion-panel-title>
@@ -41,6 +41,7 @@
 						:beneficiary="member"
 						:members-smart-card-numbers="smartCardNumbers[index]"
 						:data-cy="`member-${index + 1}-form`"
+						is-members-form
 					/>
 				</v-expansion-panel-text>
 			</v-expansion-panel>
@@ -112,7 +113,7 @@ export default {
 			const promises = [];
 			this.detailOfHousehold.beneficiaryIds.forEach((id) => {
 				if (this.detailOfHousehold.householdHeadId !== id) {
-					const beneficiaryPromise = BeneficiariesService.getBeneficiary(id).then((data) => {
+					const beneficiaryPromise = BeneficiariesService.getBeneficiary(id).then(({ data }) => {
 						this.members.push(data);
 					});
 					promises.push(beneficiaryPromise);
@@ -150,6 +151,7 @@ export default {
 
 			this.isOpen = countOfMembers;
 			this.members.push({
+				formIdentifier: Date.now(),
 				enParentsName: null,
 				gender: null,
 				nationalIds: [],
@@ -179,6 +181,10 @@ export default {
 
 		onRemoveMember(index) {
 			this.members.splice(index, 1);
+		},
+
+		generateUniqueKey(member) {
+			return member?.id ? member.id : member.formIdentifier;
 		},
 
 		submit() {

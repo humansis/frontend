@@ -63,9 +63,11 @@ import { requiredIf } from "@vuelidate/validators";
 import UsersService from "@/services/UsersService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
+import usersHelper from "@/mixins/usersHelper";
 import validation from "@/mixins/validation";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
+import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { PHONE } from "@/consts";
 
@@ -77,7 +79,7 @@ export default {
 		DataSelect,
 	},
 
-	mixins: [vuetifyHelper, validation],
+	mixins: [vuetifyHelper, validation, usersHelper],
 
 	validations() {
 		return {
@@ -109,14 +111,10 @@ export default {
 
 	computed: {
 		...mapState(["user"]),
-
-		canEnableTwoFA() {
-			return !this.userProfile?.phonePrefix || !this.userProfile?.phoneNumber;
-		},
 	},
 
 	created() {
-		this.fetchUser();
+		this.getUserData();
 	},
 
 	methods: {
@@ -129,54 +127,37 @@ export default {
 
 			const { id } = this.userProfile;
 
-			await UsersService.patchUser(id, {
-				phoneNumber: this.phone.number || null,
-				phonePrefix: this.phone.prefix?.code || null,
-			}).then(({ data }) => {
-				this.mapUser(data);
-				Notification(
-					`${this.$t("Phone Updated")}`,
-					"success",
-				);
-				this.fetchUser();
-			}).catch((e) => {
-				Notification(`${this.$t("Phone Update")} ${e.message || e}`, "error");
-			});
-			this.v$.phone.$reset();
-
-			this.changePhoneLoading = false;
-		},
-
-		async enableTwoFactor() {
-			this.twoFactorLoading = true;
-
-			const { id } = this.userProfile;
-
-			await UsersService.patchUser(id, {
-				"2fa": !this.twoFactorEnabled,
-			}).then(({ data }) => {
-				this.mapUser(data);
-				Notification(
-					`${this.$t(`Two Factor ${data["2fa"] ? "Enabled" : "Disabled"}`)}`,
-					"success",
-				);
-			}).catch((e) => {
-				Notification(`${this.$t("Two Factor Update")} ${e.message || e}`, "error");
-			});
-
-			this.twoFactorLoading = false;
-		},
-
-		async fetchUser() {
-			const { userId } = this.user;
-
-			await UsersService.getDetailOfUser(userId)
-				.then(({ data }) => {
-					this.mapUser(data);
-				})
-				.catch((e) => {
-					Notification(`${this.$t("User")} ${e.message || e}`, "error");
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await UsersService.patchUser({
+					body: {
+						phoneNumber: this.phone.number || null,
+						phonePrefix: this.phone.prefix?.code || null,
+					},
+					id,
 				});
+
+				checkResponseStatus(status, message);
+
+				this.mapUser(data);
+				Notification(`${this.$t("Phone Updated")}`, "success");
+				await this.getUserData();
+			} catch (e) {
+				Notification(`${this.$t("Phone Update")}: ${e.message || e}`, "error");
+			} finally {
+				this.v$.phone.$reset();
+				this.changePhoneLoading = false;
+			}
+		},
+
+		async getUserData() {
+			const { userId } = this.user;
+			const user = await this.getDetailOfUser(userId);
+
+			this.mapUser(user);
 		},
 
 		mapUser(data) {
