@@ -1,6 +1,5 @@
-import { download, fetcher } from "@/utils/fetcher";
+import { checkResponseStatus, download, fetcher } from "@/utils/fetcher";
 import { queryBuilder } from "@/utils/helpers";
-import { Notification } from "@/utils/UI";
 import CryptoJS from "crypto-js";
 
 export default {
@@ -16,28 +15,31 @@ export default {
 		});
 	},
 
-	createUser(body) {
-		return this.initializeUser(body.username)
-			.then(({ data: { salt, userId }, status, message }) => {
-				const userBody = body;
+	async createUser(body) {
+		// eslint-disable-next-line no-useless-catch
+		try {
+			const {
+				data: { salt, userId },
+				status,
+				message,
+			} = await this.initializeUser(body.username);
 
-				if (userBody.password) {
-					userBody.password = this.saltPassword(salt, userBody.password);
-				}
+			const userBody = body;
 
-				if (status === 400) {
-					throw new Error(message);
-				}
+			if (userBody.password) {
+				userBody.password = this.saltPassword(salt, userBody.password);
+			}
 
-				return fetcher({
-					uri: `users/${userId}`,
-					method: "PUT",
-					body: userBody,
-				});
-			})
-			.catch((e) => {
-				Notification(`${this.$t("Initialize User")}: ${e.message || e}`, "error");
+			checkResponseStatus(status, message);
+
+			return fetcher({
+				uri: `users/${userId}`,
+				method: "PUT",
+				body: userBody,
 			});
+		} catch (e) {
+			throw e;
+		}
 	},
 
 	initializeUser(username) {
@@ -72,24 +74,30 @@ export default {
 		});
 	},
 
-	updateUser({ id, body }) {
-		return this.requestSalt(body.username)
-			.then(({ data: { salt } }) => {
-				const userBody = body;
+	async updateUser({ id, body }) {
+		// eslint-disable-next-line no-useless-catch
+		try {
+			const userBody = body;
+			const {
+				data: { salt },
+				status,
+				message,
+			} = await this.requestSalt(body.username);
 
-				userBody.password = userBody.password
-					? this.saltPassword(salt, userBody.password)
-					: null;
+			userBody.password = userBody.password
+				? this.saltPassword(salt, userBody.password)
+				: null;
 
-				return fetcher({
-					uri: `users/${id}`,
-					method: "PUT",
-					body: userBody,
-				});
-			})
-			.catch((e) => {
-				Notification(`${this.$t("Update User")}: ${e.message || e}`, "error");
+			checkResponseStatus(status, message);
+
+			return fetcher({
+				uri: `users/${id}`,
+				method: "PUT",
+				body: userBody,
 			});
+		} catch (e) {
+			throw e;
+		}
 	},
 
 	deleteUser(id) {

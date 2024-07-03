@@ -1,6 +1,6 @@
 <template>
 	<!-- TODO Implement else -->
-	<v-card v-if="integrityStepActive && status" class="pa-5">
+	<v-card v-if="integrityStepActive && importStatus" class="pa-5">
 		<div>
 			<Loading v-if="isCheckingIntegrity" is-large />
 
@@ -371,7 +371,7 @@ export default {
 			required: true,
 		},
 
-		status: {
+		importStatus: {
 			type: String,
 			default: "",
 		},
@@ -401,7 +401,6 @@ export default {
 			startIntegrityCheckAgainLoading: false,
 			downloadAffectedRecordsLoading: false,
 			changeStateButtonLoading: false,
-			importStatus: this.status,
 			invalidFiles: [],
 			filesUpload: false,
 			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
@@ -410,13 +409,13 @@ export default {
 
 	computed: {
 		integrityStepActive() {
-			return this.status === IMPORT.STATUS.INTEGRITY_CHECK
-				|| this.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
-				|| this.status === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK
+				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		isCheckingIntegrity() {
-			return this.status === IMPORT.STATUS.INTEGRITY_CHECK;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK;
 		},
 
 		totalEntries() {
@@ -460,12 +459,12 @@ export default {
 		},
 
 		isIntegrityCheckFailed() {
-			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
 		isViolationMessageHide() {
-			return this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
-				|| this.statistics.status === IMPORT.STATUS.INTEGRITY_CHECK;
+			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK;
 		},
 
 		affectedRecordsClass() {
@@ -482,9 +481,8 @@ export default {
 			this.changeStateButtonLoading = value;
 		},
 
-		status(value) {
+		importStatus() {
 			this.getAffectedRecords();
-			this.importStatus = value;
 		},
 
 		amountIntegrityCorrect(newValue) {
@@ -547,34 +545,34 @@ export default {
 		},
 
 		async onStartIntegrityCheckAgain() {
+			if (this.dropFiles.length !== 1) return;
+
 			const { importId } = this.$route.params;
 
-			if (this.dropFiles.length === 1) {
-				try {
-					this.startIntegrityCheckAgainLoading = true;
+			try {
+				this.startIntegrityCheckAgainLoading = true;
 
-					const {
-						status,
-						message,
-					} = await ImportService.uploadFilesIntoImport({
-						files: this.dropFiles,
-						importId,
-					});
+				const {
+					status,
+					message,
+				} = await ImportService.uploadFilesIntoImport({
+					files: this.dropFiles,
+					importId,
+				});
 
-					checkResponseStatus(status, message);
+				checkResponseStatus(status, message);
 
-					Notification(this.$t("Uploaded Successfully"), "success");
+				Notification(this.$t("Uploaded Successfully"), "success");
 
-					this.filesUpload = false;
-					this.invalidFiles = [];
-				} catch (e) {
-					Notification(`${this.$t("Upload")}: ${e.message}`, "error");
-				} finally {
-					this.startIntegrityCheckAgainLoading = false;
-					setTimeout(() => {
-						this.getAffectedRecords();
-					}, 1500);
-				}
+				this.filesUpload = false;
+				this.invalidFiles = [];
+			} catch (e) {
+				Notification(`${this.$t("Upload")}: ${e.message}`, "error");
+			} finally {
+				this.startIntegrityCheckAgainLoading = false;
+				setTimeout(() => {
+					this.getAffectedRecords();
+				}, 1500);
 			}
 		},
 

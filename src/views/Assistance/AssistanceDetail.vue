@@ -494,21 +494,21 @@ export default {
 			const dateOfDistribution = this.assistance.dateDistribution;
 			const isAfter = this.$moment(now).isAfter(dateOfDistribution);
 
-			if (isAfter) {
-				try {
-					this.startTransactionButtonLoading = true;
+			if (!isAfter) return;
 
-					const { status, message } = await AssistancesService
-						.sendVerificationEmailForTransactions(this.$route.params.assistanceId);
+			try {
+				this.startTransactionButtonLoading = true;
 
-					checkResponseStatus(status, message, 204);
+				const { status, message } = await AssistancesService
+					.sendVerificationEmailForTransactions(this.$route.params.assistanceId);
 
-					this.transactionModal.isOpened = true;
-				} catch (e) {
-					Notification(`${this.$t("Start Transaction")}: ${e.message || e}`, "error");
-				} finally {
-					this.startTransactionButtonLoading = false;
-				}
+				checkResponseStatus(status, message, 204);
+
+				this.transactionModal.isOpened = true;
+			} catch (e) {
+				Notification(`${this.$t("Start Transaction")}: ${e.message || e}`, "error");
+			} finally {
+				this.startTransactionButtonLoading = false;
 			}
 		},
 

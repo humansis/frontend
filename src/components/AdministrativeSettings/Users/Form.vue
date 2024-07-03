@@ -44,7 +44,7 @@
 		<DataSelect
 			v-model="formModel.rights"
 			:items="options.rights"
-			:loading="rolesLoading"
+			:loading="loading.isRoles"
 			:disabled="formDisabled"
 			:error-messages="validationMsg('rights')"
 			label="Rights"
@@ -58,7 +58,7 @@
 			v-show="!formModel.disabledProject"
 			v-model="formModel.projectIds"
 			:items="options.projects"
-			:loading="projectsLoading"
+			:loading="loading.isProjects"
 			:disabled="formDisabled || formModel.disabledProject"
 			:error-messages="validationMsg('projectIds')"
 			label="Project"
@@ -74,7 +74,7 @@
 			v-show="!formModel.disabledCountry"
 			v-model="formModel.countries"
 			:items="options.countries"
-			:loading="countriesLoading"
+			:loading="loading.isCountries"
 			:disabled="formDisabled || formModel.disabledCountry"
 			:multiple="!isOnlyOneCountry"
 			:hint="countryHint"
@@ -213,9 +213,11 @@ export default {
 				languages: [],
 			},
 			mapping: true,
-			countriesLoading: true,
-			projectsLoading: true,
-			rolesLoading: true,
+			loading: {
+				isCountries: false,
+				isProjects: false,
+				isRoles: false,
+			},
 			isOnlyOneCountry: false,
 		};
 	},
@@ -279,19 +281,30 @@ export default {
 		},
 
 		async fetchProjects() {
+			this.loading.isProjects = true;
+
 			if (!this.formDisabled) {
 				try {
 					const {
 						data: { data },
 						status,
 						message,
-					} = await ProjectService.getListOfProjects({});
+					} = await ProjectService.getShortListOfProjects();
 
 					checkResponseStatus(status, message);
 
-					this.options.projects = data;
+					const projectIdsCopy = [...this.formModel.projectIds];
 
-					this.formModel.projectIds = getArrayOfCodeListByKey(this.formModel.projectIds, data, "id");
+					this.options.projects = data;
+					this.formModel.projectIds = getArrayOfCodeListByKey(
+						this.formModel.projectIds,
+						data,
+						"id",
+						true,
+					);
+					this.formModel.notUsedProjectIds = projectIdsCopy.filter(
+						(id) => !this.formModel.projectIds.map((obj) => obj.id).includes(id),
+					);
 				} catch (e) {
 					Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
 				}
@@ -311,11 +324,13 @@ export default {
 				}
 			}
 
-			this.projectsLoading = false;
+			this.loading.isProjects = false;
 		},
 
 		async fetchRoles() {
 			try {
+				this.loading.isRoles = true;
+
 				const {
 					data: { data },
 					status,
@@ -329,12 +344,14 @@ export default {
 				Notification(`${this.$t("Roles")}: ${e.message || e}`, "error");
 			} finally {
 				this.formModel.rights = getArrayOfCodeListByKey(this.formModel.roles, this.options.rights, "code");
-				this.rolesLoading = false;
+				this.loading.isRoles = false;
 			}
 		},
 
 		async fetchCountries() {
 			try {
+				this.loading.isCountries = true;
+
 				const {
 					data: { data },
 					status,
@@ -348,7 +365,7 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Countries")}: ${e.message || e}`, "error");
 			} finally {
-				this.countriesLoading = false;
+				this.loading.isCountries = false;
 			}
 		},
 

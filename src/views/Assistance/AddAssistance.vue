@@ -58,6 +58,7 @@
 					:data-before-duplicated="componentsData.dataBeforeDuplicated"
 					:date-expiration="assistanceBody.dateExpiration"
 					:validation-messages="validationMessages"
+					:is-commodity-smart-card="isCommoditySmartCard"
 					@updatedData="onFetchNewAssistanceForm"
 					@targetSelect="onTargetSelected"
 					@showComponent="onShowComponent"
@@ -114,7 +115,8 @@
 					<ActivityDetails
 						ref="activityDetails"
 						:visible="visibleActivityDetails"
-						:duplicatedData="componentsData.activityDetails"
+						:duplicated-data="componentsData.activityDetails"
+						:is-assistance-duplicated="isAssistanceDuplicated"
 						@updatedData="onFetchActivityDetails"
 					/>
 				</div>
@@ -191,6 +193,7 @@ export default {
 			isCalculatedDataLoading: false,
 			isUnValidCardModalOpen: false,
 			isCalculatedDataFetched: false,
+			isCommoditySmartCard: false,
 			visibleComponents: {
 				selectionCriteria: false,
 				distributedCommodity: false,
@@ -384,7 +387,12 @@ export default {
 				this.isCalculatedDataLoading = true;
 
 				const {
-					data: { commodities, selectedCount, totalCount },
+					data: {
+						groupEligibleIndividuals,
+						commodities,
+						selectedCount,
+						totalCount,
+					},
 					status,
 					message,
 				} = await AssistancesService.assistancePrecalculate(this.assistanceBody);
@@ -393,6 +401,7 @@ export default {
 
 				this.calculatedCommodityValue = commodities;
 				this.calculatedBeneficiaries = {
+					groupBeneficiaries: groupEligibleIndividuals,
 					selectedCount,
 					totalCount,
 				};
@@ -408,6 +417,11 @@ export default {
 
 			const { dateExpiration, ...assistanceBody } = this.assistanceBody;
 
+			if (assistanceBody.type === ASSISTANCE.TYPE.ACTIVITY) {
+				assistanceBody.commodities = null;
+				assistanceBody.remoteDistributionAllowed = null;
+			}
+
 			try {
 				const {
 					data: { id },
@@ -417,20 +431,13 @@ export default {
 
 				checkResponseStatus(status, message);
 
-				if (id) {
-					this.$router.push({
-						name: "AssistanceCreationProgress",
-						params: {
-							projectId: this.$route.params.projectId,
-							assistanceId: id,
-						},
-					});
-				} else {
-					this.$router.push({
-						name: "Project",
-						params: { projectId: this.$route.params.projectId },
-					});
-				}
+				this.$router.push({
+					name: id ? "AssistanceCreationProgress" : "Project",
+					params: {
+						projectId: this.$route.params.projectId,
+						...(id && { assistanceId: id }),
+					},
+				});
 			} catch (e) {
 				Notification(`${this.$t("New Assistance")}: ${e.message || e}`, "error");
 			}
@@ -742,6 +749,8 @@ export default {
 				|| !this.isAssistanceDuplicated) {
 				await this.fetchCommoditiesValue();
 			}
+
+			this.isCommoditySmartCard = commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
 		remoteAllowed(commodity) {

@@ -86,6 +86,11 @@ export default {
 			type: Object,
 			default: null,
 		},
+
+		isAssistanceDuplicated: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -102,10 +107,15 @@ export default {
 		duplicatedData: {
 			deep: true,
 			handler(value) {
-				this.formModel = value;
-				this.$emit("updatedData", this.formModel);
+				this.prepareDuplicatedData(value);
 			},
 		},
+	},
+
+	mounted() {
+		if (this.isAssistanceDuplicated) {
+			this.prepareDuplicatedData(this.duplicatedData);
+		}
 	},
 
 	methods: {
@@ -118,6 +128,11 @@ export default {
 			this.v$.$touch();
 
 			return !this.v$.$invalid;
+		},
+
+		prepareDuplicatedData(data) {
+			this.formModel = data;
+			this.$emit("updatedData", this.formModel);
 		},
 	},
 };

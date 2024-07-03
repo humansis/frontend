@@ -22,7 +22,7 @@
 		>
 			<AssistanceMoveForm
 				:projects="projects"
-				@formClosed="onCloseAssistanceMoveModal"
+				@formClosed="assistanceMoveModal.isOpened = false"
 				@formSubmitted="onMoveAssistance"
 			/>
 		</Modal>
@@ -36,7 +36,7 @@
 				:form-model="assistanceModel"
 				:assistance="assistance"
 				:editing="assistanceModal.isEditing"
-				@formClosed="onCloseAssistanceModal"
+				@formClosed="assistanceModal.isOpened = false"
 				@formSubmitted="onEditAssistance"
 			/>
 		</Modal>
@@ -121,14 +121,6 @@ export default {
 			this.projectLoaded = true;
 			this.project = project;
 			this.getListOfProjects();
-		},
-
-		onCloseAssistanceModal() {
-			this.assistanceModal.isOpened = false;
-		},
-
-		onCloseAssistanceMoveModal() {
-			this.assistanceMoveModal.isOpened = false;
 		},
 
 		onGoToAddAssistance() {

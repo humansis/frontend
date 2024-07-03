@@ -75,7 +75,7 @@ export default {
 	},
 
 	props: {
-		status: {
+		importStatus: {
 			type: String,
 			default: "",
 		},
@@ -97,7 +97,6 @@ export default {
 			isFileValid: false,
 			changeStateButtonLoading: false,
 			startLoading: false,
-			importStatus: "",
 			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
 		};
 	},
@@ -135,9 +134,7 @@ export default {
 	},
 
 	watch: {
-		status(value) {
-			this.importStatus = value;
-
+		importStatus(value) {
 			if (value === IMPORT.STATUS.INTEGRITY_CHECK
 				|| value === IMPORT.STATUS.INTEGRITY_CHECK_FAILED) {
 				this.$emit("moveStepForward");

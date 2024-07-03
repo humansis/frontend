@@ -7,7 +7,7 @@
 		>
 			<v-expansion-panel
 				v-for="(member, index) of members"
-				:key="index"
+				:key="generateUniqueKey(member)"
 				eager
 			>
 				<v-expansion-panel-title>
@@ -151,6 +151,7 @@ export default {
 
 			this.isOpen = countOfMembers;
 			this.members.push({
+				formIdentifier: Date.now(),
 				enParentsName: null,
 				gender: null,
 				nationalIds: [],
@@ -180,6 +181,10 @@ export default {
 
 		onRemoveMember(index) {
 			this.members.splice(index, 1);
+		},
+
+		generateUniqueKey(member) {
+			return member?.id ? member.id : member.formIdentifier;
 		},
 
 		submit() {

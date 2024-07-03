@@ -264,7 +264,7 @@ export default {
 					body: { title, projectId, description },
 				});
 
-				checkResponseStatus(status, message, 202);
+				checkResponseStatus(status, message);
 
 				Notification(this.$t("Import Successfully Updated"), "success");
 				await this.$refs.importList.fetchData();

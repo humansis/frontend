@@ -1,6 +1,6 @@
 <template>
 	<!-- TODO Implement else -->
-	<div v-if="identityStepActive && status">
+	<div v-if="identityStepActive && importStatus">
 		<v-card class="pa-5">
 			<div>
 				<Loading v-if="isCheckingIdentity" is-large />
@@ -180,7 +180,7 @@ export default {
 			required: true,
 		},
 
-		status: {
+		importStatus: {
 			type: String,
 			default: "",
 		},
@@ -194,7 +194,6 @@ export default {
 			file: {},
 			changeStateButtonLoading: false,
 			resolveDuplicitiesLoading: false,
-			importStatus: "",
 			duplicities: [],
 			resolversAllLoading: false,
 			resolversAllActive: "",
@@ -226,18 +225,18 @@ export default {
 		},
 
 		identityStepActive() {
-			return this.status === IMPORT.STATUS.IDENTITY_CHECK
-				|| this.status === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
-				|| this.status === IMPORT.STATUS.IDENTITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK
+				|| this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_FAILED;
 		},
 
 		isCheckingIdentity() {
-			return this.status === IMPORT.STATUS.IDENTITY_CHECK;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK;
 		},
 
 		canResolveDuplicities() {
-			return this.status === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
-				|| this.status === IMPORT.STATUS.IDENTITY_CHECK_FAILED;
+			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT
+				|| this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_FAILED;
 		},
 
 		totalEntries() {
@@ -303,10 +302,6 @@ export default {
 			this.changeStateButtonLoading = value;
 		},
 
-		status(value) {
-			this.importStatus = value;
-		},
-
 		duplicities() {
 			this.allFromSolved = true;
 		},
@@ -336,11 +331,11 @@ export default {
 					status,
 					message,
 				} = await ImportService.changeBulkDuplicitiesStatus({
-					filter: { status: duplicitiesStatus },
+					body: { status: duplicitiesStatus },
 					importId,
 				});
 
-				checkResponseStatus(status, message, 202);
+				checkResponseStatus(status, message);
 
 				this.resolversAllActive = duplicitiesStatus;
 

@@ -241,6 +241,11 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
+		isCommoditySmartCard: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -325,12 +330,11 @@ export default {
 		},
 
 		assistanceDates() {
-			if (this.dateExpiration) {
-				this.formModel.isDateOfAssistanceValid = isDateBeforeOrEqual(
-					this.formModel.dateOfAssistance,
-					this.dateExpiration,
-				);
-			}
+			this.validateAssistanceDate();
+		},
+
+		isCommoditySmartCard() {
+			this.validateAssistanceDate();
 		},
 
 		"formModel.targetType": function targetType() {
@@ -681,6 +685,17 @@ export default {
 
 			if (!this.formModel.subsector?.code) {
 				this.subsectorValidationMessage = `${this.$t("Subsector: {subSector} was removed, because this subsector is not selectable.", { subSector: normalizeText(subsector) })}`;
+			}
+		},
+
+		validateAssistanceDate() {
+			if (!this.isCommoditySmartCard) {
+				this.formModel.isDateOfAssistanceValid = true;
+			} else if (this.dateExpiration) {
+				this.formModel.isDateOfAssistanceValid = isDateBeforeOrEqual(
+					this.formModel.dateOfAssistance,
+					this.dateExpiration,
+				);
 			}
 		},
 

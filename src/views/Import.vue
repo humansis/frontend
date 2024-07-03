@@ -26,10 +26,7 @@
 		</p>
 
 		<div v-if="importStatus" class="text-center mt-4">
-			<v-chip
-				variant="flat"
-				:class="importStatusClass"
-			>
+			<v-chip variant="flat" :class="importStatusClass">
 				<span>
 					{{ $t(importStatus) }}
 
@@ -70,7 +67,7 @@
 			<template v-slot:item.1>
 				<StartStep
 					:importFiles="importFiles"
-					:status="importStatus"
+					:import-status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -82,7 +79,7 @@
 			<template v-slot:item.2>
 				<IntegrityStep
 					:statistics="statistics"
-					:status="importStatus"
+					:import-status="importStatus"
 					:importFiles="importFiles"
 					:loading-change-state-button="loadingChangeStateButton"
 					:is-import-loaded="isImportLoaded"
@@ -95,7 +92,7 @@
 			<template v-slot:item.3>
 				<IdentityStep
 					:statistics="statistics"
-					:status="importStatus"
+					:import-status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -107,7 +104,7 @@
 			<template v-slot:item.4>
 				<FinalisationStep
 					:statistics="statistics"
-					:status="importStatus"
+					:import-status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
@@ -286,9 +283,9 @@ export default {
 				case IMPORT.STATUS.CANCEL:
 					return this.$t("Import was canceled.");
 				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
-					return this.activeStep === 3
-						? this.$t("Please approve and start import")
-						: this.$t("Please Go to finalization");
+					return this.activeStep === 4
+						? this.$t("Please approve and run import")
+						: this.$t("Please go to finalization");
 				case IMPORT.STATUS.AUTOMATICALLY_CANCELED:
 					return `${this.$t("Import failed:")} ${this.importFailReason}`;
 				default:
@@ -376,21 +373,21 @@ export default {
 		async fetchImportFiles() {
 			const { importId } = this.$route.params;
 
-			if (importId) {
-				try {
-					const {
-						data: { data },
-						status,
-						message,
-					} = await ImportService.getFilesInImport(importId);
+			if (!importId) return;
 
-					checkResponseStatus(status, message);
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await ImportService.getFilesInImport(importId);
 
-					this.importFiles = data;
-					this.checkImportFiles(data);
-				} catch (e) {
-					Notification(`${this.$t("Import Files")}: ${e.message || e}`, "error");
-				}
+				checkResponseStatus(status, message);
+
+				this.importFiles = data;
+				this.checkImportFiles(data);
+			} catch (e) {
+				Notification(`${this.$t("Import Files")}: ${e.message || e}`, "error");
 			}
 		},
 
@@ -426,20 +423,20 @@ export default {
 		async onFetchImportStatistics() {
 			const { importId } = this.$route.params;
 
-			if (importId) {
-				try {
-					const {
-						data,
-						status,
-						message,
-					} = await ImportService.getStatisticsInImport(importId);
+			if (!importId) return;
 
-					checkResponseStatus(status, message);
+			try {
+				const {
+					data,
+					status,
+					message,
+				} = await ImportService.getStatisticsInImport(importId);
 
-					this.statistics = data;
-				} catch (e) {
-					Notification(`${this.$t("Import statistics")}: ${e.message || e}`, "error");
-				}
+				checkResponseStatus(status, message);
+
+				this.statistics = data;
+			} catch (e) {
+				Notification(`${this.$t("Import statistics")}: ${e.message || e}`, "error");
 			}
 		},
 
@@ -538,31 +535,33 @@ export default {
 					importId,
 				});
 
-				if (status === 202) {
-					if (state === IMPORT.STATUS.CANCEL) {
-						Notification(this.$t("Import Canceled"), "success");
-						this.onChangeTab(4);
-					}
+				if (status >= 400 && status <= 500) {
+					Notification(message, "warning");
+				}
 
-					if (this.$route.name === "Import") {
-						Notification(this.$t(successMessage), "success");
+				if (status !== 200) return;
 
-						if (state !== IMPORT.STATUS.FINISH
+				if (state === IMPORT.STATUS.CANCEL) {
+					Notification(this.$t("Import Canceled"), "success");
+					this.onChangeTab(4);
+				}
+
+				if (this.$route.name === "Import") {
+					Notification(this.$t(successMessage), "success");
+
+					if (state !== IMPORT.STATUS.FINISH
 							&& state !== IMPORT.STATUS.IMPORTING
 							&& state !== IMPORT.STATUS.CANCEL) {
-							if (goNext) this.onChangeTab(this.activeStep + 1);
-						}
+						if (goNext) this.onChangeTab(this.activeStep + 1);
 					}
-				} else if (status >= 400 && status <= 500) {
-					Notification(message, "warning");
 				}
 			} catch (e) {
 				const type = state === IMPORT.STATUS.IMPORTING ? "warning" : "error";
 				Notification(`${this.$t("Import")}: ${e.message || e}`, type);
 			} finally {
 				this.loadingChangeStateButton = false;
-				this.onFetchImportStatistics();
-				this.fetchImportFiles();
+				await this.onFetchImportStatistics();
+				await this.fetchImportFiles();
 			}
 		},
 

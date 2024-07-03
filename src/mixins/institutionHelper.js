@@ -230,14 +230,14 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Institutions")}: ${e.message || e}`, "error");
+				return [];
 			}
-
-			return [];
 		},
 
 		async fetchPhoneTypes() {
 			try {
 				this.phoneTypesLoading = true;
+
 				const {
 					data: { data },
 					status,
@@ -277,6 +277,7 @@ export default {
 		async fetchNationalCardTypes() {
 			try {
 				this.nationalCardTypesLoading = true;
+
 				const {
 					data: { data },
 					status,

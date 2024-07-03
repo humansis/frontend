@@ -22,7 +22,7 @@ export default {
 		});
 	},
 
-	updateProduct(id, body) {
+	updateProduct({ id, body }) {
 		return fetcher({
 			uri: `products/${id}`,
 			method: "PUT",

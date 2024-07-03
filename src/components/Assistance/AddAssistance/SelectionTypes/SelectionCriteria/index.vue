@@ -52,7 +52,7 @@
 		:key="key"
 		:group-id="key"
 		:target-type="selectedTargetType"
-		:loading="isCalculationLoading"
+		:loading="loading.isCalculation"
 		:is-assistance-duplicated="isAssistanceDuplicated"
 		:custom-fields="customFields"
 		@addCriteria="onAddCriteria"
@@ -66,8 +66,8 @@
 			<DataSelect
 				v-model="scoringType"
 				:items="options.scoringTypes"
-				:loading="isScoringTypesLoading"
-				:disabled="isCalculationLoading || !groups.length"
+				:loading="loading.isScoringTypes"
+				:disabled="loading.isCalculation || !groups.length"
 				label="Scoring"
 				name="scoring"
 				item-title="identifier"
@@ -123,7 +123,7 @@
 		</v-col>
 	</v-row>
 
-	<template v-if="!isCalculatedDataLoading && !isBeneficiariesCountLoading">
+	<template v-if="!isCalculatedDataLoading && !loading.isBeneficiariesCount">
 		<div class="text-h6 text-right mt-4">
 			<strong>
 				{{ countOf }}/{{ totalCount }}
@@ -172,6 +172,7 @@ export default {
 		"updatedData",
 		"beneficiariesCounted",
 		"calculatedCommodities",
+		"updateDataLoadingState",
 	],
 
 	props: {
@@ -214,6 +215,11 @@ export default {
 			type: Object,
 			default: () => {},
 		},
+
+		scoring: {
+			type: Object,
+			required: true,
+		},
 	},
 
 	data() {
@@ -245,13 +251,15 @@ export default {
 			filters: { enabled: true },
 			minimumSelectionScore: null,
 			scoringType: AssistancesService.getDefaultScoringType(),
-			isScoringTypesLoading: false,
-			isBeneficiariesCountLoading: false,
+			loading: {
+				isScoringTypes: false,
+				isBeneficiariesCount: false,
+				isCalculation: false,
+			},
 			beneficiariesData: [],
 			totalBeneficiariesData: [],
 			countOf: 0,
 			totalCount: 0,
-			isCalculationLoading: false,
 			isVulnerabilityScoreTouched: false,
 		};
 	},
@@ -279,7 +287,7 @@ export default {
 
 		isExportButtonDisabled() {
 			return this.isVulnerabilityScoreTouched
-				|| this.isCalculationLoading
+				|| this.loading.isCalculation
 				|| !this.groups.length
 				|| !this.totalCount;
 		},
@@ -290,14 +298,14 @@ export default {
 		},
 
 		isUpdateButtonEnabled() {
-			return this.isCalculationLoading
+			return this.loading.isCalculation
 				|| !this.groups.length
 				|| this.isMinVulnerabilityScoreFloat;
 		},
 
 		isDetailsButtonDisabled() {
 			return this.isVulnerabilityScoreTouched
-				|| this.isCalculationLoading
+				|| this.loading.isCalculation
 				|| !this.groups.length;
 		},
 	},
@@ -317,6 +325,7 @@ export default {
 		calculatedBeneficiaries: {
 			deep: true,
 			handler(value) {
+				this.prepareDataForBeneficiariesModal(value.groupBeneficiaries);
 				this.totalCount = value.totalCount;
 				this.countOf = value.selectedCount;
 			},
@@ -334,18 +343,18 @@ export default {
 
 	methods: {
 		async fetchCriteriaInfo() {
-			this.isCalculationLoading = true;
+			this.loading.isCalculation = true;
 
 			this.updateComponentsData();
 
 			await this.getCountOfBeneficiaries();
 
 			this.$emit("beneficiariesCounted", this.countOf);
-			this.isCalculationLoading = false;
+			this.loading.isCalculation = false;
 		},
 
 		async onUpdateVulnerabilityScores() {
-			if (this.isCalculationLoading || !this.groups.length) return;
+			if (this.loading.isCalculation || !this.groups.length) return;
 
 			await this.fetchCriteriaInfo();
 		},
@@ -370,39 +379,39 @@ export default {
 		async calculationOfAssistanceBeneficiaries(assistanceBody) {
 			const { dateExpiration, ...beneficiariesBody } = assistanceBody;
 
-			if (this.assistanceBodyIsValid(assistanceBody)) {
-				try {
-					this.isBeneficiariesCountLoading = true;
-					this.$emit("updateDataLoadingState", this.isBeneficiariesCountLoading);
+			if (!this.assistanceBodyIsValid(assistanceBody)) return;
 
-					const {
-						data: { groupEligibleIndividuals, selectedCount, totalCount, commodities },
-						status,
-						message,
-					} = await AssistancesService.assistancePrecalculate(beneficiariesBody);
+			try {
+				this.loading.isBeneficiariesCount = true;
+				this.$emit("updateDataLoadingState", this.loading.isBeneficiariesCount);
 
-					checkResponseStatus(status, message);
+				const {
+					data: { groupEligibleIndividuals, selectedCount, totalCount, commodities },
+					status,
+					message,
+				} = await AssistancesService.assistancePrecalculate(beneficiariesBody);
 
-					this.totalCount = totalCount;
-					this.countOf = selectedCount;
+				checkResponseStatus(status, message);
 
-					if (this.isCommoditiesCreated) {
-						this.$emit("calculatedCommodities", commodities);
-					}
+				this.totalCount = totalCount;
+				this.countOf = selectedCount;
 
-					this.prepareDataForBeneficiariesModal(groupEligibleIndividuals);
-				} catch (e) {
-					Notification(`${this.$t("Precalculate")}: ${e.message || e}`, "error");
-				} finally {
-					this.isBeneficiariesCountLoading = false;
-					this.$emit("updateDataLoadingState", this.isBeneficiariesCountLoading);
+				if (this.isCommoditiesCreated) {
+					this.$emit("calculatedCommodities", commodities);
 				}
+
+				this.prepareDataForBeneficiariesModal(groupEligibleIndividuals);
+			} catch (e) {
+				Notification(`${this.$t("Precalculate")}: ${e.message || e}`, "error");
+			} finally {
+				this.loading.isBeneficiariesCount = false;
+				this.$emit("updateDataLoadingState", this.loading.isBeneficiariesCount);
 			}
 		},
 
 		async fetchScoringTypes() {
 			try {
-				this.isScoringTypesLoading = true;
+				this.loading.isScoringTypes = true;
 
 				const {
 					data: { data },
@@ -426,7 +435,7 @@ export default {
 				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
 			} finally {
 				this.scoringType = this.options.scoringTypes?.[0] || null;
-				this.isScoringTypesLoading = false;
+				this.loading.isScoringTypes = false;
 			}
 		},
 
@@ -611,7 +620,7 @@ export default {
 				"updatedData",
 				this.prepareCriteria(),
 				this.minimumSelectionScore,
-				this.isVulnerabilityScoreTouched || this.isCalculationLoading,
+				this.isVulnerabilityScoreTouched || this.loading.isCalculation,
 				this.scoringType,
 			);
 
@@ -624,9 +633,18 @@ export default {
 		},
 
 		onShowTotalBeneficiaries() {
-			this.beneficiariesData = this.groups.flatMap(
+			const uniqueBeneficiaries = new Map();
+			const beneficiaries = this.groups.flatMap(
 				(group) => group.beneficiaries?.data || [],
 			);
+
+			beneficiaries.forEach((item) => {
+				if (!uniqueBeneficiaries.has(item.id)) {
+					uniqueBeneficiaries.set(item.id, item);
+				}
+			});
+
+			this.beneficiariesData = Array.from(uniqueBeneficiaries.values());
 			this.detailModal.isOpened = true;
 		},
 

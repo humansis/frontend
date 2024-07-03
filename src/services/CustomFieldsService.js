@@ -16,7 +16,7 @@ export default {
 		});
 	},
 
-	updateCustomField(id, body) {
+	updateCustomField({ id, body }) {
 		return fetcher({
 			uri: `country-specifics/${id}`,
 			method: "PUT",

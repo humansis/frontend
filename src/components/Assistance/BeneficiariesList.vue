@@ -90,7 +90,7 @@
 			<SmartCardInvalidateForm
 				:beneficiary-data="smartCardInvalidateModel"
 				:table-data="table.data"
-				@updateTable="table.data = $event"
+				@updateTable="updateTableAfterInvalidation"
 				@formClosed="smartCardInvalidateModal.isOpened = false"
 			/>
 		</Modal>
@@ -199,6 +199,7 @@
 		item-selectable="selectable"
 		is-row-click-disabled
 		reset-sort-button
+		is-frontend-sort-disabled
 		@update:modelValue="onRowsCheck"
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
@@ -930,9 +931,15 @@ export default {
 		},
 
 		isSetSmartCardAsInvalidVisible({ status }) {
-			return this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
+			return this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION
+				&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
 				&& this.userCan.invalidateDistribution;
+		},
+
+		updateTableAfterInvalidation(updatedData) {
+			this.table.data = updatedData;
+			this.$emit("fetchAssistanceStatistics");
 		},
 
 		onSetSmartCardAsInvalid(tableIndex, bnfId, reliefPackage) {

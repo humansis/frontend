@@ -9,21 +9,27 @@ export default {
 	},
 
 	getListOfAdm2(id) {
-		return id
-			? fetcher({ uri: `adm1/${id}/adm2` })
-			: fetcher({ uri: "adm2" });
+		return fetcher({
+			uri: id
+				? `adm1/${id}/adm2`
+				: "adm2",
+		});
 	},
 
 	getListOfAdm3(id) {
-		return id
-			? fetcher({ uri: `adm2/${id}/adm3` })
-			: fetcher({ uri: "adm3" });
+		return fetcher({
+			uri: id
+				? `adm2/${id}/adm3`
+				: "adm3",
+		});
 	},
 
 	getListOfAdm4(id) {
-		return id
-			? fetcher({ uri: `adm3/${id}/adm4` })
-			: fetcher({ uri: "adm4" });
+		return fetcher({
+			uri: id
+				? `adm3/${id}/adm4`
+				: "adm4",
+		});
 	},
 
 	getLocation(id) {

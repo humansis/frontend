@@ -72,6 +72,7 @@ export default {
 				position: "",
 				rights: [],
 				projectIds: [],
+				projectIdsCopy: [],
 				countries: [],
 				language: null,
 				phonePrefix: [],
@@ -127,6 +128,7 @@ export default {
 				position: "",
 				rights: [],
 				projectIds: [],
+				notUsedProjectIds: [],
 				roles: [],
 				countries: [],
 				language: null,
@@ -161,6 +163,7 @@ export default {
 				position,
 				rights,
 				projectIds,
+				notUsedProjectIds,
 				countries,
 				phonePrefix,
 				phoneNumber,
@@ -169,6 +172,9 @@ export default {
 				disabledProject,
 			} = userForm;
 
+			const preparedProjectIds = !disabledProject
+				? [...notUsedProjectIds, ...getArrayOfIdsByParam(projectIds, "id")]
+				: [];
 			const userBody = {
 				username: email,
 				email,
@@ -176,12 +182,13 @@ export default {
 				lastName,
 				position,
 				roles: [rights.code],
-				projectIds: !disabledProject ? getArrayOfIdsByParam(projectIds, "id") : [],
+				projectIds: preparedProjectIds,
 				countries: !disabledCountry ? getArrayOfIdsByParam(countries, "iso3") : [],
 				phonePrefix: phonePrefix?.code,
 				phoneNumber: phoneNumber || null,
 				language: language?.key || null,
 			};
+
 			if (this.userModal.isEditing && id) {
 				this.updateUser(id, userBody);
 			} else {
