@@ -1449,9 +1449,9 @@ export default {
 						} = await BeneficiariesService.exportAssistanceBeneficiaries({
 							assistanceId: this.$route.params.assistanceId,
 							search: this.table.searchPhrase,
+							...(exportType !== EXPORT.HOUSEHOLDS && { sort }),
 							format,
 							exportType,
-							sort,
 						});
 
 						downloadFile(data, filename, status, format, message);
