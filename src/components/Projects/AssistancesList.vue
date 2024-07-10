@@ -550,7 +550,7 @@ export default {
 
 		assistanceProgress(data) {
 			return (data.state.code === ASSISTANCE.STATUS.NEW && this.$t("N/A"))
-				|| `${Math.trunc(data.progress * 100)} %`;
+				|| `${data.progress * 100} %`;
 		},
 
 		onAdvancedSearchToggle() {
