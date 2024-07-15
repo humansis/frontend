@@ -273,7 +273,7 @@ export default {
 		assistanceProgress() {
 			const progress = this.statistics?.progress || 0;
 
-			return progress * 100;
+			return parseFloat((progress* 100).toFixed(2));
 		},
 
 		progressTooltip() {
