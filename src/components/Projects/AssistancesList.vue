@@ -284,8 +284,20 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "assistanceID", title: "Assistance ID", type: "link", sortKey: "id" },
-					{ key: "assistanceName", title: "Name", type: "link", sortKey: "name" },
+					{
+						key: "assistanceID",
+						title: "Assistance ID",
+						type: "link",
+						isOpenedInNewTab: true,
+						sortKey: "id"
+					},
+					{
+						key: "assistanceName",
+						title: "Name",
+						type: "link",
+						isOpenedInNewTab: true,
+						sortKey: "name"
+					},
 					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state" },
 					{ key: "round" },
 					{ key: "type", type: "assistancesType" },
@@ -558,19 +570,23 @@ export default {
 		},
 
 		onGoToDetail(id) {
-			this.$router.push({
+			const route = this.$router.resolve({
 				name: "AssistanceDetail",
 				params: {
 					assistanceId: id,
 				},
 			});
+
+			window.open(route.href, '_blank');
 		},
 
 		onGoToUpdate(id) {
 			const assistance = this.table.data.find((item) => item.id === id);
 
+			let route = {};
+
 			if (assistance.state.code === ASSISTANCE.STATUS.CREATING) {
-				this.$router.push({
+				route = this.$router.resolve({
 					name: "AssistanceCreationProgress",
 					params: {
 						assistanceId: assistance.id,
@@ -579,13 +595,15 @@ export default {
 			} else if (this.upcoming) {
 				this.showDetail(assistance);
 			} else {
-				this.$router.push({
+				route = this.$router.resolve({
 					name: "AssistanceEdit",
 					params: {
 						assistanceId: assistance.id,
 					},
 				});
 			}
+
+			window.open(route.href, '_blank');
 		},
 
 		onStatusFilter(filter) {

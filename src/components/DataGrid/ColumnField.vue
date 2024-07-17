@@ -136,6 +136,7 @@
 				name: getRouteName(),
 				params: getParams(),
 			}"
+			:target="getTargetForLink"
 			:data-cy="identifierBuilder()"
 			class="table-link"
 		>
@@ -318,6 +319,10 @@ export default {
 
 		dataCy() {
 			return `${this.tableIdentifier.length ? `${this.tableIdentifier}-` : ""}column-${this.columnKey}-row-${this.dataIndex + 1}`;
+		},
+
+		getTargetForLink() {
+			return this.column?.isOpenedInNewTab ? "_blank" : "_self";
 		},
 	},
 
