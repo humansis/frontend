@@ -289,14 +289,14 @@ export default {
 						title: "Assistance ID",
 						type: "link",
 						isOpenedInNewTab: true,
-						sortKey: "id"
+						sortKey: "id",
 					},
 					{
 						key: "assistanceName",
 						title: "Name",
 						type: "link",
 						isOpenedInNewTab: true,
-						sortKey: "name"
+						sortKey: "name",
 					},
 					{ key: "status", type: "tag", customTags: statusTags, sortKey: "state" },
 					{ key: "round" },
@@ -577,7 +577,7 @@ export default {
 				},
 			});
 
-			window.open(route.href, '_blank');
+			window.open(route.href, "_blank");
 		},
 
 		onGoToUpdate(id) {
@@ -592,8 +592,6 @@ export default {
 						assistanceId: assistance.id,
 					},
 				});
-			} else if (this.upcoming) {
-				this.showDetail(assistance);
 			} else {
 				route = this.$router.resolve({
 					name: "AssistanceEdit",
@@ -603,7 +601,7 @@ export default {
 				});
 			}
 
-			window.open(route.href, '_blank');
+			window.open(route.href, "_blank");
 		},
 
 		onStatusFilter(filter) {
