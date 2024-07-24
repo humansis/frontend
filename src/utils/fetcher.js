@@ -206,7 +206,14 @@ export const filtersToUri = (filters) => {
 	Object.keys(filters).forEach((key) => {
 		if (Array.isArray(filters[key]) && filters[key]?.length) {
 			filters[key].forEach((item) => {
-				query += `&filter[${key}][]=${encodeURIComponent(item)}`;
+				if (typeof item === "object") {
+					const objectValue = Object.values(item)[0];
+					const objectKey = Object.keys(item)[0];
+
+					query += `&filter[${key}][${objectKey}]=${encodeURIComponent((objectValue))}`;
+				} else {
+					query += `&filter[${key}][]=${encodeURIComponent(item)}`;
+				}
 			});
 		} else if (typeof filters[key] === "string"
 			|| typeof filters[key] === "boolean"
@@ -215,6 +222,7 @@ export const filtersToUri = (filters) => {
 			query += `&filter[${key}]=${encodeURIComponent(filters[key])}`;
 		}
 	});
+
 	return query;
 };
 

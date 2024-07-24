@@ -83,17 +83,14 @@
 			/>
 		</Modal>
 
-		<Modal
-			v-model="smartCardInvalidateModal.isOpened"
-			header="Set as Invalidated"
-		>
-			<SmartCardInvalidateForm
-				:beneficiary-data="smartCardInvalidateModel"
-				:table-data="table.data"
-				@updateTable="updateTableAfterInvalidation"
-				@formClosed="smartCardInvalidateModal.isOpened = false"
-			/>
-		</Modal>
+		<ApprovalSystem
+			v-if="approvalSystemData.isModalOpened"
+			:approval-system-data="approvalSystemData"
+			@form-closed="approvalSystemData.isModalOpened = false"
+			@approvalCreated="onSuccessfullyCreatedApproval"
+			@approved="onSuccessfullyApprovedApproval"
+			@rejected="onSuccessfullyRejectedApproval"
+		/>
 
 		<ConfirmAction
 			:is-dialog-opened="isWarningDialogOpenedForInvalidation"
@@ -236,6 +233,13 @@
 			</ButtonAction>
 
 			<ButtonAction
+				v-if="isInvalidationApprovalVisible(row.reliefPackages)"
+				icon="flag"
+				tooltip-text="Approve Invalidation"
+				@actionConfirmed="onSetApproveInvalidation(index, row.id, row.reliefPackages)"
+			/>
+
+			<ButtonAction
 				v-if="userCan.editDistribution"
 				icon="search"
 				tooltip-text="View"
@@ -333,10 +337,10 @@ import { mapState } from "vuex";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import InstitutionService from "@/services/InstitutionService";
+import ApprovalSystem from "@/components/ApprovalSystem";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
-import SmartCardInvalidateForm from "@/components/Assistance/BeneficiariesList/SmartCardInvalidateForm";
 import InputDistributed from "@/components/Assistance/InputDistributed/index";
 import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
 import ButtonAction from "@/components/ButtonAction";
@@ -345,6 +349,7 @@ import DataGrid from "@/components/DataGrid";
 import DataInput from "@/components/Inputs/DataInput";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
+import approvalsHelper from "@/mixins/approvalsHelper";
 import assistanceHelper from "@/mixins/assistanceHelper";
 import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
@@ -356,7 +361,7 @@ import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, INSTITUTION, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, GENERAL, INSTITUTION, TABLE } from "@/consts";
 
 const statusTags = [
 	{ code: "To distribute", class: "status to-distribute" },
@@ -376,10 +381,10 @@ export default {
 	],
 
 	components: {
+		ApprovalSystem,
 		AssignVoucherForm,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
-		SmartCardInvalidateForm,
 		DataGrid,
 		DataInput,
 		ButtonAction,
@@ -397,6 +402,7 @@ export default {
 		urlFiltersHelper,
 		vuetifyHelper,
 		assistanceHelper,
+		approvalsHelper,
 		grid,
 	],
 
@@ -462,6 +468,7 @@ export default {
 			advancedSearchVisible: false,
 			isWarningDialogOpenedForInvalidation: false,
 			warningMessageForInvalidation: "",
+			approvalsList: [],
 			selectedRows: 0,
 			exportControl: {
 				loading: false,
@@ -527,14 +534,7 @@ export default {
 				isOpened: false,
 				isWaiting: false,
 			},
-			smartCardInvalidateModal: {
-				isOpened: false,
-			},
-			smartCardInvalidateModel: {
-				bnfId: null,
-				reliefPackage: null,
-				tableIndex: null,
-			},
+			selectedBnfIdForSmartCardInvalidation: null,
 			addBeneficiariesByIdsModal: {
 				isOpened: false,
 				isWaiting: false,
@@ -549,6 +549,30 @@ export default {
 				referralType: null,
 				comment: null,
 				justification: null,
+			},
+			approvalSystemData: {
+				isOpened: false,
+				actionType: "",
+				targetId: null,
+				target: null,
+				justificationLabel: "",
+				warningMessage: "",
+				createAction: {
+					createButtonName: "",
+					confirmTitle: "",
+					confirmMessage: "",
+				},
+				acceptanceAction: {
+					approvalId: null,
+					isApproveButtonDisabled: false,
+					approveButtonName: "",
+					rejectButtonName: "",
+					confirmTitleForApprove: "",
+					confirmTitleForReject: "",
+					confirmMessageForApprove: "",
+					confirmMessageForReject: "",
+					message: "",
+				},
 			},
 			institutionModel: { ...INSTITUTION.DEFAULT_FORM_MODEL },
 			randomSampleSize: 10,
@@ -819,6 +843,10 @@ export default {
 		await this.reloadBeneficiariesList();
 	},
 
+	async mounted() {
+		await this.prepareListOfApprovals();
+	},
+
 	methods: {
 		async reloadBeneficiariesList() {
 			if (this.assistance) {
@@ -930,44 +958,114 @@ export default {
 				&& this.userCan.revertDistribution;
 		},
 
-		isSetSmartCardAsInvalidVisible({ status }) {
+		isSetSmartCardAsInvalidVisible({ status, reliefPackages }) {
 			return this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION
 				&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
-				&& this.userCan.invalidateDistribution;
-		},
-
-		updateTableAfterInvalidation(updatedData) {
-			this.table.data = updatedData;
-			this.$emit("fetchAssistanceStatistics");
+				&& this.userCan.invalidateDistribution
+				&& !this.isInvalidationApprovalForReliefPackage(reliefPackages);
 		},
 
 		onSetSmartCardAsInvalid(tableIndex, bnfId, reliefPackage) {
-			const todayDate = this.$moment(new Date());
-			const distributedAtDate = this.$moment(
-				new Date(reliefPackage[0].distributedAt),
-			);
-			const isDistributionDateValid = todayDate.diff(distributedAtDate, "days") < 30;
 			const isAlreadyPartOfAmountSpent = reliefPackage[0].spent;
 
-			this.isWarningDialogOpenedForInvalidation = !isDistributionDateValid
-				|| isAlreadyPartOfAmountSpent;
-
-			if (!isDistributionDateValid) {
-				this.warningMessageForInvalidation = "Distribution can no longer be invalidated, because it happened more than 30 days ago.";
-			}
+			this.isWarningDialogOpenedForInvalidation = isAlreadyPartOfAmountSpent;
 
 			if (isAlreadyPartOfAmountSpent) {
 				this.warningMessageForInvalidation = "Part of the distributed amount was already spent. Distribution can't be Invalidated";
 			}
 
 			if (!this.isWarningDialogOpenedForInvalidation) {
-				this.smartCardInvalidateModal.isOpened = true;
-				this.smartCardInvalidateModel = {
-					tableIndex,
-					bnfId,
-					reliefPackage,
+				this.approvalSystemData = {
+					...this.approvalSystemData,
+					isModalOpened: true,
+					actionType: GENERAL.APPROVAL_SYSTEM.TYPE.CREATE,
+					target: GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
+					targetId: reliefPackage[0].id,
+					justificationLabel: "Note (reason for Invalidation)",
+					createAction: {
+						createButtonName: "Set as invalidated",
+						title: "Request for Invalidation",
+						confirmTitle: "Request for Invalidation",
+						confirmMessage: "Do you really want to make request for Invalidation? This is permanent and distribution can not be distributed again.",
+					},
 				};
+
+				this.selectedBnfIdForSmartCardInvalidation = bnfId;
+			}
+		},
+
+		onSetApproveInvalidation(tableIndex, bnfId, reliefPackage) {
+			const isAlreadyPartOfAmountSpent = reliefPackage[0].spent;
+			const { message, id } = this.approvalsList.find(
+				(approval) => approval.targetId === reliefPackage[0].id,
+			);
+			const warningMessage = isAlreadyPartOfAmountSpent
+				? "Part of the distributed amount was already spent. Distribution can't be Invalidated."
+				: "";
+
+			this.approvalSystemData = {
+				...this.approvalSystemData,
+				isModalOpened: true,
+				actionType: GENERAL.APPROVAL_SYSTEM.TYPE.ACCEPTANCE,
+				target: GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
+				targetId: reliefPackage[0].id,
+				justificationLabel: "Note (reason for Invalidation)",
+				warningMessage,
+				acceptanceAction: {
+					approvalId: id,
+					isApproveButtonDisabled: !!isAlreadyPartOfAmountSpent,
+					approveButtonName: "Approve Invalidation",
+					rejectButtonName: "Reject Invalidation",
+					title: "Resolve approval of Invalidation",
+					confirmTitleForApprove: "Approve Invalidation",
+					confirmTitleForReject: "Reject Invalidation",
+					confirmMessageForApprove: "Do you really want to approve this un-distribution?",
+					confirmMessageForReject: "Do you really want to reject this un-distribution?",
+					message,
+				},
+			};
+
+			this.selectedBnfIdForSmartCardInvalidation = bnfId;
+		},
+
+		async onSuccessfullyCreatedApproval() {
+			if (this.approvalSystemData.target === GENERAL.APPROVAL_SYSTEM
+				.TARGET.INVALIDATE_RELIEF_PACKAGE) {
+				await this.prepareListOfApprovals();
+				await this.fetchData();
+
+				Notification(
+					`${this.$t("Successfully requested invalidation for Beneficiary ID")} ${this.selectedBnfIdForSmartCardInvalidation}`,
+					"success",
+				);
+			}
+		},
+
+		async onSuccessfullyApprovedApproval() {
+			if (this.approvalSystemData.target === GENERAL.APPROVAL_SYSTEM
+				.TARGET.INVALIDATE_RELIEF_PACKAGE) {
+				await this.prepareListOfApprovals();
+				await this.fetchData();
+
+				this.$emit("fetchAssistanceStatistics");
+
+				Notification(
+					`${this.$t("Successfully approved invalidation for Beneficiary ID")} ${this.selectedBnfIdForSmartCardInvalidation}`,
+					"success",
+				);
+			}
+		},
+
+		async onSuccessfullyRejectedApproval() {
+			if (this.approvalSystemData.target === GENERAL.APPROVAL_SYSTEM
+				.TARGET.INVALIDATE_RELIEF_PACKAGE) {
+				await this.prepareListOfApprovals();
+
+				Notification(
+					`${this.$t("Successfully rejected invalidation for Beneficiary ID")} ${this.selectedBnfIdForSmartCardInvalidation}`,
+					"success",
+				);
 			}
 		},
 
@@ -1232,6 +1330,34 @@ export default {
 			} else {
 				this.table.progress = 100;
 			}
+		},
+
+		async prepareListOfApprovals() {
+			if (this.assistanceDetail) {
+				this.setAssignedReliefPackages();
+
+				this.approvalsList = await this.fetchListOfApprovals({
+					filters: {
+						targetData: [{ assistanceId: this.$route.params.assistanceId }],
+						approvalTargets: [GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE],
+						states: [GENERAL.APPROVAL_SYSTEM.STATE.REQUESTED],
+					},
+				});
+			}
+		},
+
+		isInvalidationApprovalForReliefPackage(reliefPackages) {
+			const reliefPackageIds = new Set(reliefPackages.map((reliefPackage) => reliefPackage.id));
+
+			return this.approvalsList.filter(
+				(approval) => reliefPackageIds.has(approval.targetId)
+					&& approval.approvalTarget === GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
+			).length;
+		},
+
+		isInvalidationApprovalVisible(reliefPackages) {
+			return this.isInvalidationApprovalForReliefPackage(reliefPackages)
+				&& this.userCan.invalidateDistributionApprove;
 		},
 
 		async onRecalculate() {
