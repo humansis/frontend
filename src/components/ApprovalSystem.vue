@@ -270,9 +270,7 @@ export default {
 
 			if (this.v$.$invalid) return;
 
-			this.formAction = formAction === TYPES_OF_FORM_ACTION.REJECT
-				? TYPES_OF_FORM_ACTION.REJECT
-				: TYPES_OF_FORM_ACTION.SET;
+			this.formAction = formAction;
 
 			this.isConfirmMenuOpen = true;
 		},

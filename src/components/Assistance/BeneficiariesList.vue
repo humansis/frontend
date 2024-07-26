@@ -87,9 +87,9 @@
 			v-if="approvalSystemData.isModalOpened"
 			:approval-system-data="approvalSystemData"
 			@form-closed="approvalSystemData.isModalOpened = false"
-			@approvalCreated="onSuccessfullyCreatedApproval"
-			@approved="onSuccessfullyApprovedApproval"
-			@rejected="onSuccessfullyRejectedApproval"
+			@approvalCreated="onSuccessfullyCreatedRequest"
+			@approved="onSuccessfullyApprovedRequest"
+			@rejected="onSuccessfullyRejectedRequest"
 		/>
 
 		<ConfirmAction
@@ -222,10 +222,10 @@
 			/>
 
 			<ButtonAction
-				v-if="isSetSmartCardAsInvalidVisible(row)"
+				v-if="isInvalidateButtonVisible(row)"
 				icon="credit-card"
 				tooltip-text="Set as Invalidated"
-				@actionConfirmed="onSetSmartCardAsInvalid(index, row.id, row.reliefPackages)"
+				@actionConfirmed="onSetSmartCardAsInvalid(row.id, row.reliefPackages[0])"
 			>
 				<template v-slot:combinedIcons>
 					<v-icon icon="slash" class="card-icon" />
@@ -236,7 +236,7 @@
 				v-if="isInvalidationApprovalVisible(row.reliefPackages)"
 				icon="flag"
 				tooltip-text="Approve Invalidation"
-				@actionConfirmed="onSetApproveInvalidation(index, row.id, row.reliefPackages)"
+				@actionConfirmed="onSetApproveInvalidation(row.id, row.reliefPackages[0])"
 			/>
 
 			<ButtonAction
@@ -958,7 +958,7 @@ export default {
 				&& this.userCan.revertDistribution;
 		},
 
-		isSetSmartCardAsInvalidVisible({ status, reliefPackages }) {
+		isInvalidateButtonVisible({ status, reliefPackages }) {
 			return this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION
 				&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
@@ -966,8 +966,8 @@ export default {
 				&& !this.isInvalidationApprovalForReliefPackage(reliefPackages);
 		},
 
-		onSetSmartCardAsInvalid(tableIndex, bnfId, reliefPackage) {
-			const isAlreadyPartOfAmountSpent = reliefPackage[0].spent;
+		onSetSmartCardAsInvalid(bnfId, reliefPackage) {
+			const isAlreadyPartOfAmountSpent = reliefPackage.spent;
 
 			this.isWarningDialogOpenedForInvalidation = isAlreadyPartOfAmountSpent;
 
@@ -981,7 +981,7 @@ export default {
 					isModalOpened: true,
 					actionType: GENERAL.APPROVAL_SYSTEM.TYPE.CREATE,
 					target: GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
-					targetId: reliefPackage[0].id,
+					targetId: reliefPackage.id,
 					justificationLabel: "Note (reason for Invalidation)",
 					createAction: {
 						createButtonName: "Set as invalidated",
@@ -995,10 +995,10 @@ export default {
 			}
 		},
 
-		onSetApproveInvalidation(tableIndex, bnfId, reliefPackage) {
-			const isAlreadyPartOfAmountSpent = reliefPackage[0].spent;
+		onSetApproveInvalidation(bnfId, reliefPackage) {
+			const isAlreadyPartOfAmountSpent = reliefPackage.spent;
 			const { message, id } = this.approvalsList.find(
-				(approval) => approval.targetId === reliefPackage[0].id,
+				(approval) => approval.targetId === reliefPackage.id,
 			);
 			const warningMessage = isAlreadyPartOfAmountSpent
 				? "Part of the distributed amount was already spent. Distribution can't be Invalidated."
@@ -1009,7 +1009,7 @@ export default {
 				isModalOpened: true,
 				actionType: GENERAL.APPROVAL_SYSTEM.TYPE.ACCEPTANCE,
 				target: GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
-				targetId: reliefPackage[0].id,
+				targetId: reliefPackage.id,
 				justificationLabel: "Note (reason for Invalidation)",
 				warningMessage,
 				acceptanceAction: {
@@ -1029,7 +1029,7 @@ export default {
 			this.selectedBnfIdForSmartCardInvalidation = bnfId;
 		},
 
-		async onSuccessfullyCreatedApproval() {
+		async onSuccessfullyCreatedRequest() {
 			if (this.approvalSystemData.target === GENERAL.APPROVAL_SYSTEM
 				.TARGET.INVALIDATE_RELIEF_PACKAGE) {
 				await this.prepareListOfApprovals();
@@ -1042,7 +1042,7 @@ export default {
 			}
 		},
 
-		async onSuccessfullyApprovedApproval() {
+		async onSuccessfullyApprovedRequest() {
 			if (this.approvalSystemData.target === GENERAL.APPROVAL_SYSTEM
 				.TARGET.INVALIDATE_RELIEF_PACKAGE) {
 				await this.prepareListOfApprovals();
@@ -1057,7 +1057,7 @@ export default {
 			}
 		},
 
-		async onSuccessfullyRejectedApproval() {
+		async onSuccessfullyRejectedRequest() {
 			if (this.approvalSystemData.target === GENERAL.APPROVAL_SYSTEM
 				.TARGET.INVALIDATE_RELIEF_PACKAGE) {
 				await this.prepareListOfApprovals();

@@ -207,10 +207,9 @@ export const filtersToUri = (filters) => {
 		if (Array.isArray(filters[key]) && filters[key]?.length) {
 			filters[key].forEach((item) => {
 				if (typeof item === "object") {
-					const objectValue = Object.values(item)[0];
-					const objectKey = Object.keys(item)[0];
-
-					query += `&filter[${key}][${objectKey}]=${encodeURIComponent((objectValue))}`;
+					Object.entries(item).forEach(([objectKey, objectValue]) => {
+						query += `&filter[${key}][${objectKey}]=${encodeURIComponent((objectValue))}`;
+					});
 				} else {
 					query += `&filter[${key}][]=${encodeURIComponent(item)}`;
 				}
