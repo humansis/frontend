@@ -53,6 +53,7 @@ export default {
 		},
 		TARGET: {
 			INVALIDATE_RELIEF_PACKAGE: "invalidateReliefPackage",
+			UN_DISTRIBUTE_RELIEF_PACKAGE: "undistributeReliefPackage",
 		},
 		STATE: {
 			REQUESTED: "requested",
