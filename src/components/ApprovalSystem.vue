@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { required } from "@vuelidate/validators";
+import { maxLength, required } from "@vuelidate/validators";
 import ApprovalService from "@/services/ApprovalService";
 import ConfirmAction from "@/components/ConfirmAction";
 import DataTextarea from "@/components/Inputs/DataTextarea";
@@ -96,7 +96,10 @@ export default {
 
 	validations() {
 		return {
-			justification: { required },
+			justification: {
+				required,
+				maxLength: maxLength(500),
+			},
 		};
 	},
 
