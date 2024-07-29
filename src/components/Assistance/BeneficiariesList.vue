@@ -224,7 +224,7 @@
 			<ButtonAction
 				v-if="isInvalidateButtonVisible(row)"
 				icon="credit-card"
-				tooltip-text="Set as Invalidated"
+				tooltip-text="Request for Invalidation"
 				@actionConfirmed="onSetSmartCardAsInvalid(row.id, row.reliefPackages[0])"
 			>
 				<template v-slot:combinedIcons>
@@ -984,7 +984,7 @@ export default {
 					targetId: reliefPackage.id,
 					justificationLabel: "Note (reason for Invalidation)",
 					createAction: {
-						createButtonName: "Set as invalidated",
+						createButtonName: "Request for Invalidation",
 						title: "Request for Invalidation",
 						confirmTitle: "Request for Invalidation",
 						confirmMessage: "Do you really want to make request for Invalidation? This is permanent and distribution can not be distributed again.",
@@ -1017,11 +1017,11 @@ export default {
 					isApproveButtonDisabled: !!isAlreadyPartOfAmountSpent,
 					approveButtonName: "Approve Invalidation",
 					rejectButtonName: "Reject Invalidation",
-					title: "Resolve approval of Invalidation",
+					title: "Approve Invalidation",
 					confirmTitleForApprove: "Approve Invalidation",
 					confirmTitleForReject: "Reject Invalidation",
-					confirmMessageForApprove: "Do you really want to approve this un-distribution?",
-					confirmMessageForReject: "Do you really want to reject this un-distribution?",
+					confirmMessageForApprove: "Do you really want to approve this Invalidation?",
+					confirmMessageForReject: "Do you really want to reject this Invalidation?",
 					message,
 				},
 			};
@@ -1036,7 +1036,7 @@ export default {
 				await this.fetchData();
 
 				Notification(
-					`${this.$t("Successfully requested invalidation for Beneficiary ID")} ${this.selectedBnfIdForSmartCardInvalidation}`,
+					`${this.$t("Successfully requested Invalidation for Beneficiary ID")} ${this.selectedBnfIdForSmartCardInvalidation}`,
 					"success",
 				);
 			}
@@ -1051,7 +1051,7 @@ export default {
 				this.$emit("fetchAssistanceStatistics");
 
 				Notification(
-					`${this.$t("Successfully approved invalidation for Beneficiary ID")} ${this.selectedBnfIdForSmartCardInvalidation}`,
+					`${this.$t("Successfully approved Invalidation for Beneficiary ID")} ${this.selectedBnfIdForSmartCardInvalidation}`,
 					"success",
 				);
 			}
@@ -1063,7 +1063,7 @@ export default {
 				await this.prepareListOfApprovals();
 
 				Notification(
-					`${this.$t("Successfully rejected invalidation for Beneficiary ID")} ${this.selectedBnfIdForSmartCardInvalidation}`,
+					`${this.$t("Successfully rejected Invalidation for Beneficiary ID")} ${this.selectedBnfIdForSmartCardInvalidation}`,
 					"success",
 				);
 			}
