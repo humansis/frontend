@@ -987,7 +987,7 @@ export default {
 						createButtonName: "Request for Invalidation",
 						title: "Request for Invalidation",
 						confirmTitle: "Request for Invalidation",
-						confirmMessage: "Do you really want to make request for Invalidation? This is permanent and distribution can not be distributed again.",
+						confirmMessage: "Do you really want to make request for Invalidation?",
 					},
 				};
 
@@ -1020,7 +1020,7 @@ export default {
 					title: "Approve Invalidation",
 					confirmTitleForApprove: "Approve Invalidation",
 					confirmTitleForReject: "Reject Invalidation",
-					confirmMessageForApprove: "Do you really want to approve this Invalidation?",
+					confirmMessageForApprove: "Do you really want to approve this Invalidation? This is permanent and distribution can not be distributed again.",
 					confirmMessageForReject: "Do you really want to reject this Invalidation?",
 					message,
 				},
