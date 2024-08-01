@@ -215,14 +215,6 @@ export default {
 		});
 	},
 
-	invalidateDistributionOfReliefPackage(id, body) {
-		return fetcher({
-			uri: `assistances/relief-packages/${id}/invalidate-distribution`,
-			method: "PATCH",
-			body,
-		});
-	},
-
 	getSmartCardDepositsForAssistance(ids) {
 		return fetcher({
 			uri: `smartcard-deposits${queryBuilder({ ids })}`,

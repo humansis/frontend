@@ -46,4 +46,18 @@ export default {
 	INPUT_TYPE: {
 		TEXT: "Text",
 	},
+	APPROVAL_SYSTEM: {
+		TYPE: {
+			CREATE: "Create",
+			ACCEPTANCE: "Acceptance",
+		},
+		TARGET: {
+			INVALIDATE_RELIEF_PACKAGE: "invalidateReliefPackage",
+		},
+		STATE: {
+			REQUESTED: "requested",
+			APPROVED: "approved",
+			REJECTED: "rejected",
+		},
+	},
 };

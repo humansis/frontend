@@ -99,6 +99,7 @@ export default {
 		viewDistribution: false,
 		revertDistribution: false,
 		invalidateDistribution: false,
+		invalidateDistributionApprove: false,
 		assignDistributionItems: false,
 		addBeneficiary: false,
 		editBeneficiary: false,
