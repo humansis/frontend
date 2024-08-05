@@ -234,7 +234,7 @@ export default {
 					targetId,
 				});
 
-				checkResponseStatus(status, message);
+				checkResponseStatus(status, message, 201);
 
 				this.$emit("approvalCreated");
 			} catch (e) {
