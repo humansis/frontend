@@ -98,6 +98,7 @@ export default {
 		deleteDistribution: false,
 		viewDistribution: false,
 		revertDistribution: false,
+		revertDistributionApprove: false,
 		invalidateDistribution: false,
 		invalidateDistributionApprove: false,
 		assignDistributionItems: false,

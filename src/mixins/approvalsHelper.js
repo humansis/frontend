@@ -21,5 +21,12 @@ export default {
 
 			return [];
 		},
+
+		findApprovalByConditions(conditionsObject) {
+			return this.approvalsList.find(
+				(approval) => Object.keys(conditionsObject)
+					.every((key) => approval[key] === conditionsObject[key]),
+			);
+		},
 	},
 };

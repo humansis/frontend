@@ -208,13 +208,6 @@ export default {
 		});
 	},
 
-	revertDistributionOfReliefPackage(id) {
-		return fetcher({
-			uri: `assistances/relief-packages/${id}/revert-distribution`,
-			method: "PATCH",
-		});
-	},
-
 	getSmartCardDepositsForAssistance(ids) {
 		return fetcher({
 			uri: `smartcard-deposits${queryBuilder({ ids })}`,

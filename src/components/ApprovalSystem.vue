@@ -83,6 +83,7 @@ const TYPES_OF_FORM_ACTION = {
 	REJECT: "Reject",
 	SET: "Set",
 };
+
 export default {
 	name: "ApprovalSystem",
 
@@ -107,6 +108,9 @@ export default {
 		approvalSystemData: {
 			type: Object,
 			required: true,
+			validator(value) {
+				return !!(value.actionType && value.targetId && value.target);
+			},
 		},
 	},
 
@@ -230,7 +234,7 @@ export default {
 					targetId,
 				});
 
-				checkResponseStatus(status, message);
+				checkResponseStatus(status, message, 201);
 
 				this.$emit("approvalCreated");
 			} catch (e) {
