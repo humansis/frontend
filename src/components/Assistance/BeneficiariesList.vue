@@ -215,6 +215,7 @@
 
 			<ButtonAction
 				v-if="isUnDistributionApprovalButtonVisible(row.reliefPackages[0])"
+				:disabled="!userCan.revertDistributionApprove"
 				icon="flag"
 				tooltip-text="Approve Un-distribution"
 				@actionConfirmed="onSetApproveUnDistribution(row.id, row.reliefPackages[0])"
@@ -233,6 +234,7 @@
 
 			<ButtonAction
 				v-if="isInvalidationApprovalButtonVisible(row.reliefPackages[0])"
+				:disabled="!userCan.invalidateDistributionApprove"
 				icon="flag"
 				tooltip-text="Approve Invalidation"
 				@actionConfirmed="onSetApproveInvalidation(row.id, row.reliefPackages[0])"
@@ -979,14 +981,14 @@ export default {
 			return this.isApprovalAvailableForReliefPackage(
 				reliefPackage,
 				GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
-			) && this.userCan.invalidateDistributionApprove;
+			);
 		},
 
 		isUnDistributionApprovalButtonVisible(reliefPackage) {
 			return this.isApprovalAvailableForReliefPackage(
 				reliefPackage,
 				GENERAL.APPROVAL_SYSTEM.TARGET.UN_DISTRIBUTE_RELIEF_PACKAGE,
-			) && this.userCan.revertDistributionApprove;
+			);
 		},
 
 		onSetAsUnDistributed(bnfId, reliefPackage) {
