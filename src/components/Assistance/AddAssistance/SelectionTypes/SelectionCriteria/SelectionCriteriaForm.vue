@@ -465,6 +465,8 @@ export default {
 			this.formModel.criteria = "";
 			this.formModel.condition = "";
 
+			if (!target) return;
+
 			this.formModel.criteriaTarget = target;
 			this.fetchCriteriaFields(target);
 		},
@@ -474,6 +476,8 @@ export default {
 
 			this.formModel.condition = "";
 			this.formModel.value = null;
+
+			if (!criteria) return;
 
 			this.selectedCriteria = criteria;
 			this.fieldTypeToDisplay = criteria.type;
