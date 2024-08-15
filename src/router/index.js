@@ -403,13 +403,32 @@ const routes = [
 			},
 			{
 				path: "administrative-settings",
-				name: "Administrative Settings",
-				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
+				component: RouterView,
 				meta: {
-					permissions: ["adminSettings"],
 					breadcrumb: "Administrative Settings",
-					description: "This page is where you can manage users, donors and your organization's specifics",
 				},
+				children: [
+					{
+						path: "",
+						name: "Administrative Settings",
+						component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
+						meta: {
+							permissions: ["adminSettings"],
+							breadcrumb: "Administrative Settings",
+							description: "This page is where you can manage users, donors and your organization's specifics",
+						},
+					},
+					{
+						path: "add-role",
+						name: "Add Role",
+						component: () => import(/* webpackChunkName: "AddProject" */ "@/views/AdministrativeSettings/Roles/RolesManager"),
+						meta: {
+							permissions: [],
+							breadcrumb: "Add Role",
+							description: "This page is a form to add a new role to a humansis.",
+						},
+					},
+				],
 			},
 			{
 				path: "transactions",
