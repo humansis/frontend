@@ -57,6 +57,7 @@
 
 		<v-col cols="12" class="text-right">
 			<v-btn
+				:data-cy="identifierBuilder('advanced-search-search-button')"
 				color="primary"
 				prepend-icon="search"
 				class="text-none ml-3"
@@ -72,6 +73,7 @@
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
+import identifierBuilder from "@/mixins/identifierBuilder";
 
 export default {
 	name: "AdvancedFilter",
@@ -81,6 +83,8 @@ export default {
 		DataInput,
 		DatePicker,
 	},
+
+	mixins: [identifierBuilder],
 
 	props: {
 		selectedFiltersOptions: {
