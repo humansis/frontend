@@ -1,5 +1,5 @@
 import { getCookie } from "@/utils/cookie";
-import { CONFIG } from "@/consts";
+import { CONFIG, ROUTER } from "@/consts";
 import router from "@/router";
 import getters from "@/store/getters";
 import store from "@/store/index";
@@ -41,8 +41,8 @@ export const getResponseJSON = async (response, download = false) => {
 	}
 
 	if (forbidden) {
-		if (router.currentRoute.name !== "NoPermission") {
-			router.push({ name: "NoPermission" }).catch((error) => {
+		if (router.currentRoute.name !== ROUTER.ROUTE_NAME.NO_PERMISSION) {
+			router.push({ name: ROUTER.ROUTE_NAME.NO_PERMISSION }).catch((error) => {
 				console.error(error);
 			});
 		}
@@ -55,7 +55,7 @@ export const getResponseJSON = async (response, download = false) => {
 			|| router?.currentRoute?.fullPath;
 
 		router.push({
-			name: "Logout",
+			name: ROUTER.ROUTE_NAME.LOGOUT,
 			query: { redirect, notification: "login" },
 		}).catch((error) => {
 			console.error(error);
@@ -65,7 +65,7 @@ export const getResponseJSON = async (response, download = false) => {
 	}
 
 	if (notFound) {
-		router.push({ name: "NotFound" }).catch((error) => {
+		router.push({ name: ROUTER.ROUTE_NAME.NOT_FOUND }).catch((error) => {
 			console.error(error);
 		});
 

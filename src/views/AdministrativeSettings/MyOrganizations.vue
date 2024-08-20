@@ -1,33 +1,39 @@
 <template>
-	<Modal
-		v-model="myOrganizationModal.isOpened"
-		:header="modalHeader"
-	>
-		<MyOrganizationForm
-			:form-model="myOrganizationModel"
-			:submit-button-label="myOrganizationModal.isEditing ? 'Update' : 'Create'"
-			:form-disabled="myOrganizationModal.isDetail"
-			close-button
-			@formSubmitted="onSubmitMyOrganizationForm"
-			@formClosed="onCloseMyOrganizationModal"
-		/>
-	</Modal>
+	<v-container fluid>
+		<Modal
+			v-model="myOrganizationModal.isOpened"
+			:header="modalHeader"
+		>
+			<MyOrganizationForm
+				:form-model="myOrganizationModel"
+				:submit-button-label="myOrganizationModal.isEditing ? 'Update' : 'Create'"
+				:form-disabled="myOrganizationModal.isDetail"
+				close-button
+				@formSubmitted="onSubmitMyOrganizationForm"
+				@formClosed="onCloseMyOrganizationModal"
+			/>
+		</Modal>
 
-	<MyOrganizationsList
-		ref="myOrganizationsList"
-		@showEdit="onEditMyOrganization"
-		@showDetail="onShowDetail"
-		@print="onPrintMyOrganization"
-	/>
+		<Tabs :pre-selected-tab-value="ADMINISTRATIVE_SETTINGS.TABS_VALUE.MY_ORGANIZATIONS" />
+
+		<MyOrganizationsList
+			ref="myOrganizationsList"
+			@showEdit="onEditMyOrganization"
+			@showDetail="onShowDetail"
+			@print="onPrintMyOrganization"
+		/>
+	</v-container>
 </template>
 
 <script>
 import MyOrganizationsService from "@/services/MyOrganizationsService";
 import MyOrganizationForm from "@/components/AdministrativeSettings/MyOrganizations/Form";
 import MyOrganizationsList from "@/components/AdministrativeSettings/MyOrganizations/List";
+import Tabs from "@/components/AdministrativeSettings/Tabs";
 import Modal from "@/components/Inputs/Modal";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { ADMINISTRATIVE_SETTINGS } from "@/consts";
 
 export default {
 	name: "MyOrganizationsPage",
@@ -36,10 +42,12 @@ export default {
 		MyOrganizationsList,
 		MyOrganizationForm,
 		Modal,
+		Tabs,
 	},
 
 	data() {
 		return {
+			ADMINISTRATIVE_SETTINGS,
 			myOrganizationModal: {
 				isOpened: false,
 				isEditing: false,

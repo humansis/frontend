@@ -1,40 +1,45 @@
 <template>
-	<Modal
-		v-model="userModal.isOpened"
-		:header="modalHeader"
-	>
-		<UserForm
-			:form-model="userModel"
-			:submit-button-label="userModal.isEditing ? 'Update' : 'Create'"
-			:is-editing="userModal.isEditing"
-			:form-disabled="userModal.isDetail"
-			close-button
-			@formSubmitted="onSubmitUserForm"
-			@formClosed="onCloseUserModal"
-		/>
-	</Modal>
-
-	<div class="d-flex justify-end">
-		<v-btn
-			class="text-none ml-0 mb-3"
-			color="primary"
-			prepend-icon="plus"
-			@click="onAddNewUser"
+	<v-container fluid>
+		<Modal
+			v-model="userModal.isOpened"
+			:header="modalHeader"
 		>
-			{{ $t('Add') }}
-		</v-btn>
-	</div>
+			<UserForm
+				:form-model="userModel"
+				:submit-button-label="userModal.isEditing ? 'Update' : 'Create'"
+				:is-editing="userModal.isEditing"
+				:form-disabled="userModal.isDetail"
+				close-button
+				@formSubmitted="onSubmitUserForm"
+				@formClosed="onCloseUserModal"
+			/>
+		</Modal>
 
-	<UsersList
-		ref="usersList"
-		@delete="onRemoveUser"
-		@showEdit="onEditUser"
-		@showDetail="onShowDetail"
-	/>
+		<Tabs :pre-selected-tab-value="ADMINISTRATIVE_SETTINGS.TABS_VALUE.USERS" />
+
+		<div class="d-flex justify-end">
+			<v-btn
+				class="text-none ml-0 mb-3"
+				color="primary"
+				prepend-icon="plus"
+				@click="onAddNewUser"
+			>
+				{{ $t('Add') }}
+			</v-btn>
+		</div>
+
+		<UsersList
+			ref="usersList"
+			@delete="onRemoveUser"
+			@showEdit="onEditUser"
+			@showDetail="onShowDetail"
+		/>
+	</v-container>
 </template>
 
 <script>
 import UsersService from "@/services/UsersService";
+import Tabs from "@/components/AdministrativeSettings/Tabs";
 import UserForm from "@/components/AdministrativeSettings/Users/Form";
 import UsersList from "@/components/AdministrativeSettings/Users/List";
 import Modal from "@/components/Inputs/Modal";
@@ -42,6 +47,7 @@ import permissions from "@/mixins/permissions";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { ADMINISTRATIVE_SETTINGS } from "@/consts";
 
 export default {
 	name: "UsersPage",
@@ -50,12 +56,14 @@ export default {
 		UsersList,
 		Modal,
 		UserForm,
+		Tabs,
 	},
 
 	mixins: [permissions],
 
 	data() {
 		return {
+			ADMINISTRATIVE_SETTINGS,
 			userModal: {
 				isOpened: false,
 				isEditing: false,
