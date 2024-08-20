@@ -11,6 +11,7 @@ import institutionHelper from "@/mixins/institutionHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { isDateBeforeOrEqual, isRangeBetweenTwoDatesHigher } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
+import { ROUTER } from "@/consts";
 
 export default {
 	mixins: [baseHelper, institutionHelper],
@@ -111,8 +112,8 @@ export default {
 				if (beneficiary) {
 					if (hasLink) {
 						const routeName = isInstitution
-							? "InstitutionDetail"
-							: "HouseholdInformationSummary";
+							? ROUTER.ROUTE_NAME.INSTITUTIONS.DETAIL
+							: ROUTER.ROUTE_NAME.HOUSEHOLD_INFORMATION_SUMMARY;
 						const routeParams = isInstitution
 							? { institutionId: beneficiaryId }
 							: { householdId: beneficiary.householdId };
@@ -152,7 +153,7 @@ export default {
 
 				if (hasLink) {
 					this.table.data[key].assistance = {
-						routeName: "AssistanceDetail",
+						routeName: ROUTER.ROUTE_NAME.ASSISTANCES.DETAIL,
 						name: assistance.name,
 						routeParams: { projectId: assistance.projectId, assistanceId: assistance.id },
 					};

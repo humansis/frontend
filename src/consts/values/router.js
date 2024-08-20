@@ -57,6 +57,6 @@ export default {
 			ROOT: "transactions",
 			ASSISTANCES: "transactionsAssistances",
 			PURCHASES: "transactionsPurchases",
-		}
-	}
-}
+		},
+	},
+};

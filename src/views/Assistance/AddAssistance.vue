@@ -126,7 +126,7 @@
 
 		<div class="d-flex justify-end mt-5">
 			<v-btn
-				:to="{ name: 'Project', params: { projectId: this.$route.params.projectId } }"
+				:to="getProjectPage(this.$route.params.projectId)"
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				class="text-none mr-3"
@@ -158,9 +158,10 @@ import SelectionCriteria from "@/components/Assistance/AddAssistance/SelectionTy
 import TargetTypeSelect from "@/components/Assistance/AddAssistance/SelectionTypes/TargetTypeSelect";
 import ConfirmAction from "@/components/ConfirmAction";
 import assistanceHelper from "@/mixins/assistanceHelper";
+import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE } from "@/consts";
+import { ASSISTANCE, ROUTER } from "@/consts";
 
 export default {
 	name: "AddAssistance",
@@ -174,7 +175,7 @@ export default {
 		ConfirmAction,
 	},
 
-	mixins: [assistanceHelper],
+	mixins: [assistanceHelper, routerHelper],
 
 	data() {
 		return {
@@ -432,7 +433,9 @@ export default {
 				checkResponseStatus(status, message);
 
 				this.$router.push({
-					name: id ? "AssistanceCreationProgress" : "Project",
+					name: id
+						? ROUTER.ROUTE_NAME.ASSISTANCES.CREATION_PROGRESS
+						: ROUTER.ROUTE_NAME.ASSISTANCES.ROOT,
 					params: {
 						projectId: this.$route.params.projectId,
 						...(id && { assistanceId: id }),

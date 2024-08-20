@@ -95,7 +95,7 @@ import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, ROUTER, TABLE } from "@/consts";
 
 const statusTags = [
 	{ code: ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED, class: "status distributed" },
@@ -215,7 +215,7 @@ export default {
 
 		onRedirectToTab(tab) {
 			if (tab === "smartCardPurchasedItems") {
-				this.$router.push({ name: "TransactionsPurchases" });
+				this.$router.push({ name: ROUTER.ROUTE_NAME.TRANSACTIONS.PURCHASES });
 			}
 		},
 

@@ -17,7 +17,7 @@
 		</div>
 
 		<v-btn
-			:to="{ name: 'Dashboard' }"
+			:to="{ name: ROUTER.ROUTE_NAME.ROOT }"
 			size="x-large"
 			color="light-blue-lighten-4"
 			prepend-icon="home"
@@ -29,7 +29,15 @@
 </template>
 
 <script>
+import { ROUTER } from "@/consts";
+
 export default {
 	name: "NotFound",
+
+	data() {
+		return {
+			ROUTER,
+		};
+	},
 };
 </script>

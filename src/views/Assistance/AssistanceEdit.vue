@@ -129,6 +129,7 @@ import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import EditNote from "@/components/Inputs/EditNote";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
@@ -143,7 +144,7 @@ export default {
 		EditNote,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, routerHelper],
 
 	data() {
 		return {
@@ -224,11 +225,7 @@ export default {
 				}
 
 				if (this.assistance.state.code !== ASSISTANCE.STATUS.NEW) {
-					await this.$router.push({
-						name: "AssistanceDetail",
-						params: { assistanceId: this.assistance.id },
-
-					});
+					await this.$router.push(this.getAssistanceDetailPage(this.assistance.id));
 				}
 			} catch (e) {
 				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
@@ -299,12 +296,7 @@ export default {
 
 				Notification(this.$t("Assistance Successfully Validated and Locked"), "success");
 
-				this.$router.push({
-					name: "AssistanceDetail",
-					params: {
-						assistanceId: this.$route.params.assistanceId,
-					},
-				});
+				this.$router.push(this.getAssistanceDetailPage(this.$route.params.assistanceId));
 			} catch (e) {
 				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
 			} finally {

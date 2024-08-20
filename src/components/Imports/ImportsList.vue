@@ -112,6 +112,7 @@ import ImportsFilter from "@/components/Imports/ImportsFilter";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import { generateColumns } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -149,6 +150,7 @@ export default {
 		grid,
 		baseHelper,
 		permissions,
+		routerHelper,
 	],
 
 	data() {
@@ -383,11 +385,7 @@ export default {
 					slug = "start-import";
 			}
 
-			this.$router.push({
-				name: "Import",
-				params: { importId: importItem.id },
-				query: { step: slug },
-			});
+			this.$router.push(this.getImportPage(importItem.id, { step: slug }));
 		},
 	},
 };

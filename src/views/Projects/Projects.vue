@@ -5,7 +5,7 @@
 
 			<v-btn
 				:disabled="!isUserPermissionGranted(PERMISSIONS.PROJECT_MANAGEMENT_MANAGE)"
-				:to="{ name: ROUTER.PROJECTS }"
+				:to="{ name: ROUTER.ROUTE_NAME.PROJECTS.ADD }"
 				color="primary"
 				prepend-icon="plus"
 				class="text-none ml-0"
@@ -16,8 +16,8 @@
 
 		<ProjectsList
 			ref="projectsList"
-			@showDetail="onShowDetail"
-			@showEdit="onShowEdit"
+			@showDetail="(id) => $router.push(getProjectDetailPage(id))"
+			@showEdit="(id) => $router.push(getProjectEditPage(id))"
 			@delete="onProjectDelete"
 		/>
 	</v-container>
@@ -28,6 +28,7 @@ import { mapState } from "vuex";
 import ProjectService from "@/services/ProjectService";
 import ProjectsList from "@/components/Projects/ProjectsList";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ROUTER } from "@/consts";
@@ -39,27 +40,19 @@ export default {
 		ProjectsList,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, routerHelper],
+
+	data() {
+		return {
+			ROUTER,
+		};
+	},
 
 	computed: {
 		...mapState(["country"]),
 	},
 
 	methods: {
-		onShowEdit(id) {
-			this.$router.push({
-				name: ROUTER.ROUTE_NAME.PROJECTS.EDIT,
-				params: { projectId: id },
-			});
-		},
-
-		onShowDetail(id) {
-			this.$router.push({
-				name: ROUTER.ROUTE_NAME.PROJECTS.DETAIL,
-				params: { projectId: id },
-			});
-		},
-
 		async onProjectDelete(id) {
 			try {
 				const {

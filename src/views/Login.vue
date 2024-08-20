@@ -48,7 +48,7 @@ import usersHelper from "@/mixins/usersHelper";
 import { setCookie } from "@/utils/cookie";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { GENERAL, ROLE } from "@/consts";
+import { GENERAL, ROLE, ROUTER } from "@/consts";
 import gitInfo from "@/gitInfo";
 import { jwtDecode } from "jwt-decode";
 
@@ -115,7 +115,7 @@ export default {
 
 				const { token, userId } = data;
 
-				const user = await jwtDecode(token);
+				const user = jwtDecode(token);
 				user.userId = userId;
 
 				await setCookie("token", token, user.exp - user.iat);
@@ -123,7 +123,7 @@ export default {
 				await this.storeUser(user);
 
 				if (user.roles[0] === ROLE.GUEST) {
-					await this.$router.push({ name: "AccountCreated" });
+					await this.$router.push({ name: ROUTER.ROUTE_NAME.ACCOUNT_CREATED });
 					return;
 				}
 
@@ -165,7 +165,7 @@ export default {
 						this.$router.push(this.$route.query.redirect.toString());
 					} else {
 						this.$router.push({
-							name: "Projects",
+							name: ROUTER.ROUTE_NAME.PROJECTS.ROOT,
 							params: {
 								countryCode: this.country?.iso3 || countries[0].iso3,
 							},

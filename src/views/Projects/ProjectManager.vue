@@ -196,7 +196,7 @@
 		<v-row class="mt-5">
 			<v-col class="d-flex justify-end">
 				<v-btn
-					:to="{ name: 'Projects' }"
+					:to="{ name: ROUTER.ROUTE_NAME.PROJECTS.ROOT }"
 					:data-cy="identifierBuilder('cancel-button')"
 					color="blue-grey-lighten-4"
 					variant="elevated"
@@ -240,7 +240,7 @@ import { getArrayOfCodeListByKey, getArrayOfIdsByParam, getCodeAndValueObject } 
 import { normalizeSelectorValue, normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { GENERAL } from "@/consts";
+import { GENERAL, ROUTER } from "@/consts";
 
 const isEndDateValid = (endDate, formModel) => new Date(endDate) > new Date(formModel.startDate);
 const todayDate = new Date();
@@ -292,6 +292,7 @@ export default {
 
 	data() {
 		return {
+			ROUTER,
 			projectAction: {
 				isCreate: false,
 				isEdit: false,
@@ -599,7 +600,7 @@ export default {
 				checkResponseStatus(status, message);
 
 				Notification(this.$t("Project Successfully Created"), "success");
-				await this.$router.push({ name: "Projects" });
+				await this.$router.push({ name: ROUTER.ROUTE_NAME.PROJECTS.ROOT });
 			} catch (e) {
 				Notification(`${this.$t("Project")} ${e.message || e}`, "error");
 			}
@@ -618,7 +619,7 @@ export default {
 				checkResponseStatus(status, message);
 
 				Notification(this.$t("Project Successfully Updated"), "success");
-				this.$router.push({ name: "Projects" });
+				this.$router.push({ name: ROUTER.ROUTE_NAME.PROJECTS.ROOT });
 			} catch (e) {
 				Notification(`${this.$t("Project")}: ${e.message || e}`, "error");
 			}
@@ -824,7 +825,7 @@ export default {
 
 		getProjectAction() {
 			switch (this.$route.name) {
-				case "ProjectDetail":
+				case ROUTER.ROUTE_NAME.PROJECTS.DETAIL:
 					this.projectAction = {
 						isCreate: false,
 						isEdit: false,
@@ -833,7 +834,7 @@ export default {
 					this.pageTitle = this.$t("Detail of Project");
 					this.formDisabled = true;
 					break;
-				case "ProjectEdit":
+				case ROUTER.ROUTE_NAME.PROJECTS.EDIT:
 					this.projectAction = {
 						isCreate: false,
 						isEdit: true,

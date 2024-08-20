@@ -154,7 +154,7 @@
 
 			<v-btn
 				v-if="finishedImport"
-				:to="{ name: 'Imports' }"
+				:to="{ name: ROUTER.ROUTE_NAME.IMPORTS.ROOT }"
 				:active="false"
 				color="primary"
 				class="text-none"
@@ -164,7 +164,7 @@
 
 			<v-btn
 				v-if="finishedImport"
-				:to="{ name: 'Households' }"
+				:to="{ name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT }"
 				color="primary"
 				class="text-none"
 			>
@@ -209,7 +209,7 @@
 					<td>
 						<router-link
 							v-if="item.householdId"
-							:to="{ name: 'EditHousehold', params: { householdId: item.householdId } }"
+							:to="getHouseholdEditPage(item.householdId)"
 							class="table-link"
 							target="_blank"
 						>
@@ -284,10 +284,11 @@
 
 <script>
 import ImportService from "@/services/ImportService";
+import routerHelper from "@/mixins/routerHelper";
 import { normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { IMPORT } from "@/consts";
+import { IMPORT, ROUTER } from "@/consts";
 
 export default {
 	name: "FinalisationStep",
@@ -296,6 +297,8 @@ export default {
 		"changeImportState",
 		"canceledImport",
 	],
+
+	mixins: [routerHelper],
 
 	props: {
 		statistics: {
@@ -316,6 +319,7 @@ export default {
 
 	data() {
 		return {
+			ROUTER,
 			importStatistics: {},
 			changeStateButtonLoading: false,
 			notImportedRows: [],

@@ -31,7 +31,7 @@
 				</template>
 
 				<v-list>
-					<router-link :to="{ name: 'Imports', query: { openModal: '1' } }">
+					<router-link :to="{ name: ROUTER.ROUTE_NAME.IMPORTS.ROOT, query: { openModal: '1' } }">
 						<v-list-item>
 							<v-card
 								:title="$t('Import')"
@@ -46,7 +46,7 @@
 						</v-list-item>
 					</router-link>
 
-					<router-link :to="{ name: 'AddHousehold' }">
+					<router-link :to="{ name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ADD }">
 						<v-list-item>
 							<v-card
 								:title="$t('Add Beneficiary')"
@@ -133,7 +133,7 @@
 					icon="edit"
 					label="Edit"
 					tooltip-text="Edit"
-					@actionConfirmed="$router.push({ name: 'EditHousehold', params: { householdId } })"
+					@actionConfirmed="$router.push(getHouseholdEditPage(householdId))"
 				/>
 
 				<ButtonAction
@@ -254,13 +254,14 @@ import addressHelper from "@/mixins/addressHelper";
 import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import validation from "@/mixins/validation";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, TABLE } from "@/consts";
+import { EXPORT, ROUTER, TABLE } from "@/consts";
 
 export default {
 	name: "HouseholdPage",
@@ -284,10 +285,12 @@ export default {
 		urlFiltersHelper,
 		validation,
 		identifierBuilder,
+		routerHelper,
 	],
 
 	data() {
 		return {
+			ROUTER,
 			TABLE,
 			visiblePanels: [],
 			householdsSelects: true,
@@ -646,7 +649,7 @@ export default {
 					members: item.beneficiaryIds.length,
 					id: {
 						routeParams: { householdId: id },
-						routeName: "HouseholdInformationSummary",
+						routeName: ROUTER.ROUTE_NAME.HOUSEHOLD_INFORMATION_SUMMARY,
 						name: id,
 					},
 				};
