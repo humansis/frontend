@@ -1,47 +1,53 @@
 <template>
-	<Modal
-		v-model="donorModal.isOpened"
-		:header="modalHeader"
-	>
-		<DonorForm
-			:form-model="donorModel"
-			:submit-button-label="donorModal.isEditing ? 'Update' : 'Create'"
-			:form-disabled="donorModal.isDetail"
-			close-button
-			@formSubmitted="submitDonorForm"
-			@formClosed="closeDonorModal"
-		/>
-	</Modal>
-
-	<div class="d-flex justify-end">
-		<v-btn
-			:data-cy="identifierBuilder('new-button')"
-			class="text-none ml-0 mb-3"
-			color="primary"
-			prepend-icon="plus"
-			@click="addNewDonor"
+	<v-container fluid>
+		<Modal
+			v-model="donorModal.isOpened"
+			:header="modalHeader"
 		>
-			{{ $t('Add') }}
-		</v-btn>
-	</div>
+			<DonorForm
+				:form-model="donorModel"
+				:submit-button-label="donorModal.isEditing ? 'Update' : 'Create'"
+				:form-disabled="donorModal.isDetail"
+				close-button
+				@formSubmitted="submitDonorForm"
+				@formClosed="closeDonorModal"
+			/>
+		</Modal>
 
-	<DonorsList
-		ref="donorsList"
-		@delete="removeDonor"
-		@showEdit="editDonor"
-		@showDetail="showDetail"
-	/>
+		<Tabs :pre-selected-tab-value="ADMINISTRATIVE_SETTINGS.TABS_VALUE.DONORS" />
+
+		<div class="d-flex justify-end">
+			<v-btn
+				:data-cy="identifierBuilder('new-button')"
+				class="text-none ml-0 mb-3"
+				color="primary"
+				prepend-icon="plus"
+				@click="addNewDonor"
+			>
+				{{ $t('Add') }}
+			</v-btn>
+		</div>
+
+		<DonorsList
+			ref="donorsList"
+			@delete="removeDonor"
+			@showEdit="editDonor"
+			@showDetail="showDetail"
+		/>
+	</v-container>
 </template>
 
 <script>
 import DonorService from "@/services/DonorService";
 import DonorForm from "@/components/AdministrativeSettings/Donors/Form";
 import DonorsList from "@/components/AdministrativeSettings/Donors/List";
+import Tabs from "@/components/AdministrativeSettings/Tabs";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import identifierBuilder from "@/mixins/identifierBuilder";
+import { ADMINISTRATIVE_SETTINGS } from "@/consts";
 
 export default {
 	name: "DonorPage",
@@ -50,12 +56,14 @@ export default {
 		Modal,
 		DonorForm,
 		DonorsList,
+		Tabs,
 	},
 
 	mixins: [permissions, identifierBuilder],
 
 	data() {
 		return {
+			ADMINISTRATIVE_SETTINGS,
 			donorModal: {
 				isOpened: false,
 				isEditing: false,

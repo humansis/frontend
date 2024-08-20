@@ -5,7 +5,7 @@
 
 			<v-btn
 				:disabled="!isUserPermissionGranted(PERMISSIONS.PROJECT_MANAGEMENT_MANAGE)"
-				:to="{ name: 'AddProject' }"
+				:to="{ name: ROUTER.PROJECTS }"
 				color="primary"
 				prepend-icon="plus"
 				class="text-none ml-0"
@@ -30,6 +30,7 @@ import ProjectsList from "@/components/Projects/ProjectsList";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { ROUTER } from "@/consts";
 
 export default {
 	name: "Projects",
@@ -47,14 +48,14 @@ export default {
 	methods: {
 		onShowEdit(id) {
 			this.$router.push({
-				name: "ProjectEdit",
+				name: ROUTER.ROUTE_NAME.PROJECTS.EDIT,
 				params: { projectId: id },
 			});
 		},
 
 		onShowDetail(id) {
 			this.$router.push({
-				name: "ProjectDetail",
+				name: ROUTER.ROUTE_NAME.PROJECTS.DETAIL,
 				params: { projectId: id },
 			});
 		},
