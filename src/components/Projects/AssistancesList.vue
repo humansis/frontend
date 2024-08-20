@@ -216,7 +216,7 @@ import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/dat
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, PERMISSIONS, ROUTER, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, ROUTER, TABLE } from "@/consts";
 
 const customSort = { progress: () => {} };
 const statusTags = [
