@@ -52,9 +52,9 @@ export default {
 		});
 	},
 
-	getDuplicitiesInImport({ importId, page, size, filter }) {
+	getDuplicitiesInImport({ importId, page, size, filters }) {
 		return fetcher({
-			uri: `imports/${importId}/duplicities${queryBuilder({ page, size, filter })}`,
+			uri: `imports/${importId}/duplicities${queryBuilder({ page, size, filters })}`,
 		});
 	},
 
