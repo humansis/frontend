@@ -419,7 +419,7 @@ import validation from "@/mixins/validation";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { normalizeText } from "@/utils/datagrid";
 import { filterEmptyValues, replaceEmptyValuesWithNull } from "@/utils/helpers";
-import { INSTITUTION } from "@/consts";
+import { INSTITUTION, ROUTER } from "@/consts";
 
 export default {
 	name: "InstitutionManager",
@@ -540,7 +540,7 @@ export default {
 		},
 
 		goBack() {
-			this.$router.push({ name: "Institutions" });
+			this.$router.push({ name: ROUTER.ROUTE_NAME.INSTITUTIONS.ROOT });
 		},
 
 		validateNewInstitution() {
@@ -650,7 +650,7 @@ export default {
 
 		getInstitutionAction() {
 			switch (this.$route.name) {
-				case "InstitutionDetail":
+				case ROUTER.ROUTE_NAME.INSTITUTIONS.DETAIL:
 					this.institutionAction = {
 						isCreate: false,
 						isEdit: false,
@@ -661,7 +661,7 @@ export default {
 					this.formDisabled = true;
 
 					break;
-				case "InstitutionEdit":
+				case ROUTER.ROUTE_NAME.INSTITUTIONS.EDIT:
 					this.institutionAction = {
 						isCreate: false,
 						isEdit: true,

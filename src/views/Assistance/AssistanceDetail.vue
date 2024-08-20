@@ -147,6 +147,7 @@ import ButtonAction from "@/components/ButtonAction";
 import EditNote from "@/components/Inputs/EditNote";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { isUserPermissionGranted } from "@/utils/permissions";
 import { Notification } from "@/utils/UI";
@@ -165,7 +166,7 @@ export default {
 		Modal,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, routerHelper],
 
 	data() {
 		return {
@@ -585,9 +586,7 @@ export default {
 				checkResponseStatus(status, message);
 
 				Notification(this.$t("Assistance Successfully Closed"), "success");
-				this.$router.push({ name: "Project",
-					params: { projectId: this.$route.params.projectId },
-				});
+				this.$router.push(this.getProjectPage(this.$route.params.projectId));
 			} catch (e) {
 				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
 			}

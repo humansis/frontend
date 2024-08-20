@@ -71,11 +71,13 @@ import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
+import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, PERMISSIONS, TABLE } from "@/consts";
+import { EXPORT, TABLE } from "@/consts";
 
 export default {
 	name: "ProjectList",
@@ -87,14 +89,15 @@ export default {
 	},
 
 	mixins: [
+		permissions,
 		grid,
 		baseHelper,
 		identifierBuilder,
+		routerHelper,
 	],
 
 	data() {
 		return {
-			PERMISSIONS,
 			TABLE,
 			isLoadingList: false,
 			exportControl: {
@@ -185,7 +188,7 @@ export default {
 		},
 
 		onGoToDetail({ item: { id } }) {
-			this.$router.push({ name: "Project", params: { projectId: id } });
+			this.$router.push(this.getProjectPage(id));
 		},
 
 		async onExportProjects(exportType, format) {

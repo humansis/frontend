@@ -8,7 +8,7 @@
 		</h2>
 
 		<v-btn
-			:to="{ name: 'Logout' }"
+			:to="{ name: ROUTER.ROUTE_NAME.LOGOUT }"
 			size="x-large"
 			color="light-blue-lighten-4"
 			prepend-icon="home"
@@ -20,7 +20,15 @@
 </template>
 
 <script>
+import { ROUTER } from "@/consts";
+
 export default {
 	name: "AccountCreated",
+
+	data() {
+		return {
+			ROUTER,
+		};
+	},
 };
 </script>

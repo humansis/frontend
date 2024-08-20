@@ -102,7 +102,7 @@
 				</template>
 
 				<v-list>
-					<router-link :to="{ name: 'Profile' }">
+					<router-link :to="{ name: ROUTER.ROUTE_NAME.PROFILE }">
 						<v-list-item value="profile">
 							<v-icon class="mr-1" icon="fa-user" size="x-small" />
 							{{ $t('Profile') }}
@@ -126,6 +126,7 @@ import TranslationService from "@/services/TranslationService";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { ROUTER } from "@/consts";
 
 export default {
 	name: "NavBar",
@@ -134,6 +135,7 @@ export default {
 
 	data() {
 		return {
+			ROUTER,
 			dataCy: "nav-bar",
 			tooltip: {
 				label: "",
@@ -204,7 +206,10 @@ export default {
 			await this.storeCountry(country);
 			await this.fetchAdmNames();
 
-			this.$router.push({ name: "Projects", params: { countryCode: country.iso3 } });
+			this.$router.push({
+				name: ROUTER.ROUTE_NAME.PROJECTS.ROOT,
+				params: { countryCode: country.iso3 },
+			});
 		},
 
 		async handleChangeLanguage(language) {
@@ -252,7 +257,7 @@ export default {
 		},
 
 		logout() {
-			this.$router.push({ name: "Logout" });
+			this.$router.push({ name: ROUTER.ROUTE_NAME.LOGOUT });
 		},
 	},
 

@@ -121,10 +121,11 @@ import FinalisationStep from "@/components/Imports/FinalisationStep";
 import IdentityStep from "@/components/Imports/IdentityStep";
 import IntegrityStep from "@/components/Imports/IntegrityStep";
 import StartStep from "@/components/Imports/StartStep";
+import routerHelper from "@/mixins/routerHelper";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { IMPORT } from "@/consts";
+import { IMPORT, ROUTER } from "@/consts";
 
 export default {
 	name: "Import",
@@ -137,7 +138,7 @@ export default {
 		ConfirmAction,
 	},
 
-	mixins: [vuetifyHelper],
+	mixins: [vuetifyHelper, routerHelper],
 
 	data() {
 		return {
@@ -334,11 +335,7 @@ export default {
 			const { slug, code } = this.steps.find((step) => step.code === data);
 
 			if (this.$route.query.step !== slug) {
-				this.$router.replace({
-					name: "Import",
-					params: { importId: this.$route.params.importId },
-					query: { step: slug },
-				});
+				this.$router.replace(this.getImportPage(this.$route.params.importId, { step: slug }));
 			}
 
 			this.activeStep = code;
@@ -546,7 +543,7 @@ export default {
 					this.onChangeTab(4);
 				}
 
-				if (this.$route.name === "Import") {
+				if (this.$route.name === ROUTER.ROUTE_NAME.IMPORTS.NEW) {
 					Notification(this.$t(successMessage), "success");
 
 					if (state !== IMPORT.STATUS.FINISH

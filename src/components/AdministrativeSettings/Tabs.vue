@@ -23,7 +23,7 @@
 
 <script>
 import permissions from "@/mixins/permissions";
-import { ADMINISTRATIVE_SETTINGS } from "@/consts";
+import { ADMINISTRATIVE_SETTINGS, ROUTER } from "@/consts";
 
 export default {
 	mixins: [permissions],
@@ -49,32 +49,32 @@ export default {
 				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.USERS,
 				title: "Users",
 				icon: "user",
-				pageName: "Users",
+				pageName: ROUTER.ROUTE_NAME.USERS.ROOT,
 			},
 			{
 				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.DONORS,
 				title: "Donors",
 				icon: "dollar-sign",
 				isUserAllowed: this.userCan.viewDonors,
-				pageName: "Donors",
+				pageName: ROUTER.ROUTE_NAME.DONORS,
 			},
 			{
 				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.MY_ORGANIZATIONS,
 				title: "My Organizations",
 				icon: "child",
-				pageName: "MyOrganizations",
+				pageName: ROUTER.ROUTE_NAME.MY_ORGANIZATIONS,
 			},
 			{
 				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.ORGANIZATION_SERVICES,
 				title: "Organization Services",
 				icon: "th-large",
-				pageName: "OrganizationServices",
+				pageName: ROUTER.ROUTE_NAME.ORGANIZATION_SERVICES,
 			},
 			{
 				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.SYNC,
 				title: "Sync",
 				icon: "th-large",
-				pageName: "Sync",
+				pageName: ROUTER.ROUTE_NAME.SYNC,
 			},
 		];
 	},

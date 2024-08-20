@@ -50,7 +50,7 @@
 				v-if="!row.validated"
 				icon="edit"
 				tooltip-text="Update"
-				@actionConfirmed="onGoToUpdate(row.id)"
+				@actionConfirmed="onGoToUpdate(row.id, row.state.code)"
 			/>
 
 			<ButtonAction
@@ -210,12 +210,13 @@ import AssistancesFilter from "@/components/Projects/AssistancesFilter";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, PERMISSIONS, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, ROUTER, TABLE } from "@/consts";
 
 const customSort = { progress: () => {} };
 const statusTags = [
@@ -242,6 +243,7 @@ export default {
 		grid,
 		baseHelper,
 		urlFiltersHelper,
+		routerHelper,
 	],
 
 	props: {
@@ -269,7 +271,6 @@ export default {
 
 	data() {
 		return {
-			PERMISSIONS,
 			TABLE,
 			customSort,
 			exportControl: {
@@ -551,11 +552,11 @@ export default {
 			switch (code) {
 				case ASSISTANCE.STATUS.CLOSED:
 				case ASSISTANCE.STATUS.VALIDATED:
-					return "AssistanceDetail";
+					return ROUTER.ROUTE_NAME.ASSISTANCES.DETAIL;
 				case ASSISTANCE.STATUS.CREATING:
-					return "AssistanceCreationProgress";
+					return ROUTER.ROUTE_NAME.ASSISTANCES.CREATION_PROGRESS;
 				default:
-					return "AssistanceEdit";
+					return ROUTER.ROUTE_NAME.ASSISTANCES.EDIT;
 			}
 		},
 
@@ -569,35 +570,18 @@ export default {
 		},
 
 		onGoToDetail(id) {
-			const route = this.$router.resolve({
-				name: "AssistanceDetail",
-				params: {
-					assistanceId: id,
-				},
-			});
+			const route = this.$router.resolve(this.getAssistanceDetailPage(id));
 
 			window.open(route.href, "_blank");
 		},
 
-		onGoToUpdate(id) {
-			const assistance = this.table.data.find((item) => item.id === id);
-
+		onGoToUpdate(id, stateCode) {
 			let route = {};
 
-			if (assistance.state.code === ASSISTANCE.STATUS.CREATING) {
-				route = this.$router.resolve({
-					name: "AssistanceCreationProgress",
-					params: {
-						assistanceId: assistance.id,
-					},
-				});
+			if (stateCode === ASSISTANCE.STATUS.CREATING) {
+				route = this.$router.resolve(this.getAssistanceProgressPage(id));
 			} else {
-				route = this.$router.resolve({
-					name: "AssistanceEdit",
-					params: {
-						assistanceId: assistance.id,
-					},
-				});
+				route = this.$router.resolve(this.getAssistanceEditPage(id));
 			}
 
 			window.open(route.href, "_blank");
@@ -635,7 +619,10 @@ export default {
 		},
 
 		onDuplicate(id) {
-			this.$router.push({ name: "AddAssistance", query: { duplicateAssistance: id } });
+			this.$router.push({
+				name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD,
+				query: { duplicateAssistance: id },
+			});
 		},
 
 		isAssistanceMoveEnable(assistance) {

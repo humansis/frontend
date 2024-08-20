@@ -10,7 +10,7 @@
 			<div>
 				<v-list>
 					<v-list-item prepend-avatar="" class="side-menu-logo">
-						<router-link :to="{ name: 'Home' }" class="hms-logo">
+						<router-link :to="{ name: ROUTER.ROUTE_NAME.HOME }" class="hms-logo">
 							<img src="@/assets/images/bms_logo.png" alt="">
 						</router-link>
 					</v-list-item>
@@ -159,6 +159,7 @@
 import { mapState } from "vuex";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
+import { ROUTER } from "@/consts";
 import gitInfo from "@/gitInfo";
 
 export default {
@@ -168,25 +169,28 @@ export default {
 
 	data() {
 		return {
+			ROUTER,
 			dataCy: "side-menu",
 			sideBarItems: [
 				{
 					title: "Home",
 					prependIcon: "home",
-					to: { name: "Home" },
+					to: { name: ROUTER.ROUTE_NAME.HOME },
 				},
 				{
 					title: "Projects",
 					prependIcon: "clipboard-list",
-					to: { name: "Projects" },
+					to: { name: ROUTER.ROUTE_NAME.PROJECTS.ROOT },
 					alias: [
-						"Project",
-						"AddProject",
-						"ProjectDetail",
-						"ProjectEdit",
-						"AddAssistance",
-						"AssistanceEdit",
-						"AssistanceDetail",
+						ROUTER.ROUTE_NAME.PROJECTS.ROOT,
+						ROUTER.ROUTE_NAME.PROJECTS.ADD,
+						ROUTER.ROUTE_NAME.PROJECTS.EDIT,
+						ROUTER.ROUTE_NAME.PROJECTS.DETAIL,
+						ROUTER.ROUTE_NAME.ASSISTANCES.ROOT,
+						ROUTER.ROUTE_NAME.ASSISTANCES.ADD,
+						ROUTER.ROUTE_NAME.ASSISTANCES.EDIT,
+						ROUTER.ROUTE_NAME.ASSISTANCES.DETAIL,
+						ROUTER.ROUTE_NAME.ASSISTANCES.CREATION_PROGRESS,
 					],
 				},
 				{
@@ -196,24 +200,24 @@ export default {
 						{
 							title: "Households",
 							prependIcon: "home",
-							to: { name: "Households" },
+							to: { name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT },
 						},
 						{
 							title: "Institutions",
 							prependIcon: "building",
-							to: { name: "Institutions" },
+							to: { name: ROUTER.ROUTE_NAME.INSTITUTIONS.ROOT },
 						},
 						{
 							title: "Vendors",
 							prependIcon: "store",
-							to: { name: "Vendors" },
+							to: { name: ROUTER.ROUTE_NAME.VENDORS },
 						},
 					],
 				},
 				{
 					title: "Imports",
 					prependIcon: "file-import",
-					to: { name: "Imports" },
+					to: { name: ROUTER.ROUTE_NAME.IMPORTS.ROOT },
 				},
 				{
 					title: "Reports",
@@ -224,7 +228,7 @@ export default {
 				{
 					title: "Vouchers",
 					prependIcon: "ticket-alt",
-					to: { name: "Vouchers" },
+					to: { name: ROUTER.ROUTE_NAME.VOUCHERS },
 				},
 				{
 					title: "Country Settings",
@@ -233,24 +237,24 @@ export default {
 						{
 							title: "Products",
 							prependIcon: "shopping-cart",
-							to: { name: "Products" },
+							to: { name: ROUTER.ROUTE_NAME.PRODUCTS },
 						},
 						{
 							title: "Country specifics",
 							prependIcon: "map-marker-alt",
-							to: { name: "CountrySpecific" },
+							to: { name: ROUTER.ROUTE_NAME.COUNTRY_SPECIFICS },
 						},
 					],
 				},
 				{
 					title: "Administrative Settings",
 					prependIcon: "wrench",
-					to: { name: "Administrative Settings" },
+					to: { name: ROUTER.ROUTE_NAME.ADMINISTRATIVE_SETTINGS },
 				},
 				{
 					title: "Transactions",
 					prependIcon: "exchange-alt",
-					to: { name: "TransactionsAssistances" },
+					to: { name: ROUTER.ROUTE_NAME.TRANSACTIONS.ASSISTANCES },
 				},
 			],
 			gitInfo,

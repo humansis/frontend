@@ -141,7 +141,7 @@ import permissions from "@/mixins/permissions";
 import { getArrayOfIdsByParam } from "@/utils/codeList";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { GENERAL } from "@/consts";
+import { GENERAL, ROUTER } from "@/consts";
 
 export default {
 	name: "HouseholdTabs",
@@ -246,7 +246,7 @@ export default {
 		},
 
 		close() {
-			this.$router.push({ name: "Households" });
+			this.$router.push({ name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT });
 		},
 
 		nextPage(next) {
@@ -401,7 +401,7 @@ export default {
 				checkResponseStatus(status, message);
 
 				Notification(this.$t("Household Successfully Updated"), "success");
-				this.$router.push({ name: "Households" });
+				this.$router.push({ name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT });
 			} catch (e) {
 				Notification(`${this.$t("Household")}: ${e.message || e}`, "error");
 			} finally {
@@ -421,7 +421,7 @@ export default {
 				checkResponseStatus(status, message);
 
 				Notification(this.$t("Household Successfully Created"), "success");
-				await this.$router.push({ name: "Households" });
+				await this.$router.push({ name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT });
 			} catch (e) {
 				Notification(`${this.$t("Household")}: ${e.message || e}`, "error");
 			} finally {

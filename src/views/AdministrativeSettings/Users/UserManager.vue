@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { ROUTER } from "@/consts";
+
 export default {
 
 	computed: {
@@ -58,7 +60,7 @@ export default {
 	methods: {
 		getUserAction() {
 			switch (this.$route.name) {
-				case "InstitutionDetail":
+				case ROUTER.ROUTE_NAME.USERS.DETAIL:
 					this.institutionAction = {
 						isCreate: false,
 						isEdit: false,
@@ -69,7 +71,7 @@ export default {
 					this.formDisabled = true;
 
 					break;
-				case "InstitutionEdit":
+				case ROUTER.ROUTE_NAME.USERS.EDIT:
 					this.institutionAction = {
 						isCreate: false,
 						isEdit: true,
