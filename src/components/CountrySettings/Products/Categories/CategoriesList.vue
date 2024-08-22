@@ -26,14 +26,12 @@
 
 			<ButtonAction
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
-				v-if="userCan.addEditProducts"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditProducts"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"

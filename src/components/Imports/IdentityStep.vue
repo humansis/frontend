@@ -85,7 +85,7 @@
 					<div class="d-flex flex-wrap ga-2">
 						<v-btn
 							v-if="amountIdentityDuplicities && canResolveDuplicities"
-							:disabled="allRecordsFormLoading"
+							:disabled="isAllFromFileButtonDisabled"
 							:variant="isAllFromFileUnselected ? 'outlined' : 'elevated'"
 							color="info"
 							@click="onChangeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_UPDATE)"
@@ -95,6 +95,7 @@
 
 						<v-btn
 							v-if="amountIdentityDuplicities && canResolveDuplicities"
+							:disabled="!isUserPermissionGranted(PERMISSIONS.IMPORT_APPROVE_AND_SAVE)"
 							:variant="isAllFromHumansisUnselected ? 'outlined' : 'elevated'"
 							color="info"
 							@click="onChangeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_LINK)"
@@ -117,9 +118,9 @@
 
 					<div>
 						<v-btn
-							v-if="canGoToFinalisation"
+							v-if="isGoToFinalisationButtonVisible"
 							:loading="changeStateButtonLoading"
-							:disabled="!canGoToFinalisation"
+							:disabled="!isUserPermissionGranted(PERMISSIONS.IMPORT_MANAGE)"
 							color="primary"
 							append-icon="play-circle"
 							class="text-none"
@@ -137,7 +138,7 @@
 				ref="duplicityResolver"
 				:header="$t('Duplicity Cases')"
 				:is-duplicities-loading="resolveDuplicitiesLoading"
-				:is-form-changes-loading="allRecordsFormLoading"
+				:is-form-changes-loading="isAllRecordsFormLoading"
 				@loaded="onDuplicityLoaded"
 				@updated="onUpdate"
 				@duplicitiesChange="onLoadDuplicities"
@@ -150,6 +151,7 @@
 import ImportService from "@/services/ImportService";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import Loading from "@/components/Loading";
+import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
@@ -168,6 +170,8 @@ export default {
 		DuplicityResolver,
 		Loading,
 	},
+
+	mixins: [permissions],
 
 	props: {
 		statistics: {
@@ -204,7 +208,7 @@ export default {
 	},
 
 	computed: {
-		allRecordsFormLoading() {
+		isAllRecordsFormLoading() {
 			if (this.resolversAllActive === IMPORT.ITEM_STATUS.TO_UPDATE) {
 				return this.resolversAllLoading
 					|| (!this.duplicities.every(
@@ -269,7 +273,7 @@ export default {
 				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
 		},
 
-		canGoToFinalisation() {
+		isGoToFinalisationButtonVisible() {
 			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
@@ -290,6 +294,11 @@ export default {
 			return `${((this.amountIdentityDuplicitiesIncrement
 				- this.amountIdentityDuplicitiesResolvedIncrement)
 				/ (this.amountIdentityDuplicitiesIncrement || this.amountIdentityDuplicitiesResolved)) * 100}%`;
+		},
+
+		isAllFromFileButtonDisabled() {
+			return this.isAllRecordsFormLoading
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_APPROVE_AND_SAVE);
 		},
 	},
 

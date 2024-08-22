@@ -23,14 +23,12 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditUsers"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditUsers"
 				:disabled="isLoggedUser(row.id)"
 				icon="trash"
 				tooltip-text="Delete"

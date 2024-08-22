@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory, RouterView } from "vue-router";
 import { getCookie } from "@/utils/cookie";
+import { isUserPermissionGranted } from "@/utils/permissions";
 import { Notification } from "@/utils/UI";
-import { ROLE } from "@/consts";
+import { PERMISSIONS, ROLE } from "@/consts";
 import i18n from "@/plugins/i18n";
 import CONST from "@/store/const";
 import getters from "@/store/getters";
@@ -107,7 +108,7 @@ const routes = [
 				name: "Home",
 				component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
 				meta: {
-					permissions: [],
+					requiredPermissions: [PERMISSIONS.HOME_PAGE],
 					breadcrumb: "Home",
 					description: "This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones.",
 				},
@@ -124,7 +125,7 @@ const routes = [
 						name: "Projects",
 						component: () => import("@/views/Projects/Projects"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.PROJECT_MANAGEMENT],
 							description: "This page is where you can see all the country`s projects (only thoses that you have the right to see).",
 						},
 					},
@@ -133,7 +134,7 @@ const routes = [
 						name: "AddProject",
 						component: () => import(/* webpackChunkName: "AddProject" */ "@/views/Projects/ProjectManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.PROJECT_MANAGEMENT_MANAGE],
 							breadcrumb: "Add Project",
 							description: "This page is a form to add a new project to a humansis.",
 						},
@@ -143,7 +144,7 @@ const routes = [
 						name: "ProjectDetail",
 						component: () => import(/* webpackChunkName: "ProjectDetail" */ "@/views/Projects/ProjectManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.PROJECT_MANAGEMENT],
 							breadcrumb: "Project detail",
 							description: "This page is a form to show detail of a project in humansis.",
 						},
@@ -153,7 +154,7 @@ const routes = [
 						name: "ProjectEdit",
 						component: () => import(/* webpackChunkName: "ProjectEdit" */ "@/views/Projects/ProjectManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.PROJECT_MANAGEMENT_MANAGE],
 							breadcrumb: "Project detail",
 							description: "This page is a form to edit a project in humansis.",
 						},
@@ -170,7 +171,7 @@ const routes = [
 								name: "Project",
 								component: () => import(/* webpackChunkName: "Project" */ "@/views/Projects/Project"),
 								meta: {
-									permissions: [],
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT],
 									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
 								},
 							},
@@ -229,7 +230,7 @@ const routes = [
 						name: "Imports",
 						component: () => import(/* webpackChunkName: "Imports" */ "@/views/Imports"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.IMPORT],
 						},
 					},
 					{
@@ -241,7 +242,6 @@ const routes = [
 								name: "Import",
 								component: () => import(/* webpackChunkName: "Import" */ "@/views/Import"),
 								meta: {
-									permissions: [],
 									description: "",
 								},
 							},
@@ -254,7 +254,6 @@ const routes = [
 				redirect: { name: "Households" },
 				component: RouterView,
 				meta: {
-					permissions: [],
 					breadcrumb: "Beneficiaries",
 				},
 				children: [
@@ -262,8 +261,8 @@ const routes = [
 						path: "households",
 						component: RouterView,
 						meta: {
-							// breadcrumb: "Households",
-							// parent: "Beneficiaries",
+							requiredPermissions: [PERMISSIONS.HOUSEHOLD],
+							breadcrumb: "Households",
 						},
 						children: [
 							{
@@ -271,7 +270,7 @@ const routes = [
 								name: "Households",
 								component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
 								meta: {
-									permissions: [],
+									requiredPermissions: [PERMISSIONS.HOUSEHOLD],
 									description: "This page is where you can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
 								},
 							},
@@ -280,7 +279,7 @@ const routes = [
 								name: "AddHousehold",
 								component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
 								meta: {
-									permissions: ["addBeneficiary"],
+									requiredPermissions: [PERMISSIONS.HOUSEHOLD_CREATE],
 									breadcrumb: "Add Household",
 									description: "This page is a form to add a new household to the platform.",
 								},
@@ -290,7 +289,7 @@ const routes = [
 								name: "EditHousehold",
 								component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
 								meta: {
-									permissions: ["viewBeneficiary", "editBeneficiary"],
+									requiredPermissions: [PERMISSIONS.HOUSEHOLD_EDIT],
 									breadcrumb: "Edit Household",
 								},
 							},
@@ -299,7 +298,7 @@ const routes = [
 								name: "HouseholdInformationSummary",
 								component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
 								meta: {
-									permissions: ["viewBeneficiary"],
+									requiredPermissions: [PERMISSIONS.HOUSEHOLD_VIEW],
 									breadcrumb: "Household Information Summary",
 								},
 							},
@@ -319,7 +318,7 @@ const routes = [
 						name: "Institutions",
 						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.INSTITUTION],
 							description: "",
 						},
 					},
@@ -328,7 +327,7 @@ const routes = [
 						name: "AddInstitution",
 						component: () => import(/* webpackChunkName: "AddInstitution" */ "@/views/Beneficiaries/InstitutionManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.INSTITUTION_CREATE],
 							breadcrumb: "Add Institution",
 							description: "This page is a form to add a new institution to a humansis.",
 						},
@@ -338,7 +337,7 @@ const routes = [
 						name: "InstitutionDetail",
 						component: () => import(/* webpackChunkName: "InstitutionDetail" */ "@/views/Beneficiaries/InstitutionManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.INSTITUTION],
 							breadcrumb: "Institution Detail",
 							description: "This page is a form to show detail of a institution in humansis.",
 						},
@@ -348,7 +347,7 @@ const routes = [
 						name: "InstitutionEdit",
 						component: () => import(/* webpackChunkName: "InstitutionEdit" */ "@/views/Beneficiaries/InstitutionManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.INSTITUTION_EDIT],
 							breadcrumb: "Institution edit",
 							description: "This page is a form to edit a institution in humansis.",
 						},
@@ -360,7 +359,7 @@ const routes = [
 				name: "Vendors",
 				component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
 				meta: {
-					permissions: ["viewVendors"],
+					requiredPermissions: [PERMISSIONS.VENDOR],
 					breadcrumb: "Vendors",
 					description: "",
 				},
@@ -370,7 +369,7 @@ const routes = [
 				name: "Vouchers",
 				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
 				meta: {
-					permissions: ["viewVouchers"],
+					requiredPermissions: [PERMISSIONS.VOUCHERS],
 					breadcrumb: "Vouchers",
 					description: "This page is where you can create, edit, assign and print vouchers booklets",
 				},
@@ -483,11 +482,7 @@ router.beforeEach((to, from, next) => {
 			return next({ name: "Login", query: { redirect: to.query.redirect || to.fullPath } });
 		}
 
-		const storedPermissions = getters.getPermissionsFromVuexStorage();
-		const { permissions } = to.meta;
-		const canGoNext = permissions?.length
-			? permissions.some((permission) => storedPermissions?.[permission])
-			: true;
+		const { requiredPermissions } = to.meta;
 
 		if (user?.roles[0] === ROLE.GUEST && to.name !== "AccountCreated") {
 			return next({ name: "AccountCreated" });
@@ -499,7 +494,7 @@ router.beforeEach((to, from, next) => {
 			store.dispatch("showSideMenu", false);
 		}
 
-		if (!canGoNext) {
+		if (!!requiredPermissions && !isUserPermissionGranted(requiredPermissions)) {
 			return next({ name: "NoPermission" });
 		}
 	}

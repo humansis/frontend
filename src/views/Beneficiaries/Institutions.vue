@@ -4,7 +4,7 @@
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Institutions') }}</h2>
 
 			<v-btn
-				v-if="userCan.addBeneficiary"
+				:disabled="!isUserPermissionGranted(PERMISSIONS.INSTITUTION_CREATE)"
 				:to="{ name: 'AddInstitution' }"
 				color="primary"
 				prepend-icon="plus"

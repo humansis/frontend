@@ -52,7 +52,7 @@
 
 			<template v-slot:actions="{ index }">
 				<v-btn
-					:disabled="isResolveFromFileDisabled(index)"
+					:disabled="isResolveFromFileButtonDisabled(index)"
 					:loading="table.data[index].toUpdateLoading"
 					:variant="isFromFileSelected(index) ? 'elevated' : 'outlined'"
 					color="info"
@@ -67,7 +67,7 @@
 				</v-btn>
 
 				<v-btn
-					:disabled="isDataForTableLoading(index)"
+					:disabled="isResolveFromHumansisButtonDisabled(index)"
 					:loading="table.data[index].toLinkLoading"
 					:variant="isFromHumansisSelected(index) ? 'elevated' : 'outlined'"
 					color="info"
@@ -92,6 +92,7 @@ import ImportService from "@/services/ImportService";
 import DataGrid from "@/components/DataGrid";
 import Loading from "@/components/Loading";
 import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -105,7 +106,7 @@ export default {
 		Loading,
 	},
 
-	mixins: [grid],
+	mixins: [grid, permissions],
 
 	props: {
 		header: {
@@ -488,23 +489,29 @@ export default {
 			this.$emit("updated");
 		},
 
-		isFromFileSelected(item) {
-			return this.table.data[item].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
+		isFromFileSelected(index) {
+			return this.table.data[index].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
 		},
 
-		isFromHumansisSelected(item) {
-			return this.table.data[item].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
+		isFromHumansisSelected(index) {
+			return this.table.data[index].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
 		},
 
-		isDataForTableLoading(item) {
-			return this.table.data[item].toUpdateLoading
-				|| this.table.data[item].toLinkLoading
+		isDataForTableLoading(index) {
+			return this.table.data[index].toUpdateLoading
+				|| this.table.data[index].toLinkLoading
 				|| this.isFormChangesLoading;
 		},
 
-		isResolveFromFileDisabled(item) {
-			return this.isDataForTableLoading(item)
-				|| this.table.data[item].recordFrom?.includes("hasBeneficiaryIdDuplicity");
+		isResolveFromHumansisButtonDisabled(index) {
+			return this.isDataForTableLoading(index)
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_RESOLVE_DUPLICITIES);
+		},
+
+		isResolveFromFileButtonDisabled(index) {
+			return this.isDataForTableLoading(index)
+				|| this.table.data[index].recordFrom?.includes("hasBeneficiaryIdDuplicity")
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_RESOLVE_DUPLICITIES);
 		},
 	},
 

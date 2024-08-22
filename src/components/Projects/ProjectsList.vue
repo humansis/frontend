@@ -17,6 +17,7 @@
 	>
 		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
@@ -24,7 +25,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.editProject"
+				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT_MANAGE"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
@@ -32,7 +33,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.deleteProject"
+				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT_MANAGE"
 				:disabled="!row.deletable"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
@@ -49,6 +50,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT_EXPORT"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -69,12 +71,11 @@ import ExportControl from "@/components/Inputs/ExportControl";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
-import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, TABLE } from "@/consts";
+import { EXPORT, PERMISSIONS, TABLE } from "@/consts";
 
 export default {
 	name: "ProjectList",
@@ -86,7 +87,6 @@ export default {
 	},
 
 	mixins: [
-		permissions,
 		grid,
 		baseHelper,
 		identifierBuilder,
@@ -94,6 +94,7 @@ export default {
 
 	data() {
 		return {
+			PERMISSIONS,
 			TABLE,
 			isLoadingList: false,
 			exportControl: {
@@ -127,10 +128,6 @@ export default {
 
 	computed: {
 		...mapState(["availableProjects"]),
-	},
-
-	watch: {
-		$route: "fetchData",
 	},
 
 	created() {
@@ -188,9 +185,7 @@ export default {
 		},
 
 		onGoToDetail({ item: { id } }) {
-			if (this.userCan.viewProject) {
-				this.$router.push({ name: "Project", params: { projectId: id } });
-			}
+			this.$router.push({ name: "Project", params: { projectId: id } });
 		},
 
 		async onExportProjects(exportType, format) {

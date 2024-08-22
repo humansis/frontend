@@ -7,6 +7,7 @@
 
 			<v-btn
 				v-if="beneficiariesCount"
+				:disabled="!isUserPermissionGranted(PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION)"
 				color="primary"
 				prepend-icon="plus"
 				class="text-none ml-0"
@@ -32,6 +33,7 @@
 			:header="assistanceModal.title"
 		>
 			<AssistanceForm
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_CORRECTIONS"
 				:project="project"
 				:form-model="assistanceModel"
 				:assistance="assistance"

@@ -23,14 +23,12 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditDonors"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditDonors"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"

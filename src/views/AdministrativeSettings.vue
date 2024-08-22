@@ -14,7 +14,7 @@
 				{{ $t('Users') }}
 			</v-tab>
 
-			<v-tab v-if="userCan.viewDonors" value="donors" class="text-none">
+			<v-tab value="donors" class="text-none">
 				<v-icon icon="dollar-sign" class="mr-2" />
 
 				{{ $t('Donors') }}

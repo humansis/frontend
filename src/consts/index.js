@@ -8,6 +8,7 @@ import GENERAL from "./general";
 import HOUSEHOLD from "./household";
 import IMPORT from "./import";
 import INSTITUTION from "./institution";
+import PERMISSIONS from "./permissions";
 import PHONE from "./phone";
 import ROLE from "./role";
 import SCORING from "./scoring";
@@ -28,4 +29,5 @@ export {
 	SCORING,
 	TABLE,
 	COUNTRY_SETTINGS,
+	PERMISSIONS,
 };

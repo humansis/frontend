@@ -59,9 +59,9 @@ export default {
 		}
 	},
 
-	storePermissions: ({ commit }, permissions) => {
+	storeUserPermissions: ({ commit }, permissions) => {
 		if (permissions) {
-			commit(CONST.STORE_PERMISSIONS, permissions);
+			commit(CONST.STORE_USER_PERMISSIONS, permissions);
 		}
 	},
 

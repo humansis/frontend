@@ -97,6 +97,7 @@
 
 			<v-btn
 				v-if="isNextButtonVisible"
+				:disabled="isNextButtonDisabled"
 				color="primary"
 				append-icon="arrow-right"
 				class="text-none"
@@ -107,6 +108,7 @@
 
 			<v-btn
 				v-if="isValidateAndLockButtonVisible"
+				:disabled="isValidateAndLockButtonDisabled"
 				:loading="validateAssistanceButtonLoading"
 				color="primary"
 				append-icon="lock"
@@ -126,6 +128,7 @@ import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import EditNote from "@/components/Inputs/EditNote";
+import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
@@ -139,6 +142,8 @@ export default {
 		BeneficiariesList,
 		EditNote,
 	},
+
+	mixins: [permissions],
 
 	data() {
 		return {
@@ -173,6 +178,18 @@ export default {
 
 		isValidateAndLockButtonVisible() {
 			return this.activeStep === this.steps.length || !this.isTargetHouseholdOrIndividual;
+		},
+
+		isValidateAndLockButtonDisabled() {
+			return !this.isUserPermissionGranted(
+				this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_VALIDATE_AND_LOCK,
+			);
+		},
+
+		isNextButtonDisabled() {
+			return !this.isUserPermissionGranted(
+				this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE,
+			);
 		},
 	},
 

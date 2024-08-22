@@ -18,10 +18,11 @@
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.VENDORS)"
 		@resetFilters="onResetVendorsFilters"
-		@rowClicked="(row) => onShowDetail(row.item)"
+		@rowClicked="(row) => onShowVendorDetail(row.item)"
 	>
 		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.VENDOR_SUMMARY"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-summary-button`)"
 				icon="hand-holding-usd"
 				tooltip-text="Show Vendor Summary"
@@ -29,6 +30,7 @@
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.VENDOR_DETAIL"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
@@ -36,7 +38,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditVendors"
+				:required-permissions="PERMISSIONS.VENDOR_EDIT"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
@@ -44,7 +46,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditVendors"
+				:required-permissions="PERMISSIONS.VENDOR_DELETE"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
@@ -60,6 +62,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.VENDOR_EXPORT"
 				:disabled="!table.dataUpdated || !table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -281,6 +284,12 @@ export default {
 
 		onShowSummary(vendor) {
 			this.$emit("showSummary", vendor);
+		},
+
+		onShowVendorDetail(item) {
+			if (this.isUserPermissionGranted(this.PERMISSIONS.VENDOR_DETAIL)) {
+				this.onShowDetail(item);
+			}
 		},
 
 		async getLocations(locationIds) {

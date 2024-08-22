@@ -20,6 +20,7 @@
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Imports') }}</h2>
 
 			<ExportControl
+				:required-permissions="PERMISSIONS.IMPORT"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.isLoading"
@@ -29,6 +30,7 @@
 			/>
 
 			<v-btn
+				:disabled="!isUserPermissionGranted(PERMISSIONS.IMPORT_MANAGE)"
 				color="primary"
 				prepend-icon="plus"
 				class="text-none ml-0"
@@ -64,6 +66,7 @@ import ImportForm from "@/components/Imports/ImportForm";
 import ImportsList from "@/components/Imports/ImportsList";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
+import permissions from "@/mixins/permissions";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
@@ -80,7 +83,7 @@ export default {
 		ExportControl,
 	},
 
-	mixins: [vuetifyHelper],
+	mixins: [vuetifyHelper, permissions],
 
 	data() {
 		return {

@@ -173,7 +173,6 @@
 					:is-modal-openable="isProjectWithSectors"
 					:table-action="projectAction"
 					:table-data="formModel.targets"
-					:is-user-allowed-use-table-action="userCan.projectTargets"
 					content-name="Target"
 					new-row-button-name="Add new target"
 					no-openable-modal-message="Please add some Sector for using Target"

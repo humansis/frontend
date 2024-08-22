@@ -1,6 +1,6 @@
 import sanitizeHtml from "sanitize-html";
 
-const options = {
+const sanitazeOptions = {
 	allowedAttributes: {
 		...sanitizeHtml.defaults.allowedAttributes,
 		"*": ["id", "class"],
@@ -9,16 +9,4 @@ const options = {
 	},
 	allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
 };
-
-const htmlSecureDirective = {
-	mounted(el, binding) {
-		// eslint-disable-next-line no-param-reassign
-		el.innerHTML = sanitizeHtml(binding.value, options);
-	},
-	updated(el, binding) {
-		// eslint-disable-next-line no-param-reassign
-		el.innerHTML = sanitizeHtml(binding.value, options);
-	},
-};
-
-export default htmlSecureDirective;
+export default sanitazeOptions;

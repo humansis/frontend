@@ -19,8 +19,8 @@
 			<v-menu>
 				<template v-slot:activator="{ props }">
 					<v-btn
-						v-if="userCan.addBeneficiary"
 						v-bind="props"
+						:disabled="!isUserPermissionGranted(PERMISSIONS.HOUSEHOLD_CREATE)"
 						:data-cy="identifierBuilder('add-beneficiary-button')"
 						color="primary"
 						prepend-icon="plus"
@@ -32,7 +32,7 @@
 
 				<v-list>
 					<router-link :to="{ name: 'Imports', query: { openModal: '1' } }">
-						<v-list-item v-if="userCan.importBeneficiaries">
+						<v-list-item>
 							<v-card
 								:title="$t('Import')"
 								:subtitle="$t('Import from File')"
@@ -117,7 +117,7 @@
 		>
 			<template v-slot:actions="{ row: { householdId }, index }">
 				<ButtonAction
-					v-if="userCan.viewBeneficiary"
+					:required-permissions="PERMISSIONS.HOUSEHOLD_DETAIL"
 					:disabled="!householdsSelects"
 					:data-cy="`table-row-${index + 1}-show-detail-button`"
 					icon="search"
@@ -127,7 +127,7 @@
 				/>
 
 				<ButtonAction
-					v-if="userCan.viewBeneficiary"
+					:required-permissions="PERMISSIONS.HOUSEHOLD_EDIT"
 					:disabled="!householdsSelects"
 					:data-cy="`table-row-${index + 1}-edit-button`"
 					icon="edit"
@@ -137,7 +137,7 @@
 				/>
 
 				<ButtonAction
-					v-if="userCan.deleteBeneficiary"
+					:required-permissions="PERMISSIONS.HOUSEHOLD_DELETE"
 					:disabled="!householdsSelects"
 					:data-cy="`table-row-${index + 1}-delete-button`"
 					icon="trash"
@@ -155,6 +155,7 @@
 
 			<template v-slot:tableControls>
 				<ExportControl
+					:required-permissions="PERMISSIONS.HOUSEHOLD_EXPORT"
 					:disabled="!table.data.length || !table.dataUpdated"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="exportControl.types"
@@ -203,10 +204,7 @@
 							{{ $t('Add to Project') }}
 						</v-list-item>
 
-						<v-list-item
-							v-if="userCan.deleteBeneficiary"
-							@click="removeHouseholdModal.isOpened = true"
-						>
+						<v-list-item @click="removeHouseholdModal.isOpened = true">
 							<v-icon class="mr-1" icon="trash" />
 							{{ $t('Delete') }}
 						</v-list-item>

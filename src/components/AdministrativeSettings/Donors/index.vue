@@ -15,7 +15,6 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
-			v-if="userCan.addEditDonors"
 			class="text-none ml-0 mb-3"
 			color="primary"
 			prepend-icon="plus"

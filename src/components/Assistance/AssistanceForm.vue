@@ -5,8 +5,9 @@
 		<AssistanceName
 			v-model="formModel.name"
 			ref="assistanceName"
-			:is-switch-disabled="isAssistanceValidated"
+			:required-permissions="requiredPermissions"
 			:data-for-assistance-name="dataForAssistanceName"
+			:is-switch-disabled="isAssistanceValidated"
 			is-assistance-detail
 		/>
 
@@ -19,6 +20,7 @@
 
 		<LocationForm
 			ref="locationForm"
+			:required-permissions="requiredPermissions"
 			:form-model="formModel"
 			:disabled-adm="disabledAdmInput"
 			:disabled-adm-clear="disabledAdmInput"
@@ -30,6 +32,7 @@
 
 		<DatePicker
 			v-model="formModel.dateDistribution"
+			:required-permissions="requiredPermissions"
 			:min-date="minDateOfAssistance"
 			:max-date="maxDateOfAssistance"
 			:disabled="!isAssistanceNew"
@@ -43,6 +46,7 @@
 
 		<DataSelect
 			v-model="formModel.round"
+			:required-permissions="requiredPermissions"
 			:items="options.rounds"
 			:disabled="isAssistanceValidated"
 			:is-clearable="false"
@@ -54,6 +58,7 @@
 
 		<DataInput
 			v-model="formModel.eloNumber"
+			:required-permissions="requiredPermissions"
 			label="ELO number"
 			name="elo-number"
 		/>
@@ -101,6 +106,7 @@
 
 		<DataTextarea
 			v-model.trim="formModel.note"
+			:required-permissions="requiredPermissions"
 			label="Note"
 			name="note"
 			class="mb-4"
@@ -135,6 +141,7 @@
 
 			<DatePicker
 				v-model="formModel.dateExpiration"
+				:required-permissions="requiredPermissions"
 				:min-date="formModel.dateDistribution"
 				:max-date="maxDateOfAssistance"
 				:disabled="!isAssistanceNew"
@@ -271,6 +278,11 @@ export default {
 		project: {
 			type: Object,
 			default: () => {},
+		},
+
+		requiredPermissions: {
+			type: [String, Array],
+			default: null,
 		},
 	},
 

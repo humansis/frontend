@@ -2,6 +2,7 @@
 	<div class="d-flex assistance-name">
 		<DataInput
 			v-model.trim="assistanceName"
+			:required-permissions="requiredPermissions"
 			:disabled="!isCustom || isSwitchDisabled"
 			:error-messages="validationMsg('assistanceName')"
 			label="Name of Assistance"
@@ -16,7 +17,7 @@
 		<v-switch
 			v-model="isCustom"
 			:label="$t('Custom')"
-			:disabled="isSwitchDisabled"
+			:disabled="isSwitchDisabled || !isUserPermissionGranted(requiredPermissions)"
 			color="primary"
 			class="custom"
 			hide-details="auto"
@@ -27,6 +28,7 @@
 <script>
 import { required } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
+import permissions from "@/mixins/permissions";
 import validation from "@/mixins/validation";
 
 export default {
@@ -36,7 +38,7 @@ export default {
 		DataInput,
 	},
 
-	mixins: [validation],
+	mixins: [validation, permissions],
 
 	validations() {
 		return {
@@ -73,6 +75,11 @@ export default {
 		dataBeforeDuplicated: {
 			type: Object,
 			default: () => {},
+		},
+
+		requiredPermissions: {
+			type: [String, Array],
+			default: null,
 		},
 	},
 

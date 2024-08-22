@@ -17,10 +17,4 @@ export default {
 			body,
 		});
 	},
-
-	getRolePermissions(role) {
-		return fetcher({
-			uri: `acl/roles/${role}`,
-		});
-	},
 };

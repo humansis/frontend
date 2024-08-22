@@ -2,6 +2,7 @@
 	<section>
 		<DataSelect
 			v-model="formModel.adm1"
+			:required-permissions="requiredPermissions"
 			:items="options.provinces"
 			:label="admNames.adm1"
 			:error-messages="validateMsgForAdm1"
@@ -19,6 +20,7 @@
 
 		<DataSelect
 			v-model="formModel.adm2"
+			:required-permissions="requiredPermissions"
 			:items="options.districts"
 			:label="admNames.adm2"
 			:loading="districtsLoading"
@@ -35,6 +37,7 @@
 
 		<DataSelect
 			v-model="formModel.adm3"
+			:required-permissions="requiredPermissions"
 			:items="options.communes"
 			:label="admNames.adm3"
 			:loading="communesLoading"
@@ -58,6 +61,7 @@
 
 		<DataSelect
 			v-model="formModel.adm4"
+			:required-permissions="requiredPermissions"
 			:items="options.villages"
 			:label="admNames.adm4"
 			:loading="villagesLoading"
@@ -169,6 +173,11 @@ export default {
 				adm3: false,
 				adm4: false,
 			}),
+		},
+
+		requiredPermissions: {
+			type: [String, Array],
+			default: null,
 		},
 
 		dataCy: {
