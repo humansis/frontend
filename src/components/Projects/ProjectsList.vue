@@ -77,7 +77,7 @@ import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, TABLE } from "@/consts";
+import { EXPORT, PERMISSIONS, TABLE } from "@/consts";
 
 export default {
 	name: "ProjectList",
