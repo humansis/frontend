@@ -119,7 +119,9 @@ export const fetcher = async ({
 		headers.Authorization = `Bearer ${token}`;
 	}
 
-	headers.Country = store.state.country?.iso3 || "";
+	if (store.state.country?.iso3) {
+		headers.Country = store.state.country?.iso3;
+	}
 
 	const config = { headers };
 
