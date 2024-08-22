@@ -2,6 +2,7 @@
 	<v-textarea
 		:placeholder="$t(placeholder)"
 		:name="name"
+		:disabled="disabled || !isUserPermissionGranted(requiredPermissions)"
 		:data-cy="identifierBuilder(`${name}-input`)"
 		variant="outlined"
 		density="compact"
@@ -33,11 +34,12 @@
 
 <script>
 import identifierBuilder from "@/mixins/identifierBuilder";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "DataTextarea",
 
-	mixins: [identifierBuilder],
+	mixins: [identifierBuilder, permissions],
 
 	props: {
 		label: {
@@ -68,6 +70,16 @@ export default {
 		name: {
 			type: String,
 			required: true,
+		},
+
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
+
+		requiredPermissions: {
+			type: [String, Array],
+			default: null,
 		},
 	},
 };

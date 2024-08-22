@@ -4,7 +4,7 @@
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Vouchers') }}</h2>
 
 			<v-btn
-				v-if="userCan.addVouchers"
+				:disabled="!isUserPermissionGranted(PERMISSIONS.VOUCHERS)"
 				color="primary"
 				prepend-icon="plus"
 				class="text-none ml-0"

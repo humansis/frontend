@@ -5,6 +5,7 @@
 		:hide-details="hideDetails"
 		:placeholder="$t(placeholder)"
 		:name="name"
+		:disabled="disabled || !isUserPermissionGranted(requiredPermissions)"
 		:data-cy="identifierBuilder(`${name}-input`)"
 		autocomplete="off"
 	>
@@ -22,6 +23,7 @@
 <script>
 import ExtendedLabel from "@/components/Inputs/Helpers/ExtendedLabel";
 import identifierBuilder from "@/mixins/identifierBuilder";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "DataInput",
@@ -30,7 +32,7 @@ export default {
 		ExtendedLabel,
 	},
 
-	mixins: [identifierBuilder],
+	mixins: [identifierBuilder, permissions],
 
 	props: {
 		label: {
@@ -73,6 +75,11 @@ export default {
 			required: true,
 		},
 
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
+
 		labelAppendIcon: {
 			type: String,
 			default: "circle-info",
@@ -81,6 +88,11 @@ export default {
 		labelAppendIconTooltip: {
 			type: String,
 			default: "",
+		},
+
+		requiredPermissions: {
+			type: [String, Array],
+			default: null,
 		},
 	},
 };

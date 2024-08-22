@@ -17,7 +17,6 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
-			v-if="userCan.addCustomField"
 			:data-cy="identifierBuilder('custom-fields-new-button')"
 			class="text-none ml-0 mb-3"
 			color="primary"

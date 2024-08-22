@@ -4,7 +4,7 @@
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Vendors') }}</h2>
 
 			<v-btn
-				v-if="userCan.addEditVendors"
+				:disabled="!isUserPermissionGranted(PERMISSIONS.VENDOR_CREATE)"
 				:data-cy="identifierBuilder('new-button')"
 				color="primary"
 				prepend-icon="plus"

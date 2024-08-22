@@ -11,7 +11,6 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
-				:disabled="!userCan.editScoring"
 				:icon="scoringStatusChangeButtonIcon(row)"
 				:tooltip-text="scoringStatusChangeButtonTooltip(row)"
 				@actionConfirmed="onStatusChange(row.id, !row.enabled)"
@@ -24,7 +23,7 @@
 			/>
 
 			<ButtonAction
-				:disabled="!userCan.deleteScoring || !row.deletable"
+				:disabled="!row.deletable"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"

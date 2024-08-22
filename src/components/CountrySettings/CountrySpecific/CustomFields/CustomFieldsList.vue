@@ -27,7 +27,6 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.editCustomField"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"

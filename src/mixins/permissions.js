@@ -1,7 +1,16 @@
-import { mapState } from "vuex";
+import { isUserPermissionGranted } from "@/utils/permissions";
+import { PERMISSIONS } from "@/consts";
 
 export default {
-	computed: {
-		...mapState({ userCan: "permissions" }),
+	data() {
+		return {
+			PERMISSIONS,
+		};
+	},
+
+	methods: {
+		isUserPermissionGranted(permissions) {
+			return isUserPermissionGranted(permissions);
+		},
 	},
 };

@@ -25,6 +25,7 @@
 					>
 						<v-list-item
 							v-if="sideBarItem?.href"
+							:disabled="5 < 6"
 							:title="$t(sideBarItem.title)"
 							:href="sideBarItem.href"
 							:active="isRouteActive(sideBarItem)"
@@ -290,9 +291,10 @@ export default {
 		},
 
 		isCountrySettingsVisible() {
-			return this.userCan.viewProducts
-				|| this.userCan.countrySettings
-				|| this.userCan.viewScoring;
+			return true;
+			// return this.userCan.viewProducts
+			// 	|| this.userCan.countrySettings
+			// 	|| this.userCan.viewScoring;
 		},
 	},
 
@@ -337,18 +339,18 @@ export default {
 
 		sideMenuItemsVisibility({ title }) {
 			switch (title) {
-				case "Vendors":
-					return this.userCan.viewVendors;
-				case "Vouchers":
-					return this.userCan.viewVouchers;
-				case "Country Settings":
-					return this.isCountrySettingsVisible;
-				case "Products":
-					return this.userCan.viewProducts;
-				case "Country specifics":
-					return this.userCan.countrySettings || this.userCan.viewScoring;
-				case "Administrative Settings":
-					return this.userCan.adminSettings;
+				// case "Vendors":
+				// 	return this.userCan.viewVendors;
+				// case "Vouchers":
+				// 	return this.userCan.viewVouchers;
+				// case "Country Settings":
+				// 	return this.isCountrySettingsVisible;
+				// case "Products":
+				// 	return this.userCan.viewProducts;
+				// case "Country specifics":
+				// 	return this.userCan.countrySettings || this.userCan.viewScoring;
+				// case "Administrative Settings":
+				// 	return this.userCan.adminSettings;
 				default:
 					return true;
 			}

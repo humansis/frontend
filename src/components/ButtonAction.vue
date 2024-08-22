@@ -9,8 +9,9 @@
 			<v-btn
 				v-if="isOnlyIcon"
 				v-bind="props"
-				:class="['action-button', $attrs.class, { disabled }]"
-				:disabled="disabled"
+				:class="['action-button', $attrs.class, { disabled: isDisabled }]"
+				:disabled="isDisabled"
+				:loading="isLoading"
 				:data-cy="identifierBuilder()"
 				icon=""
 				@click.stop="onButtonClicked"
@@ -22,6 +23,7 @@
 
 			<v-btn
 				v-else-if="defaultButton"
+				:disabled="isDisabled"
 				:prepend-icon="icon"
 				:data-cy="identifierBuilder()"
 				color="primary"
@@ -35,8 +37,8 @@
 			<v-btn
 				v-else
 				v-bind="props"
-				:class="['text-none action-button texted-button', { disabled }]"
-				:disabled="disabled"
+				:class="['text-none action-button texted-button', { disabled: isDisabled }]"
+				:disabled="isDisabled"
 				:size="buttonSize"
 				:data-cy="identifierBuilder()"
 				@click.stop="onButtonClicked"
@@ -67,6 +69,7 @@
 <script>
 import ConfirmAction from "@/components/ConfirmAction";
 import identifierBuilder from "@/mixins/identifierBuilder";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "ButtonAction",
@@ -75,7 +78,7 @@ export default {
 		ConfirmAction,
 	},
 
-	mixins: [identifierBuilder],
+	mixins: [identifierBuilder, permissions],
 
 	props: {
 		label: {
@@ -177,12 +180,28 @@ export default {
 			type: String,
 			default: "",
 		},
+
+		isLoading: {
+			type: Boolean,
+			default: false,
+		},
+
+		requiredPermissions: {
+			type: [String, Array],
+			default: null,
+		},
 	},
 
 	data() {
 		return {
 			isDialogOpened: false,
 		};
+	},
+
+	computed: {
+		isDisabled() {
+			return this.disabled || !this.isUserPermissionGranted(this.requiredPermissions);
+		},
 	},
 
 	watch: {

@@ -95,7 +95,7 @@ export default {
 	methods: {
 		...mapActions([
 			"storeUser",
-			"storePermissions",
+			"storeUserPermissions",
 			"storeLanguage",
 			"storeTranslations",
 			"storeCountries",
@@ -158,25 +158,7 @@ export default {
 					}
 				}
 
-				let rolePrivileges = [];
-
-				if (user.roles[0]) {
-					try {
-						const {
-							data: { privileges },
-							status: responseStatus,
-							message: responseMessage,
-						} = await LoginService.getRolePermissions(user.roles[0]);
-
-						checkResponseStatus(responseStatus, responseMessage);
-
-						rolePrivileges = privileges;
-					} catch (e) {
-						Notification(`${this.$t("Permissions")}: ${e.message || e}`, "error");
-					}
-				}
-
-				await this.storePermissions(rolePrivileges);
+				this.storeUserPermissions(userDetail.role.permissions);
 
 				if (countries.length) {
 					if (this.$route.query.redirect) {

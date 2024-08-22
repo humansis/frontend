@@ -105,8 +105,8 @@
 
 					<v-btn
 						v-if="canStartIdentityCheck"
+						:disabled="!isImportLoaded || !isUserPermissionGranted(PERMISSIONS.IMPORT_MANAGE)"
 						:loading="changeStateButtonLoading"
-						:disabled="!isImportLoaded"
 						color="primary"
 						append-icon="play-circle"
 						class="text-none"
@@ -342,6 +342,7 @@
 import ImportService from "@/services/ImportService";
 import FileUpload from "@/components/Inputs/FileUpload";
 import Loading from "@/components/Loading";
+import permissions from "@/mixins/permissions";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
@@ -358,7 +359,7 @@ export default {
 		FileUpload,
 	},
 
-	mixins: [vuetifyHelper],
+	mixins: [vuetifyHelper, permissions],
 
 	props: {
 		statistics: {

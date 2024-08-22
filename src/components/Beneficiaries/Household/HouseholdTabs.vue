@@ -100,7 +100,6 @@
 				<template v-slot:next>
 					<v-btn
 						v-if="activeStep === 4"
-						:disabled="!userCan.editBeneficiary"
 						:loading="saveButtonLoading"
 						:data-cy="identifierBuilder('form-save-button')"
 						color="primary"

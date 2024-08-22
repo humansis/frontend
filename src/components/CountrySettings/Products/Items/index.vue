@@ -17,7 +17,6 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
-			v-if="userCan.addEditProducts"
 			:data-cy="identifierBuilder('items-new-button')"
 			class="text-none ml-0 mb-3"
 			color="primary"

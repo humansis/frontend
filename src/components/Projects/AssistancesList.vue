@@ -1,5 +1,5 @@
 <template>
-	<h2 v-if="upcoming" class="mb-4">{{ $t('Assistances') }}</h2>
+	<h2 v-if="upcoming" class="my-4">{{ $t('Assistances') }}</h2>
 
 	<v-alert
 		v-if="isNoProjectErrorVisible"
@@ -47,21 +47,22 @@
 	>
 		<template v-if="!upcoming" v-slot:actions="{ row }">
 			<ButtonAction
-				v-if="!row.validated && userCan.editDistribution"
+				v-if="!row.validated"
 				icon="edit"
 				tooltip-text="Update"
 				@actionConfirmed="onGoToUpdate(row.id)"
 			/>
 
 			<ButtonAction
-				v-if="(row.validated || row.completed) && isAssistanceDetailAllowed"
+				v-if="(row.validated || row.completed)"
+				:required-permissions="row.validated && PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE"
 				:icon="row.validated && row.completed ? 'eye' : 'edit'"
 				:tooltip-text="row.validated && row.completed ? 'View' : 'Update'"
 				@actionConfirmed="onGoToDetail(row.id)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.editDistribution"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_VIEW"
 				icon="search"
 				tooltip-text="Details"
 				@actionConfirmed="onShowEdit(row)"
@@ -83,7 +84,7 @@
 				<v-list>
 					<v-list-item class="dropdown-actions">
 						<ButtonAction
-							v-if="userCan.editDistribution"
+							:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION"
 							:is-only-icon="false"
 							icon="copy"
 							label="Duplicate"
@@ -92,7 +93,7 @@
 						/>
 
 						<ButtonAction
-							v-if="userCan.editDistribution"
+							:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION"
 							:is-only-icon="false"
 							:disabled="isAssistanceMoveEnable(row)"
 							icon="share"
@@ -102,7 +103,8 @@
 						/>
 
 						<ButtonAction
-							:disabled="!row.deletable || !userCan.deleteDistribution"
+							:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION"
+							:disabled="!row.deletable"
 							:is-only-icon="false"
 							label="Delete"
 							icon="trash"
@@ -213,7 +215,7 @@ import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/dat
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, PERMISSIONS, TABLE } from "@/consts";
 
 const customSort = { progress: () => {} };
 const statusTags = [
@@ -267,6 +269,7 @@ export default {
 
 	data() {
 		return {
+			PERMISSIONS,
 			TABLE,
 			customSort,
 			exportControl: {
@@ -356,10 +359,6 @@ export default {
 
 		isAdvancedSearchVisible() {
 			return this.visiblePanels.includes("advancedSearch");
-		},
-
-		isAssistanceDetailAllowed() {
-			return this.userCan.editDistribution || this.userCan.viewDistribution;
 		},
 
 		isNoProjectErrorVisible() {
@@ -640,7 +639,7 @@ export default {
 		},
 
 		isAssistanceMoveEnable(assistance) {
-			return (assistance.validated && !assistance.completed) || !this.userCan.moveAssistance;
+			return (assistance.validated && !assistance.completed);
 		},
 
 		async onExportAssistances(exportType, format) {

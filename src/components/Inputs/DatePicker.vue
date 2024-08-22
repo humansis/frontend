@@ -3,13 +3,14 @@
 		v-model="isDatePickerOpened"
 		:close-on-content-click="false"
 		:nudge-right="40"
-		:disabled="disabled"
+		:disabled="disabled || !isUserPermissionGranted(requiredPermissions)"
 		transition="scale-transition"
 	>
 		<template v-slot:activator="{ props }">
 			<DataInput
 				v-model="formattedDate"
 				v-bind="{ ...props, ...$attrs }"
+				:required-permissions="requiredPermissions"
 				:label="label"
 				:name="name"
 				:error-messages="$attrs['error-messages']"
@@ -40,6 +41,7 @@
 <script>
 import DataInput from "@/components/Inputs/DataInput";
 import identifierBuilder from "@/mixins/identifierBuilder";
+import permissions from "@/mixins/permissions";
 
 export default {
 	name: "DatePicker",
@@ -48,7 +50,7 @@ export default {
 		DataInput,
 	},
 
-	mixins: [identifierBuilder],
+	mixins: [identifierBuilder, permissions],
 
 	inheritAttrs: false,
 
@@ -96,6 +98,11 @@ export default {
 		placeholder: {
 			type: String,
 			default: "",
+		},
+
+		requiredPermissions: {
+			type: [String, Array],
+			default: null,
 		},
 
 		dataCy: {

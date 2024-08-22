@@ -39,7 +39,7 @@
 
 			<v-btn
 				v-if="canStartImport"
-				:disabled="!disabledStartImport"
+				:disabled="isStartImportDisabled || !isUserPermissionGranted(PERMISSIONS.IMPORT_MANAGE)"
 				:loading="loadingChangeStateButton || startLoading"
 				color="primary"
 				class="text-none"
@@ -56,6 +56,7 @@
 <script>
 import ImportService from "@/services/ImportService";
 import FileUpload from "@/components/Inputs/FileUpload";
+import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
@@ -73,6 +74,8 @@ export default {
 	components: {
 		FileUpload,
 	},
+
+	mixins: [permissions],
 
 	props: {
 		importStatus: {
@@ -102,10 +105,10 @@ export default {
 	},
 
 	computed: {
-		disabledStartImport() {
-			return this.importStatus === IMPORT.STATUS.NEW
-				&& (this.dropFiles.length === 1 || this.importFiles.length)
-				&& this.isFileValid;
+		isStartImportDisabled() {
+			return this.importStatus !== IMPORT.STATUS.NEW
+				|| (this.dropFiles.length !== 1 || !this.importFiles.length)
+				|| !this.isFileValid;
 		},
 
 		isStatusNew() {

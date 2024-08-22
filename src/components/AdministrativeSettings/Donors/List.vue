@@ -25,7 +25,6 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditDonors"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
@@ -33,7 +32,6 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditDonors"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"

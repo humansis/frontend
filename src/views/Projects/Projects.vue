@@ -4,7 +4,7 @@
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Projects') }}</h2>
 
 			<v-btn
-				v-if="userCan.addProject"
+				:disabled="!isUserPermissionGranted(PERMISSIONS.PROJECT_MANAGEMENT_MANAGE)"
 				:to="{ name: 'AddProject' }"
 				color="primary"
 				prepend-icon="plus"

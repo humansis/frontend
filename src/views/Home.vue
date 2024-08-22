@@ -1,16 +1,16 @@
 <template>
 	<v-container fluid>
 		<v-row :class="{ 'flex-column': isMobile }">
-			<v-col class="mb-4">
+			<v-col v-if="isUserPermissionGranted(PERMISSIONS.HOME_PAGE)" class="mb-4">
 				<DistributionMap />
 			</v-col>
 
-			<v-col class="mb-4">
+			<v-col v-if="isUserPermissionGranted(PERMISSIONS.HOME_PAGE)" class="mb-4">
 				<HomeSummary />
 			</v-col>
 		</v-row>
 
-		<UpcomingAssistances />
+		<UpcomingAssistances v-if="isUserPermissionGranted(PERMISSIONS.HOME_PAGE)" />
 	</v-container>
 </template>
 
@@ -18,7 +18,9 @@
 import DistributionMap from "@/components/Home/DistributionMap";
 import HomeSummary from "@/components/Home/HomeSummary";
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
+import permissions from "@/mixins/permissions";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
+import { PERMISSIONS } from "@/consts";
 
 export default {
 	name: "HomePage",
@@ -29,6 +31,12 @@ export default {
 		UpcomingAssistances,
 	},
 
-	mixins: [vuetifyHelper],
+	mixins: [vuetifyHelper, permissions],
+
+	data() {
+		return {
+			PERMISSIONS,
+		};
+	},
 };
 </script>

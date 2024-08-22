@@ -19,7 +19,7 @@
 				</span>
 
 				<v-btn
-					:disabled="isProjectsLoading"
+					:disabled="isProjectsLoading || !isUserPermissionGranted(PERMISSIONS.VENDOR_SUMMARY)"
 					:data-cy="identifierBuilder(`history-button`)"
 					variant="outlined"
 					class="text-none text-right"
@@ -51,7 +51,7 @@
 
 					<v-col class="d-flex justify-end align-center">
 						<v-btn
-							:disabled="!batch.canRedeem"
+							:disabled="!batch.canRedeem || !isUserPermissionGranted(PERMISSIONS.VENDOR_SUMMARY)"
 							:loading="redeemLoading === batch"
 							color="primary"
 							class="text-none text-right"
@@ -124,6 +124,7 @@
 
 		<v-btn
 			v-if="redemptionSummary && printButtonVisible"
+			:disabled="!isUserPermissionGranted(PERMISSIONS.VENDOR_SUMMARY)"
 			:loading="printLoading"
 			class="text-none ml-2"
 			color="primary"
@@ -143,6 +144,7 @@ import RedeemedBatches from "@/components/Beneficiaries/Smartcard/RedeemedBatche
 import RedemptionSummary from "@/components/Beneficiaries/Smartcard/RedemptionSummary";
 import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
+import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
@@ -155,7 +157,11 @@ export default {
 		RedemptionSummary,
 	},
 
-	mixins: [grid, identifierBuilder],
+	mixins: [
+		grid,
+		identifierBuilder,
+		permissions,
+	],
 
 	props: {
 		vendor: {
