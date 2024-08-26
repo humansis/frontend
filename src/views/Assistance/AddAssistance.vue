@@ -762,7 +762,7 @@ export default {
 		},
 
 		checkDataInAssistanceBody(data) {
-			return ((data.insitutions?.length && data.commodities?.length)
+			return ((data.institutions?.length && data.commodities?.length)
 				|| (data.commodities?.length && data.selectionCriteria?.length)
 				|| (data.selectionCriteria?.length && data.description?.length));
 		},
