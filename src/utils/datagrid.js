@@ -4,7 +4,8 @@ const { global: { t } } = i18n;
 
 export const kebabize = (text = "") => text
 	.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($, ofs) => (ofs ? "-" : "") + $.toLowerCase())
-	.replace(/( )/g, "-");
+	.replace(/( )/g, "-")
+	.replace(/[()]/g, "");
 
 export const normalizeText = (text = "") => text
 	.replace(/([A-Z])/g, " $1")
