@@ -184,6 +184,7 @@
 		:headers="table.columns"
 		:items="table.data"
 		:total-count="table.total"
+		:current-page="table.currentPage"
 		:loading="isLoadingList"
 		:show-select="table.settings.checkableTable"
 		:is-search-visible="!isAssistanceTargetInstitution"
