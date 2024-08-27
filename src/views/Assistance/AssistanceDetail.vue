@@ -267,13 +267,17 @@ export default {
 		},
 
 		beneficiariesTotal() {
-			return this.statistics?.beneficiariesTotal;
+			return this.statistics?.beneficiariesTotal || 0;
+		},
+
+		beneficiariesDeleted() {
+			return this.statistics?.beneficiariesDeleted || 0;
 		},
 
 		assistanceProgress() {
 			const progress = this.statistics?.progress || 0;
 
-			return parseFloat((progress* 100).toFixed(2));
+			return parseFloat((progress * 100).toFixed(2));
 		},
 
 		progressTooltip() {
@@ -294,7 +298,8 @@ export default {
 			);
 			 */
 
-			return this.$t(`Distribution progress: ${this.assistanceProgress} based on ${this.beneficiariesReached} / ${this.beneficiariesTotal} BNFs reached.`);
+			return this.$t(`Distribution progress: ${this.assistanceProgress} based on ${this.beneficiariesReached}
+				/ ${this.beneficiariesTotal - this.beneficiariesDeleted} BNFs reached.`);
 		},
 
 		amountDistributed() {
