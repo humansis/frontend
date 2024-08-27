@@ -888,7 +888,7 @@ export default {
 
 			if (scoringBlueprint && scoringType) {
 				this.componentsData.scoring = {
-					scoringType: {
+					type: {
 						...scoringType,
 						identifier: `${scoringType.name} (ID: ${scoringType.id})`,
 					},
@@ -896,7 +896,7 @@ export default {
 				};
 			} else {
 				this.componentsData.scoring = {
-					scoringType: AssistancesService.getDefaultScoringType(),
+					type: AssistancesService.getDefaultScoringType(),
 					minimumSelectionScore: null,
 				};
 			}
