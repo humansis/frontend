@@ -704,9 +704,9 @@ export default {
 				activity: target.activity,
 				locationId: target.locationId,
 				firstTargetType: target.firstTargetType.code,
-				firstTarget: target.firstTarget,
+				firstTarget: target.firstTarget || null,
 				secondTargetType: target.secondTargetType?.code,
-				secondTarget: target.secondTarget,
+				secondTarget: target.secondTarget || null,
 				budgetLine: target.budgetLine,
 				note: target.note,
 			}));
