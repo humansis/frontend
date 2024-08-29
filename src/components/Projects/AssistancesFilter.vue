@@ -14,7 +14,7 @@
 import { helpers } from "@vuelidate/validators";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
-import { isFirstDateAfterSecond } from "@/utils/helpers";
+import { isDateBeforeOrEqual } from "@/utils/helpers";
 import { FILTER } from "@/consts";
 
 export default {
@@ -63,10 +63,12 @@ export default {
 			return {
 				selectedFiltersOptions: {
 					dateTo: {
-						...(this.selectedFiltersOptions.dateTo && { isDateBeforeOrEqual: helpers.withMessage(
-							"Date To is before Date From",
-							(value) => isFirstDateAfterSecond(value, this.selectedFiltersOptions.dateFrom),
-						) }),
+						...(this.selectedFiltersOptions.dateTo
+							&& this.selectedFiltersOptions.dateFrom
+							&& { isDateBeforeOrEqual: helpers.withMessage(
+								"Date To is before Date From",
+								(value) => isDateBeforeOrEqual(this.selectedFiltersOptions.dateFrom, value),
+							) }),
 					},
 				},
 			};
