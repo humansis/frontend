@@ -45,6 +45,7 @@
 				v-else-if="options.type === 'date'"
 				v-model="selectedFiltersOptions[filter]"
 				:label="options.name"
+				:error-messages="validationMsg(filter, 'selectedFiltersOptions')"
 				:placeholder="options.placeholder"
 				name="filter-datepicker"
 				clearable
@@ -61,7 +62,7 @@
 				color="primary"
 				prepend-icon="search"
 				class="text-none ml-3"
-				@click="$emit('search')"
+				@click="onSearch"
 			>
 				{{ $t('Search') }}
 			</v-btn>
@@ -74,6 +75,7 @@ import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
 import identifierBuilder from "@/mixins/identifierBuilder";
+import validation from "@/mixins/validation";
 
 export default {
 	name: "AdvancedFilter",
@@ -84,7 +86,11 @@ export default {
 		DatePicker,
 	},
 
-	mixins: [identifierBuilder],
+	mixins: [identifierBuilder, validation],
+
+	validations() {
+		return this.validationRules;
+	},
 
 	props: {
 		selectedFiltersOptions: {
@@ -95,6 +101,11 @@ export default {
 		filtersOptions: {
 			type: Object,
 			required: true,
+		},
+
+		validationRules: {
+			type: Object,
+			default: () => {},
 		},
 	},
 
@@ -141,6 +152,15 @@ export default {
 			});
 
 			this.$emit("filtersChanged", filters, filterName);
+		},
+
+		onSearch() {
+			this.v$.$touch();
+
+			if (this.v$.$invalid) return;
+
+			this.$emit("search");
+			this.v$.$reset();
 		},
 	},
 };

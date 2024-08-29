@@ -17,6 +17,8 @@ export default {
 		onValidate(field, object) {
 			const validation = this.getValidation(field, object);
 
+			if (!validation) return;
+
 			validation.$touch();
 		},
 
@@ -50,6 +52,8 @@ export default {
 
 		validationMsg(field, object = "formModel", index = null) {
 			const validation = this.getValidation(field, object);
+
+			if (!validation) return "";
 
 			if (Object.keys(validation).includes("required")
 				&& validation.required.$invalid

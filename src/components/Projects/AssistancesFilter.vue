@@ -3,6 +3,7 @@
 		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
+		:validation-rules="validationRules"
 		multiline
 		@filtersChanged="onFilterChanged"
 		@search="$emit('search')"
@@ -10,8 +11,10 @@
 </template>
 
 <script>
+import { helpers } from "@vuelidate/validators";
 import AdvancedFilter from "@/components/AdvancedFilter";
 import filtersHelper from "@/mixins/filtersHelper";
+import { isFirstDateAfterSecond } from "@/utils/helpers";
 import { FILTER } from "@/consts";
 
 export default {
@@ -53,6 +56,21 @@ export default {
 				},
 			},
 		};
+	},
+
+	computed: {
+		validationRules() {
+			return {
+				selectedFiltersOptions: {
+					dateTo: {
+						...(this.selectedFiltersOptions.dateTo && { isDateBeforeOrEqual: helpers.withMessage(
+							"Date To is before Date From",
+							(value) => isFirstDateAfterSecond(value, this.selectedFiltersOptions.dateFrom),
+						) }),
+					},
+				},
+			};
+		},
 	},
 
 	methods: {

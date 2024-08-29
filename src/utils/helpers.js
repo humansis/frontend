@@ -113,6 +113,10 @@ export const isDateBeforeOrEqual = (firstDate, secondDate) => (
 	moment(firstDate) <= moment(secondDate)
 );
 
+export const isFirstDateAfterSecond = (firstDate, secondDate) => (
+	moment(firstDate) > moment(secondDate)
+);
+
 export default {
 	BookletStatusArray,
 	copyObject,
@@ -124,4 +128,5 @@ export default {
 	splitBySpace,
 	downloadFile,
 	isDateBeforeOrEqual,
+	isFirstDateAfterSecond,
 };
