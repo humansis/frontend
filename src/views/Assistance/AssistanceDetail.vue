@@ -298,7 +298,7 @@ export default {
 			);
 			 */
 
-			return this.$t(`Distribution progress: ${this.assistanceProgress} based on ${this.beneficiariesReached}
+			return this.$t(`Distribution progress: ${this.assistanceProgress} % based on ${this.beneficiariesReached}
 				/ ${this.beneficiariesTotal - this.beneficiariesDeleted} BNFs reached.`);
 		},
 
