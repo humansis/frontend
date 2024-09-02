@@ -254,8 +254,14 @@ export default {
 			this.visiblePanels = this.isAdvancedSearchVisible ? [] : ["advancedSearch"];
 		},
 
-		onResetFilters() {
-			this.resetSearch({ tableRef: "distributionsList", filtersRef: "distributionFilter" });
+		async onResetFilters() {
+			this.resetSearch(
+				{ tableRef: "distributionsList", filtersRef: "distributionFilter" },
+				false,
+			);
+			await this.setDefaultFilters();
+			this.$refs.distributionFilter.setDefaultFilters();
+			await this.fetchData();
 		},
 
 		async onExportDistributions(exportType, format) {
