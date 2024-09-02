@@ -165,9 +165,10 @@ export default {
 		},
 	},
 
-	created() {
+	async created() {
 		this.setGridFilters("distributions");
-		this.fetchData();
+		this.setDefaultFilters();
+		await this.fetchData();
 	},
 
 	methods: {
@@ -201,8 +202,9 @@ export default {
 				this.table.progress = 20;
 				this.table.total = totalCount;
 				this.table.dataUpdated = true;
+
 				if (data.length > 0) {
-					await this.prepareDataForTable(data);
+					this.prepareDataForTable(data);
 				}
 			} catch (e) {
 				Notification(`${this.$t("Distributed Items")}: ${e.message || e}`, "error");
@@ -254,10 +256,6 @@ export default {
 
 		onResetFilters() {
 			this.resetSearch({ tableRef: "distributionsList", filtersRef: "distributionFilter" });
-		},
-
-		resetTableSort() {
-			this.$refs.table.onResetSort();
 		},
 
 		async onExportDistributions(exportType, format) {

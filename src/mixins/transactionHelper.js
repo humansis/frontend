@@ -1,4 +1,5 @@
 import { mapState } from "vuex";
+import { helpers, required } from "@vuelidate/validators";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import LocationsService from "@/services/LocationsService";
@@ -8,6 +9,7 @@ import VendorService from "@/services/VendorService";
 import baseHelper from "@/mixins/baseHelper";
 import institutionHelper from "@/mixins/institutionHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
+import { isDateBeforeOrEqual, isRangeBetweenTwoDatesHigher } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 
 export default {
@@ -15,6 +17,33 @@ export default {
 
 	computed: {
 		...mapState(["admNames"]),
+
+		validationRules() {
+			return {
+				selectedFiltersOptions: {
+					dateTo: {
+						required,
+						...(this.selectedFiltersOptions.dateTo
+							&& this.selectedFiltersOptions.dateFrom
+							&& { isDateBeforeOrEqual: helpers.withMessage(
+								"Date To is before Date From",
+								(value) => isDateBeforeOrEqual(this.selectedFiltersOptions.dateFrom, value),
+							) }),
+						...(this.selectedFiltersOptions.dateTo && { isRangerToHigher: helpers.withMessage(
+							"The period between chosen dates is bigger than 1 year",
+							(value) => !isRangeBetweenTwoDatesHigher(
+								this.selectedFiltersOptions.dateFrom,
+								value,
+								365,
+							),
+						) }),
+					},
+					dateFrom: {
+						required,
+					},
+				},
+			};
+		},
 	},
 
 	methods: {
@@ -450,6 +479,24 @@ export default {
 			} finally {
 				this.filtersOptions.distribution.loading = false;
 			}
+		},
+
+		setDefaultFilters() {
+			if (this.filters.dateFrom && this.filters.dateTo) return;
+
+			const todayDay = new Date();
+			const dateFrom = new Date();
+			dateFrom.setDate(todayDay.getDate() - 30);
+
+			this.filters = {
+				...this.filters,
+				...(!this.filters.dateFrom && {
+					dateFrom: this.$moment(dateFrom).format("YYYY-MM-DD"),
+				}),
+				...(!this.filters.dateTo && {
+					dateTo: this.$moment(todayDay).format("YYYY-MM-DD"),
+				}),
+			};
 		},
 	},
 };

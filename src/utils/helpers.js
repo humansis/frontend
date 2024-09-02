@@ -113,6 +113,13 @@ export const isDateBeforeOrEqual = (firstDate, secondDate) => (
 	moment(firstDate) <= moment(secondDate)
 );
 
+export const isRangeBetweenTwoDatesHigher = (firstDate, secondDate, maxDateDiff) => {
+	const timeDiff = secondDate.getTime() - firstDate.getTime();
+	const dayDiff = Math.round(timeDiff / (1000 * 3600 * 24));
+
+	return dayDiff > maxDateDiff;
+};
+
 export default {
 	BookletStatusArray,
 	copyObject,
@@ -124,4 +131,5 @@ export default {
 	splitBySpace,
 	downloadFile,
 	isDateBeforeOrEqual,
+	isRangeBetweenTwoDatesHigher,
 };

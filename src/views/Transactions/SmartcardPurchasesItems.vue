@@ -162,9 +162,10 @@ export default {
 		},
 	},
 
-	created() {
+	async created() {
 		this.setGridFilters("purchases");
-		this.fetchData();
+		this.setDefaultFilters();
+		await this.fetchData();
 	},
 
 	methods: {
