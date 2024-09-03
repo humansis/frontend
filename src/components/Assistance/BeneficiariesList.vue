@@ -961,6 +961,7 @@ export default {
 		},
 
 		isInvalidateButtonVisible({ status, reliefPackages }) {
+			console.log(status);
 			return this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION
 				&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
@@ -1110,7 +1111,7 @@ export default {
 				await this.fetchData();
 
 				Notification(
-					`${this.$t(`Successfully requested ${this.nameOfApprovalTarget} for Beneficiary ID`)} ${this.selectedBnfIdForApproval}`,
+					`${this.$t(`Successfully requested ${this.nameOfApprovalTarget} for Beneficiary ID {bnfID}`, { bnfID: this.selectedBnfIdForApproval })}`,
 					"success",
 				);
 			}
@@ -1124,7 +1125,7 @@ export default {
 				this.$emit("fetchAssistanceStatistics");
 
 				Notification(
-					`${this.$t(`Successfully approved ${this.nameOfApprovalTarget} for Beneficiary ID`)} ${this.selectedBnfIdForApproval}`,
+					`${this.$t(`Successfully approved ${this.nameOfApprovalTarget} for Beneficiary ID {bnfID}`, { bnfID: this.selectedBnfIdForApproval })}`,
 					"success",
 				);
 			}
@@ -1135,7 +1136,7 @@ export default {
 				await this.prepareListOfApprovals();
 
 				Notification(
-					`${this.$t(`Successfully rejected ${this.nameOfApprovalTarget} for Beneficiary ID`)} ${this.selectedBnfIdForApproval}`,
+					`${this.$t(`Successfully rejected ${this.nameOfApprovalTarget} for Beneficiary ID {bnfID}`, { bnfID: this.selectedBnfIdForApproval })}`,
 					"success",
 				);
 			}
