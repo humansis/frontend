@@ -1110,7 +1110,7 @@ export default {
 				await this.fetchData();
 
 				Notification(
-					`${this.$t(`Successfully requested ${this.nameOfApprovalTarget} for Beneficiary ID`)} ${this.selectedBnfIdForApproval}`,
+					`${this.$t(`Successfully requested ${this.nameOfApprovalTarget} for Beneficiary ID {bnfID}`, { bnfID: this.selectedBnfIdForApproval })}`,
 					"success",
 				);
 			}
@@ -1124,7 +1124,7 @@ export default {
 				this.$emit("fetchAssistanceStatistics");
 
 				Notification(
-					`${this.$t(`Successfully approved ${this.nameOfApprovalTarget} for Beneficiary ID`)} ${this.selectedBnfIdForApproval}`,
+					`${this.$t(`Successfully approved ${this.nameOfApprovalTarget} for Beneficiary ID {bnfID}`, { bnfID: this.selectedBnfIdForApproval })}`,
 					"success",
 				);
 			}
@@ -1135,7 +1135,7 @@ export default {
 				await this.prepareListOfApprovals();
 
 				Notification(
-					`${this.$t(`Successfully rejected ${this.nameOfApprovalTarget} for Beneficiary ID`)} ${this.selectedBnfIdForApproval}`,
+					`${this.$t(`Successfully rejected ${this.nameOfApprovalTarget} for Beneficiary ID {bnfID}`, { bnfID: this.selectedBnfIdForApproval })}`,
 					"success",
 				);
 			}
