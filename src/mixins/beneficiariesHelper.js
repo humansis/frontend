@@ -394,6 +394,7 @@ export default {
 				? search.field.code
 				: "";
 
+			this.table.currentPage = 1;
 			await this.reloadBeneficiariesList();
 		},
 

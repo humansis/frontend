@@ -255,7 +255,7 @@ export default {
 				title: `Detail of ${this.contentName}`,
 			};
 
-			this.formData = this.table.data[index];
+			this.formData = { ...this.table.data[index] };
 		},
 
 		showCreateModal() {
@@ -276,7 +276,7 @@ export default {
 			};
 
 			this.table.index = index;
-			this.formData = this.table.data[index];
+			this.formData = { ...this.table.data[index] };
 			this.$emit("editModalOpened", this.formData);
 		},
 

@@ -3,6 +3,7 @@
 		ref="advancedFilter"
 		:selected-filters-options="selectedFiltersOptions"
 		:filters-options="filtersOptions"
+		:validation-rules="validationRules"
 		multiline
 		@filtersChanged="onFilterChanged"
 		@search="$emit('search')"

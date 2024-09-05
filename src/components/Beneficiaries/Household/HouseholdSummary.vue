@@ -101,6 +101,7 @@
 			:headers="table.columns"
 			:items="membersData"
 			:total-count="table.total"
+			:data-cy="prepareComponentIdentifier('summary-table', true)"
 			class="mb-4"
 			is-header-disabled
 			is-custom-footer-disabled

@@ -24,7 +24,7 @@
 				deduplication
 				close-button
 				@submit="onFetchDataAfterBeneficiaryChange"
-				@close="onCloseInputDistributedModal"
+				@close="inputDistributedModal.isOpened = false"
 			/>
 		</Modal>
 
@@ -51,7 +51,7 @@
 				close-button
 				adding-to-assistance
 				@submit="onFetchDataAfterBeneficiaryChange"
-				@close="onCloseAddBeneficiariesByIdsModal"
+				@close="addBeneficiariesByIdsModal.isOpened = false"
 			/>
 		</Modal>
 
@@ -83,17 +83,14 @@
 			/>
 		</Modal>
 
-		<Modal
-			v-model="smartCardInvalidateModal.isOpened"
-			header="Set as Invalidated"
-		>
-			<SmartCardInvalidateForm
-				:beneficiary-data="smartCardInvalidateModel"
-				:table-data="table.data"
-				@updateTable="updateTableAfterInvalidation"
-				@formClosed="smartCardInvalidateModal.isOpened = false"
-			/>
-		</Modal>
+		<ApprovalSystem
+			v-if="approvalSystemData.isModalOpened"
+			:approval-system-data="approvalSystemData"
+			@form-closed="approvalSystemData.isModalOpened = false"
+			@approvalCreated="onSuccessfullyCreatedRequest"
+			@approved="onSuccessfullyApprovedRequest"
+			@rejected="onSuccessfullyRejectedRequest"
+		/>
 
 		<ConfirmAction
 			:is-dialog-opened="isWarningDialogOpenedForInvalidation"
@@ -146,7 +143,7 @@
 				color="primary"
 				prepend-icon="plus"
 				class="text-none ma-2"
-				@click="onOpenAddBeneficiariesByIdsModal"
+				@click="addBeneficiariesByIdsModal.isOpened = true"
 			>
 				{{ $t('Bulk add') }}
 			</v-btn>
@@ -156,7 +153,7 @@
 				color="primary"
 				prepend-icon="minus"
 				class="text-none ma-2"
-				@click="onOpenInputDistributedModal"
+				@click="inputDistributedModal.isOpened = true"
 			>
 				{{ $t('Bulk remove') }}
 			</v-btn>
@@ -187,6 +184,7 @@
 		:headers="table.columns"
 		:items="table.data"
 		:total-count="table.total"
+		:current-page="table.currentPage"
 		:loading="isLoadingList"
 		:show-select="table.settings.checkableTable"
 		:is-search-visible="!isAssistanceTargetInstitution"
@@ -208,32 +206,40 @@
 		@resetFilters="onResetFilters"
 		@resetSort="onResetSort(defaultSortOptions)"
 	>
-		<template v-slot:actions="{ index, row }">
+		<template v-slot:actions="{ row }">
 			<ButtonAction
-				v-if="isNotDistributedButtonVisible(row)"
+				v-if="isUnDistributedButtonVisible(row)"
 				icon="user-slash"
-				tooltip-text="Set as not distributed"
-				confirm-title="Set as not distributed"
-				confirm-message="Do you really want to set as not distributed?"
-				prepend-icon="circle-exclamation"
-				prepend-icon-color="info"
-				close-button-name="Cancel"
-				confirm-button-name="Set"
-				confirm-button-color="primary"
-				is-confirm-action
-				@actionConfirmed="onSetAsNotDistributed(index, row.id, row.reliefPackages)"
+				tooltip-text="Request for Un-distribution"
+				@actionConfirmed="onSetAsUnDistributed(row.id, row.reliefPackages[0])"
 			/>
 
 			<ButtonAction
-				v-if="isSetSmartCardAsInvalidVisible(row)"
+				v-if="isUnDistributionApprovalButtonVisible(row.reliefPackages[0])"
+				:disabled="!userCan.revertDistributionApprove"
+				icon="flag"
+				tooltip-text="Approve Un-distribution"
+				@actionConfirmed="onSetApproveUnDistribution(row.id, row.reliefPackages[0])"
+			/>
+
+			<ButtonAction
+				v-if="isInvalidateButtonVisible(row)"
 				icon="credit-card"
-				tooltip-text="Set as Invalidated"
-				@actionConfirmed="onSetSmartCardAsInvalid(index, row.id, row.reliefPackages)"
+				tooltip-text="Request for Invalidation"
+				@actionConfirmed="onSetSmartCardAsInvalid(row.id, row.reliefPackages[0])"
 			>
 				<template v-slot:combinedIcons>
 					<v-icon icon="slash" class="card-icon" />
 				</template>
 			</ButtonAction>
+
+			<ButtonAction
+				v-if="isInvalidationApprovalButtonVisible(row.reliefPackages[0])"
+				:disabled="!userCan.invalidateDistributionApprove"
+				icon="flag"
+				tooltip-text="Approve Invalidation"
+				@actionConfirmed="onSetApproveInvalidation(row.id, row.reliefPackages[0])"
+			/>
 
 			<ButtonAction
 				v-if="userCan.editDistribution"
@@ -333,10 +339,10 @@ import { mapState } from "vuex";
 import AssistancesService from "@/services/AssistancesService";
 import BeneficiariesService from "@/services/BeneficiariesService";
 import InstitutionService from "@/services/InstitutionService";
+import ApprovalSystem from "@/components/ApprovalSystem";
 import AddBeneficiaryForm from "@/components/Assistance/BeneficiariesList/AddBeneficiaryForm";
 import AssignVoucherForm from "@/components/Assistance/BeneficiariesList/AssignVoucherForm";
 import EditBeneficiaryForm from "@/components/Assistance/BeneficiariesList/EditBeneficiaryForm";
-import SmartCardInvalidateForm from "@/components/Assistance/BeneficiariesList/SmartCardInvalidateForm";
 import InputDistributed from "@/components/Assistance/InputDistributed/index";
 import InstitutionForm from "@/components/Beneficiaries/InstitutionForm";
 import ButtonAction from "@/components/ButtonAction";
@@ -345,6 +351,7 @@ import DataGrid from "@/components/DataGrid";
 import DataInput from "@/components/Inputs/DataInput";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
+import approvalsHelper from "@/mixins/approvalsHelper";
 import assistanceHelper from "@/mixins/assistanceHelper";
 import baseHelper from "@/mixins/baseHelper";
 import beneficiariesHelper from "@/mixins/beneficiariesHelper";
@@ -356,7 +363,7 @@ import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, INSTITUTION, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, GENERAL, INSTITUTION, TABLE } from "@/consts";
 
 const statusTags = [
 	{ code: "To distribute", class: "status to-distribute" },
@@ -364,6 +371,11 @@ const statusTags = [
 	{ code: "Expired", class: "status expired" },
 	{ code: "Invalidated", class: "status invalidated" },
 	{ code: "Canceled", class: "status canceled" },
+];
+
+const reliefPackageTargetTypes = [
+	GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
+	GENERAL.APPROVAL_SYSTEM.TARGET.UN_DISTRIBUTE_RELIEF_PACKAGE,
 ];
 
 export default {
@@ -376,10 +388,10 @@ export default {
 	],
 
 	components: {
+		ApprovalSystem,
 		AssignVoucherForm,
 		AddBeneficiaryForm,
 		EditBeneficiaryForm,
-		SmartCardInvalidateForm,
 		DataGrid,
 		DataInput,
 		ButtonAction,
@@ -397,6 +409,7 @@ export default {
 		urlFiltersHelper,
 		vuetifyHelper,
 		assistanceHelper,
+		approvalsHelper,
 		grid,
 	],
 
@@ -462,6 +475,7 @@ export default {
 			advancedSearchVisible: false,
 			isWarningDialogOpenedForInvalidation: false,
 			warningMessageForInvalidation: "",
+			approvalsList: [],
 			selectedRows: 0,
 			exportControl: {
 				loading: false,
@@ -527,14 +541,7 @@ export default {
 				isOpened: false,
 				isWaiting: false,
 			},
-			smartCardInvalidateModal: {
-				isOpened: false,
-			},
-			smartCardInvalidateModel: {
-				bnfId: null,
-				reliefPackage: null,
-				tableIndex: null,
-			},
+			selectedBnfIdForApproval: null,
 			addBeneficiariesByIdsModal: {
 				isOpened: false,
 				isWaiting: false,
@@ -549,6 +556,30 @@ export default {
 				referralType: null,
 				comment: null,
 				justification: null,
+			},
+			approvalSystemData: {
+				isOpened: false,
+				actionType: "",
+				targetId: null,
+				target: null,
+				justificationLabel: "",
+				warningMessage: "",
+				createAction: {
+					createButtonName: "",
+					confirmTitle: "",
+					confirmMessage: "",
+				},
+				acceptanceAction: {
+					approvalId: null,
+					isApproveButtonDisabled: false,
+					approveButtonName: "",
+					rejectButtonName: "",
+					confirmTitleForApprove: "",
+					confirmTitleForReject: "",
+					confirmMessageForApprove: "",
+					confirmMessageForReject: "",
+					message: "",
+				},
 			},
 			institutionModel: { ...INSTITUTION.DEFAULT_FORM_MODEL },
 			randomSampleSize: 10,
@@ -790,6 +821,13 @@ export default {
 			}
 			return TABLE.DEFAULT_SORT_OPTIONS.ASSISTANCE_EDIT.HOUSEHOLD;
 		},
+
+		nameOfApprovalTarget() {
+			return this.approvalSystemData.target === GENERAL
+				.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE
+				? "Invalidate"
+				: "Un-distribution";
+		},
 	},
 
 	watch: {
@@ -817,6 +855,10 @@ export default {
 		}
 
 		await this.reloadBeneficiariesList();
+	},
+
+	async mounted() {
+		await this.prepareListOfApprovals();
 	},
 
 	methods: {
@@ -854,22 +896,6 @@ export default {
 		onFetchDataAfterBeneficiaryChange() {
 			this.$emit("assistanceUpdated");
 			this.reloadBeneficiariesList();
-		},
-
-		onOpenInputDistributedModal() {
-			this.inputDistributedModal.isOpened = true;
-		},
-
-		onCloseInputDistributedModal() {
-			this.inputDistributedModal.isOpened = false;
-		},
-
-		onOpenAddBeneficiariesByIdsModal() {
-			this.addBeneficiariesByIdsModal.isOpened = true;
-		},
-
-		onCloseAddBeneficiariesByIdsModal() {
-			this.addBeneficiariesByIdsModal.isOpened = false;
 		},
 
 		setDefaultSortForHouseholdOrIndividual() {
@@ -924,50 +950,194 @@ export default {
 			return this.isAssistanceTargetInstitution ? row.institution.id : row.id;
 		},
 
-		isNotDistributedButtonVisible({ status }) {
+		isUnDistributedButtonVisible({ status, reliefPackages }) {
 			return this.isNotDistributedAvailable
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
-				&& this.userCan.revertDistribution;
+				&& this.userCan.revertDistribution
+				&& !this.isApprovalAvailableForReliefPackage(
+					reliefPackages[0],
+					GENERAL.APPROVAL_SYSTEM.TARGET.UN_DISTRIBUTE_RELIEF_PACKAGE,
+				);
 		},
 
-		isSetSmartCardAsInvalidVisible({ status }) {
+		isInvalidateButtonVisible({ status, reliefPackages }) {
 			return this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION
 				&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
-				&& this.userCan.invalidateDistribution;
+				&& this.userCan.invalidateDistribution
+				&& !this.isApprovalAvailableForReliefPackage(
+					reliefPackages[0],
+					GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
+				);
 		},
 
-		updateTableAfterInvalidation(updatedData) {
-			this.table.data = updatedData;
-			this.$emit("fetchAssistanceStatistics");
+		isApprovalAvailableForReliefPackage(reliefPackage, approvalTarget) {
+			return !!this.findApprovalByConditions({
+				targetId: reliefPackage.id,
+				approvalTarget,
+			});
 		},
 
-		onSetSmartCardAsInvalid(tableIndex, bnfId, reliefPackage) {
-			const todayDate = this.$moment(new Date());
-			const distributedAtDate = this.$moment(
-				new Date(reliefPackage[0].distributedAt),
+		isInvalidationApprovalButtonVisible(reliefPackage) {
+			return this.isApprovalAvailableForReliefPackage(
+				reliefPackage,
+				GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
 			);
-			const isDistributionDateValid = todayDate.diff(distributedAtDate, "days") < 30;
-			const isAlreadyPartOfAmountSpent = reliefPackage[0].spent;
+		},
 
-			this.isWarningDialogOpenedForInvalidation = !isDistributionDateValid
-				|| isAlreadyPartOfAmountSpent;
+		isUnDistributionApprovalButtonVisible(reliefPackage) {
+			return this.isApprovalAvailableForReliefPackage(
+				reliefPackage,
+				GENERAL.APPROVAL_SYSTEM.TARGET.UN_DISTRIBUTE_RELIEF_PACKAGE,
+			);
+		},
 
-			if (!isDistributionDateValid) {
-				this.warningMessageForInvalidation = "Distribution can no longer be invalidated, because it happened more than 30 days ago.";
-			}
+		onSetAsUnDistributed(bnfId, reliefPackage) {
+			this.approvalSystemData = {
+				...this.approvalSystemData,
+				isModalOpened: true,
+				actionType: GENERAL.APPROVAL_SYSTEM.TYPE.CREATE,
+				target: GENERAL.APPROVAL_SYSTEM.TARGET.UN_DISTRIBUTE_RELIEF_PACKAGE,
+				targetId: reliefPackage.id,
+				justificationLabel: "Note (reason for Un-distribution)",
+				createAction: {
+					createButtonName: "Request for Un-distribution",
+					title: "Request for Un-distribution",
+					confirmTitle: "Request for Un-distribution",
+					confirmMessage: "Do you really want to make request for Un-distribution?",
+				},
+			};
+
+			this.selectedBnfIdForApproval = bnfId;
+		},
+
+		onSetApproveUnDistribution(bnfId, reliefPackage) {
+			const { message, id } = this.findApprovalByConditions({
+				targetId: reliefPackage.id,
+				approvalTarget: GENERAL.APPROVAL_SYSTEM.TARGET.UN_DISTRIBUTE_RELIEF_PACKAGE,
+			});
+
+			this.approvalSystemData = {
+				...this.approvalSystemData,
+				isModalOpened: true,
+				actionType: GENERAL.APPROVAL_SYSTEM.TYPE.ACCEPTANCE,
+				target: GENERAL.APPROVAL_SYSTEM.TARGET.UN_DISTRIBUTE_RELIEF_PACKAGE,
+				targetId: reliefPackage.id,
+				justificationLabel: "Note (reason for Un-distribution)",
+				acceptanceAction: {
+					approvalId: id,
+					approveButtonName: "Approve Un-distribution",
+					rejectButtonName: "Reject Un-distribution",
+					title: "Approve Un-distribution",
+					confirmTitleForApprove: "Approve Un-distribution",
+					confirmTitleForReject: "Reject Un-distribution",
+					confirmMessageForApprove: "Do you really want to approve this Un-distribution?",
+					confirmMessageForReject: "Do you really want to reject this Un-distribution?",
+					message,
+				},
+			};
+
+			this.selectedBnfIdForApproval = bnfId;
+		},
+
+		onSetSmartCardAsInvalid(bnfId, reliefPackage) {
+			const isAlreadyPartOfAmountSpent = reliefPackage.spent;
+
+			this.isWarningDialogOpenedForInvalidation = isAlreadyPartOfAmountSpent;
 
 			if (isAlreadyPartOfAmountSpent) {
 				this.warningMessageForInvalidation = "Part of the distributed amount was already spent. Distribution can't be Invalidated";
 			}
 
 			if (!this.isWarningDialogOpenedForInvalidation) {
-				this.smartCardInvalidateModal.isOpened = true;
-				this.smartCardInvalidateModel = {
-					tableIndex,
-					bnfId,
-					reliefPackage,
+				this.approvalSystemData = {
+					...this.approvalSystemData,
+					isModalOpened: true,
+					actionType: GENERAL.APPROVAL_SYSTEM.TYPE.CREATE,
+					target: GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
+					targetId: reliefPackage.id,
+					justificationLabel: "Note (reason for Invalidation)",
+					createAction: {
+						createButtonName: "Request for Invalidation",
+						title: "Request for Invalidation",
+						confirmTitle: "Request for Invalidation",
+						confirmMessage: "Do you really want to make request for Invalidation?",
+					},
 				};
+
+				this.selectedBnfIdForApproval = bnfId;
+			}
+		},
+
+		onSetApproveInvalidation(bnfId, reliefPackage) {
+			const isAlreadyPartOfAmountSpent = reliefPackage.spent;
+			const { message, id } = this.findApprovalByConditions({
+				targetId: reliefPackage.id,
+				approvalTarget: GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
+			});
+			const warningMessage = isAlreadyPartOfAmountSpent
+				? "Part of the distributed amount was already spent. Distribution can't be Invalidated."
+				: "";
+
+			this.approvalSystemData = {
+				...this.approvalSystemData,
+				isModalOpened: true,
+				actionType: GENERAL.APPROVAL_SYSTEM.TYPE.ACCEPTANCE,
+				target: GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
+				targetId: reliefPackage.id,
+				justificationLabel: "Note (reason for Invalidation)",
+				warningMessage,
+				acceptanceAction: {
+					approvalId: id,
+					isApproveButtonDisabled: !!isAlreadyPartOfAmountSpent,
+					approveButtonName: "Approve Invalidation",
+					rejectButtonName: "Reject Invalidation",
+					title: "Approve Invalidation",
+					confirmTitleForApprove: "Approve Invalidation",
+					confirmTitleForReject: "Reject Invalidation",
+					confirmMessageForApprove: "Do you really want to approve this Invalidation? This is permanent and distribution can not be distributed again.",
+					confirmMessageForReject: "Do you really want to reject this Invalidation?",
+					message,
+				},
+			};
+
+			this.selectedBnfIdForApproval = bnfId;
+		},
+
+		async onSuccessfullyCreatedRequest() {
+			if (reliefPackageTargetTypes.includes(this.approvalSystemData.target)) {
+				await this.prepareListOfApprovals();
+				await this.fetchData();
+
+				Notification(
+					`${this.$t(`Successfully requested ${this.nameOfApprovalTarget} for Beneficiary ID {bnfID}`, { bnfID: this.selectedBnfIdForApproval })}`,
+					"success",
+				);
+			}
+		},
+
+		async onSuccessfullyApprovedRequest() {
+			if (reliefPackageTargetTypes.includes(this.approvalSystemData.target)) {
+				await this.prepareListOfApprovals();
+				await this.fetchData();
+
+				this.$emit("fetchAssistanceStatistics");
+
+				Notification(
+					`${this.$t(`Successfully approved ${this.nameOfApprovalTarget} for Beneficiary ID {bnfID}`, { bnfID: this.selectedBnfIdForApproval })}`,
+					"success",
+				);
+			}
+		},
+
+		async onSuccessfullyRejectedRequest() {
+			if (reliefPackageTargetTypes.includes(this.approvalSystemData.target)) {
+				await this.prepareListOfApprovals();
+
+				Notification(
+					`${this.$t(`Successfully rejected ${this.nameOfApprovalTarget} for Beneficiary ID {bnfID}`, { bnfID: this.selectedBnfIdForApproval })}`,
+					"success",
+				);
 			}
 		},
 
@@ -1234,6 +1404,20 @@ export default {
 			}
 		},
 
+		async prepareListOfApprovals() {
+			if (this.assistanceDetail) {
+				this.setAssignedReliefPackages();
+
+				this.approvalsList = await this.fetchListOfApprovals({
+					filters: {
+						targetData: [{ assistanceId: this.$route.params.assistanceId }],
+						approvalTargets: [...reliefPackageTargetTypes],
+						states: [GENERAL.APPROVAL_SYSTEM.STATE.REQUESTED],
+					},
+				});
+			}
+		},
+
 		async onRecalculate() {
 			try {
 				this.isRecalculationLoading = true;
@@ -1256,45 +1440,6 @@ export default {
 				Notification(`${this.$t("Recalculation")}: ${e.message || e}`, "error");
 			} finally {
 				this.isRecalculationLoading = false;
-			}
-		},
-
-		async onSetAsNotDistributed(tableIndex, bnfId, reliefPackage) {
-			try {
-				const {
-					data,
-					status,
-					message,
-				} = await AssistancesService.revertDistributionOfReliefPackage(
-					reliefPackage[0].id,
-				);
-
-				checkResponseStatus(status, message);
-
-				Notification(
-					`${this.$t("Successfully set as not distributed for Beneficiary ID")} ${bnfId}`,
-					"success",
-				);
-
-				const updatedRow = {
-					status: [data.state],
-					distributed: [`${data.distributed} ${data.unit}`],
-					lastModified: [this.$moment.utc(data.lastModified).format("YYYY-MM-DD HH:mm")],
-					selectable: true,
-				};
-
-				const unDistributedItemIndex = this.table.checkedRows.findIndex(
-					(row) => row === this.table.data[tableIndex].id,
-				);
-
-				this.table.checkedRows.splice(unDistributedItemIndex, 1);
-				this.table.data = this.table.data.map(
-					(row, index) => (index === tableIndex ? { ...row, ...updatedRow } : row),
-				);
-
-				this.$emit("fetchAssistanceStatistics");
-			} catch (e) {
-				Notification(`${this.$t("Set as not distributed")} ${e.message || e}`, "error");
 			}
 		},
 
@@ -1449,9 +1594,9 @@ export default {
 						} = await BeneficiariesService.exportAssistanceBeneficiaries({
 							assistanceId: this.$route.params.assistanceId,
 							search: this.table.searchPhrase,
+							...(exportType !== EXPORT.HOUSEHOLDS && { sort }),
 							format,
 							exportType,
-							sort,
 						});
 
 						downloadFile(data, filename, status, format, message);

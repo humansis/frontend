@@ -16,7 +16,11 @@
 				</v-col>
 
 				<v-col cols="6">
-					<v-card color="info" class="pa-4">
+					<v-card
+						:data-cy="identifierBuilder('maximum-allowed-numbers-text')"
+						color="info"
+						class="pa-4"
+					>
 						{{ $t('Split ID Numbers with white space') }}.
 						{{ $t('Maximum 500 ID Numbers allowed') }}.
 					</v-card>
@@ -117,7 +121,7 @@ export default {
 				ids: "",
 				notFoundIds: "",
 			},
-			dataCy: "",
+			dataCy: "bulk-search",
 		};
 	},
 

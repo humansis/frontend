@@ -103,6 +103,7 @@
 			:search-phrase="table.searchPhrase"
 			:selected-rows="table.checkedRows.length"
 			:is-search-disabled="isBulkSearchVisible"
+			:data-cy="prepareComponentIdentifier('households-table')"
 			reset-filters-button
 			reset-sort-button
 			is-search-visible
@@ -175,6 +176,7 @@
 
 				<v-btn
 					:append-icon="isBulkSearchVisible ? 'arrow-up' : 'arrow-down'"
+					:data-cy="identifierBuilder('bulk-search-button')"
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="ml-4 text-none"

@@ -34,6 +34,7 @@
 					<div>
 						<v-btn
 							v-if="resetSortButton"
+							:data-cy="identifierBuilder('reset-table-sort')"
 							color="grey-lighten-2"
 							prepend-icon="eraser"
 							size="x-small"
@@ -328,6 +329,12 @@ export default {
 			});
 
 			return customSort;
+		},
+	},
+
+	watch: {
+		currentPage(value) {
+			this.page = value;
 		},
 	},
 

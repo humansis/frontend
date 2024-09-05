@@ -10,6 +10,8 @@ export default {
 					return "project-assistance";
 				case "CountrySpecific":
 					return "country-specifics";
+				case "HouseholdInformationSummary":
+					return "household-information-summary";
 				case "Projects":
 				case "AddProject":
 				case "ProjectDetail":
@@ -45,9 +47,9 @@ export default {
 			return identifierParams.join("-");
 		},
 
-		prepareComponentIdentifier(externalComponentIdentifier) {
+		prepareComponentIdentifier(externalComponentIdentifier, isDataCyIgnored = false) {
 			if (externalComponentIdentifier?.length) {
-				return this.dataCy?.length
+				return !isDataCyIgnored && this.dataCy?.length
 					? this.dataCy.concat("-", externalComponentIdentifier)
 					: externalComponentIdentifier;
 			}

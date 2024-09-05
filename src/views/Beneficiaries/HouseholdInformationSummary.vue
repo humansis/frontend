@@ -4,20 +4,43 @@
 			{{ $t('Household Information Summary') }}
 		</h2>
 
-		<p v-if="householdHead" class="text-center text-h5 mb-8">
+		<p
+			v-if="householdHead"
+			:data-cy="identifierBuilder('name-data')"
+			class="text-center text-h5 mb-8"
+		>
 			{{ `${householdHead.localGivenName} ${householdHead.localFamilyName}` }}
 		</p>
 
-		<h3 class="text-center mb-4">{{ $t('Current Address') }}</h3>
+		<h3
+			:data-cy="identifierBuilder('current-address-text')"
+			class="text-center mb-4"
+		>
+			{{ $t('Current Address') }}
+		</h3>
 
-		<p v-if="householdHead" class="text-center mb-4">
+		<p
+			v-if="householdHead"
+			:data-cy="identifierBuilder('address-data')"
+			class="text-center mb-4"
+		>
 			{{ address }}
 		</p>
 
 		<v-tabs v-model="activeTab">
-			<v-tab value="assistances">{{ $t('Assistances') }}</v-tab>
+			<v-tab
+				:data-cy="identifierBuilder('assistances-tab-button')"
+				value="assistances"
+			>
+				{{ $t('Assistances') }}
+			</v-tab>
 
-			<v-tab value="purchases">{{ $t('Purchases') }}</v-tab>
+			<v-tab
+				:data-cy="identifierBuilder('purchases-tab-button')"
+				value="purchases"
+			>
+				{{ $t('Purchases') }}
+			</v-tab>
 		</v-tabs>
 
 		<v-window v-model="activeTab">
@@ -38,6 +61,7 @@ import HouseholdAssistancesList from "@/components/Beneficiaries/Household/House
 import HouseholdPurchasesList from "@/components/Beneficiaries/Household/HouseholdPurchasesList";
 import addressHelper from "@/mixins/addressHelper";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { GENERAL } from "@/consts";
@@ -50,7 +74,11 @@ export default {
 		HouseholdPurchasesList,
 	},
 
-	mixins: [addressHelper, grid],
+	mixins: [
+		addressHelper,
+		grid,
+		identifierBuilder,
+	],
 
 	data() {
 		return {

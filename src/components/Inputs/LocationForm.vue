@@ -214,7 +214,8 @@ export default {
 			await this.mapLocations();
 		}
 
-		if (this.isEditing && this.formModel.adm1) {
+		// TODO After regression check this component and refactor, there is some nonsense code
+		if (this.isEditing && this.formModel.adm1 && !this.formModel.campId && !this.formModel.adm1Id) {
 			await this.fetchDistricts(this.formModel.adm1?.id);
 
 			if (this.formModel.adm2) {

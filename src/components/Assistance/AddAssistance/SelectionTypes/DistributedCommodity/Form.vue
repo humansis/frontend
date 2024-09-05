@@ -329,14 +329,14 @@ export default {
 				quantity: {
 					required: requiredIf(this.displayedFields.quantity),
 					...(this.displayedFields.quantity && { minValue: minValue(1) }),
-					...this.decimalPartValidationRule,
+					...this.decimalPartValidationRule(),
 				},
 				value: {
 					required: requiredIf(this.displayedFields.value && !this.isModalityInKind),
 					...(this.displayedFields.value && {
 						minValue: minValue(this.isModalityVoucher ? 1 : 0.01),
 					}),
-					...this.decimalPartValidationRule,
+					...this.decimalPartValidationRule(),
 				},
 				currency: {
 					required: requiredIf(this.displayedFields.currency && !this.isModalityInKind),
@@ -347,6 +347,7 @@ export default {
 				secondQuantity: {
 					required: false,
 					minValue: minValue(1),
+					...this.decimalPartValidationRule(),
 				},
 				...(this.isCountrySYR
 					&& {

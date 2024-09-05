@@ -35,28 +35,33 @@
 
 		<EditNote :assistance="assistance" />
 
-		<div
+		<v-tooltip
 			v-if="!isAssistanceLoading"
-			class="ma-6"
+			:text="progressTooltip"
+			location="top"
+			content-class="tooltip-top"
 		>
-			<div class="text-center mb-3">
-				<div class="text-h6">
-					{{ $t(distributionOrActivity) }}:
-					<strong>{{ assistanceProgress }} %</strong>
-				</div>
-			</div>
+			<template v-slot:activator="{ props }">
+				<div v-bind="props" class="ma-6">
+					<div class="text-center text-h6 mb-3">
+						{{ $t(distributionOrActivity) }}:
 
-			<v-progress-linear
-				v-model="assistanceProgress"
-				color="green"
-				height="20"
-				rounded
-			>
-				<template v-slot:default>
-					<strong>{{ assistanceProgress }}%</strong>
-				</template>
-			</v-progress-linear>
-		</div>
+						<strong>{{ assistanceProgress }} %</strong>
+					</div>
+
+					<v-progress-linear
+						v-model="assistanceProgress"
+						color="green"
+						height="20"
+						rounded
+					>
+						<template v-slot:default>
+							<strong>{{ assistanceProgress }}%</strong>
+						</template>
+					</v-progress-linear>
+				</div>
+			</template>
+		</v-tooltip>
 
 		<BeneficiariesList
 			ref="beneficiariesList"
@@ -257,10 +262,33 @@ export default {
 			return this.commodities?.[0]?.modalityType;
 		},
 
+		beneficiariesReached() {
+			return this.statistics?.beneficiariesReached;
+		},
+
+		beneficiariesTotal() {
+			return this.statistics?.beneficiariesTotal || 0;
+		},
+
+		beneficiariesDeleted() {
+			return this.statistics?.beneficiariesDeleted || 0;
+		},
+
 		assistanceProgress() {
 			const progress = this.statistics?.progress || 0;
 
-			return Math.trunc(progress * 100);
+			return parseFloat((progress * 100).toFixed(2));
+		},
+
+		progressTooltip() {
+			return this.$t(
+				`Distribution progress: {progress} % based on {beneficiariesReached} / {beneficiariesTotal} BNFs reached.`,
+				{
+					progress: this.assistanceProgress,
+					beneficiariesReached: this.beneficiariesReached,
+					beneficiariesTotal: this.beneficiariesTotal - this.beneficiariesDeleted,
+				},
+			);
 		},
 
 		amountDistributed() {

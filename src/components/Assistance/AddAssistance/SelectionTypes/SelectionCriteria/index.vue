@@ -434,7 +434,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
 			} finally {
-				this.scoringType = this.options.scoringTypes?.[0] || null;
+				if (this.isAssistanceDuplicated) {
+					this.scoringType = this.scoring.type;
+					this.minimumSelectionScore = this.scoring.minimumSelectionScore;
+				} else {
+					this.scoringType = this.options.scoringTypes?.[0] || null;
+				}
+
 				this.loading.isScoringTypes = false;
 			}
 		},
