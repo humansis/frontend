@@ -110,8 +110,17 @@ export const getUniqueObjectsInArray = (filterData, filterBy) => filterData.filt
 );
 
 export const isDateBeforeOrEqual = (firstDate, secondDate) => (
-	moment(firstDate) <= moment(secondDate)
+	moment(firstDate).startOf("day") <= moment(secondDate).startOf("day")
 );
+
+export const isRangeBetweenTwoDatesHigher = (firstDate, secondDate, maxDateDiff) => {
+	const startDay = moment(firstDate);
+	const endDay = moment(secondDate);
+	const dayDiff = endDay.diff(startDay, "days");
+	const extraLeapDay = (startDay.isLeapYear() || endDay.isLeapYear()) ? 1 : 0;
+
+	return dayDiff > (maxDateDiff + extraLeapDay);
+};
 
 export default {
 	BookletStatusArray,
@@ -124,4 +133,5 @@ export default {
 	splitBySpace,
 	downloadFile,
 	isDateBeforeOrEqual,
+	isRangeBetweenTwoDatesHigher,
 };

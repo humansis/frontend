@@ -310,6 +310,10 @@ export default {
 				? this.$t("Date is after Expiration date of the commodity")
 				: "";
 		},
+
+		isSectorOrSubSectorInvalidated() {
+			return this.sectorValidationMessage.length || this.subsectorValidationMessage.length;
+		},
 	},
 
 	watch: {
@@ -338,7 +342,9 @@ export default {
 		},
 
 		"formModel.targetType": function targetType() {
-			this.showComponents();
+			if (!this.isSectorOrSubSectorInvalidated) {
+				this.showComponents();
+			}
 		},
 
 		"formModel.name": function targetType() {
@@ -402,7 +408,7 @@ export default {
 
 			this.validateSectorAndSubSector(sector, subsector);
 
-			if (!this.sectorValidationMessage.length && !this.subsectorValidationMessage.length) {
+			if (!this.isSectorOrSubSectorInvalidated) {
 				await this.showComponents();
 			}
 

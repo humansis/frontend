@@ -11,15 +11,15 @@
 
 			<!-- TODO in future unite isOptional and optional -->
 			<v-card-text class="mt-4">
-				<div v-for="(formInput, index) in formInputs" :key="formInput.key" class="mb-3">
+				<div v-for="(formInput) in formInputs" :key="formInput.key" class="mb-3">
 					<DatePicker
 						v-if="isInputTypeCalendar(formInput)"
 						v-model="data[formInput.key]"
 						:label="formInput.label"
+						:name="normalizeName(formInput.label)"
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
 						:optional="!formInput.required"
-						name="start-date"
 						class="mb-4"
 						@blur="onInputChanged(formInput, data)"
 					/>
@@ -27,13 +27,13 @@
 					<DataSelect
 						v-if="isInputTypeSingleSelect(formInput) || isInputTypeMultiSelect(formInput)"
 						v-model="data[formInput.key]"
+						:label="formInput.label"
+						:name="normalizeName(formInput.label)"
 						:items="formInput.options"
 						:multiple="isInputTypeMultiSelect(formInput)"
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
-						:label="formInput.label"
 						:optional="!formInput.required"
-						name="subsectors"
 						class="mb-4"
 						@update:modelValue="onInputChanged(formInput, data)"
 					/>
@@ -41,11 +41,11 @@
 					<DataInput
 						v-if="isInputTypeText(formInput)"
 						v-model="data[formInput.key]"
+						:label="formInput.label"
+						:name="normalizeName(formInput.label)"
 						:error-messages="validateRequiredMsg('name')"
 						:disabled="isFormDisabled"
-						:label="formInput.label"
 						:optional="!formInput.required"
-						name="project-name"
 						class="mb-4"
 						@blur="onInputChanged(formInput, data)"
 					/>
@@ -54,6 +54,7 @@
 						v-if="isInputTypeNumber(formInput)"
 						v-model.number="data[formInput.key]"
 						:label="formInput.label"
+						:name="normalizeName(formInput.label)"
 						:error-messages="validateRequiredMsg(formInput)"
 						:hide-spin-buttons="true"
 						:disabled="isFormDisabled"
@@ -69,9 +70,9 @@
 						v-if="isInputTypeTextArea(formInput)"
 						v-model="data[formInput.key]"
 						:label="formInput.label"
+						:name="normalizeName(formInput.label)"
 						:error-messages="validateRequiredMsg(formInput)"
 						:disabled="isFormDisabled"
-						:name="`note-${index}`"
 						:is-optional="!formInput.required"
 						class="mt-4"
 						auto-grow
@@ -124,6 +125,7 @@ import DataTextarea from "@/components/Inputs/DataTextarea";
 import DatePicker from "@/components/Inputs/DatePicker";
 import LocationForm from "@/components/Inputs/LocationForm";
 import validation from "@/mixins/validation";
+import { kebabize } from "@/utils/datagrid";
 import { GENERAL } from "@/consts";
 
 export default {
@@ -317,6 +319,10 @@ export default {
 
 		isLocationTypeAdm1({ key }) {
 			return key === GENERAL.EDITABLE_TABLE.ADM_TYPE.ADM1;
+		},
+
+		normalizeName(text) {
+			return kebabize(text);
 		},
 	},
 };

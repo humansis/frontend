@@ -267,34 +267,28 @@ export default {
 		},
 
 		beneficiariesTotal() {
-			return this.statistics?.beneficiariesTotal;
+			return this.statistics?.beneficiariesTotal || 0;
+		},
+
+		beneficiariesDeleted() {
+			return this.statistics?.beneficiariesDeleted || 0;
 		},
 
 		assistanceProgress() {
 			const progress = this.statistics?.progress || 0;
 
-			return parseFloat((progress* 100).toFixed(2));
+			return parseFloat((progress * 100).toFixed(2));
 		},
 
 		progressTooltip() {
-			/*
-			*	TODO Refactor before 4.3 release
-			*	after adding new string into crowdin (including this one)
-			*	refactor this code to use interpolation
-			*/
-
-			/*
 			return this.$t(
-				`Distribution progress: {progress} based on {beneficiariesReached} / {beneficiariesTotal}.`,
+				`Distribution progress: {progress} % based on {beneficiariesReached} / {beneficiariesTotal} BNFs reached.`,
 				{
 					progress: this.assistanceProgress,
 					beneficiariesReached: this.beneficiariesReached,
-					beneficiariesTotal: this.beneficiariesTotal,
+					beneficiariesTotal: this.beneficiariesTotal - this.beneficiariesDeleted,
 				},
 			);
-			 */
-
-			return this.$t(`Distribution progress: ${this.assistanceProgress} based on ${this.beneficiariesReached} / ${this.beneficiariesTotal} BNFs reached.`);
 		},
 
 		amountDistributed() {

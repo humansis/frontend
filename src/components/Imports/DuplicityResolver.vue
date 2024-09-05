@@ -235,7 +235,7 @@ export default {
 					importId,
 					page: this.table.currentPage,
 					size: this.perPage,
-					filter: this.filters,
+					filters: this.filters,
 				});
 
 				this.table.data = [];

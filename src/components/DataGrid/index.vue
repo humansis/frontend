@@ -332,6 +332,12 @@ export default {
 		},
 	},
 
+	watch: {
+		currentPage(value) {
+			this.page = value;
+		},
+	},
+
 	methods: {
 		onHandleRowClick(clickEvent, row) {
 			this.$emit("rowClicked", row);

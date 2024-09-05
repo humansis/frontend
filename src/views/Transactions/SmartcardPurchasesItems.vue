@@ -162,9 +162,10 @@ export default {
 		},
 	},
 
-	created() {
+	async created() {
 		this.setGridFilters("purchases");
-		this.fetchData();
+		this.setDefaultFilters();
+		await this.fetchData();
 	},
 
 	methods: {
@@ -245,8 +246,14 @@ export default {
 			this.visiblePanels = this.isAdvancedSearchVisible ? [] : ["advancedSearch"];
 		},
 
-		onResetFilters() {
-			this.resetSearch({ tableRef: "smartCardPurchasesList", filtersRef: "purchasesFilter" });
+		async onResetFilters() {
+			this.resetSearch(
+				{ tableRef: "smartCardPurchasesList", filtersRef: "purchasesFilter" },
+				false,
+			);
+			await this.setDefaultFilters();
+			this.$refs.purchasesFilter.setDefaultFilters();
+			await this.fetchData();
 		},
 
 		resetTableSort() {
