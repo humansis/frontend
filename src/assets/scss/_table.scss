@@ -39,12 +39,6 @@
   }
 }
 
-.v-list-item--disabled {
-  opacity: .5;
-  pointer-events: auto;
-  cursor: not-allowed;
-}
-
 .action-button {
   &.disabled {
     opacity: .5;
