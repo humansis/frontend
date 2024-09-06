@@ -17,6 +17,7 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
+			:disabled="!isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD_CREATE)"
 			:data-cy="identifierBuilder('custom-fields-new-button')"
 			class="text-none ml-0 mb-3"
 			color="primary"

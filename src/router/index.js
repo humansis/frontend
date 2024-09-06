@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouterView } from "vue-router";
 import { getCookie } from "@/utils/cookie";
 import { isUserPermissionGranted } from "@/utils/permissions";
 import { Notification } from "@/utils/UI";
-import { ROLE, ROUTER, PERMISSIONS } from "@/consts";
+import { PERMISSIONS, ROLE, ROUTER } from "@/consts";
 import i18n from "@/plugins/i18n";
 import CONST from "@/store/const";
 import getters from "@/store/getters";
@@ -411,7 +411,19 @@ const routes = [
 					permissions: ["adminSettings"],
 					breadcrumb: "Administrative Settings",
 				},
-				redirect: { name: ROUTER.ROUTE_NAME.USERS.ROOT },
+				redirect: () => {
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_USER)) {
+						return { name: ROUTER.ROUTE_NAME.USERS.ROOT };
+					} if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR)) {
+						return { name: ROUTER.ROUTE_NAME.DONORS };
+					} if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION)) {
+						return { name: ROUTER.ROUTE_NAME.MY_ORGANIZATIONS };
+					} if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION_SERVICES)) {
+						return { name: ROUTER.ROUTE_NAME.ORGANIZATION_SERVICES };
+					}
+
+					return { name: ROUTER.ROUTE_NAME.SYNC };
+				},
 				children: [
 					{
 						path: "users",
@@ -422,39 +434,9 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.USERS.ROOT,
 								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/Users"),
 								meta: {
-									permissions: [],
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER],
 									breadcrumb: "Users",
 									description: "This page is where you can manage users.",
-								},
-							},
-							{
-								path: "add-user",
-								name: ROUTER.ROUTE_NAME.USERS.ADD,
-								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
-								meta: {
-									permissions: [],
-									breadcrumb: "Add user",
-									description: "This page is a form to add a new user to a humansis.",
-								},
-							},
-							{
-								path: "user-detail/:userId",
-								name: ROUTER.ROUTE_NAME.USERS.DETAIL,
-								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
-								meta: {
-									permissions: [],
-									breadcrumb: "User detail",
-									description: "This page is a form to show detail of a user in humansis.",
-								},
-							},
-							{
-								path: "user-edit/:userId",
-								name: ROUTER.ROUTE_NAME.USERS.EDIT,
-								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
-								meta: {
-									permissions: [],
-									breadcrumb: "User edit",
-									description: "This page is a form to edit a user in humansis.",
 								},
 							},
 						],
@@ -464,6 +446,7 @@ const routes = [
 						name: ROUTER.ROUTE_NAME.DONORS,
 						component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings/Donors"),
 						meta: {
+							requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR],
 							breadcrumb: "Donors",
 							description: "This page is where you can manage donors.",
 						},
@@ -473,6 +456,7 @@ const routes = [
 						name: ROUTER.ROUTE_NAME.MY_ORGANIZATIONS,
 						component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings/MyOrganizations"),
 						meta: {
+							requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION],
 							breadcrumb: "My Organizations",
 							description: "This page is where you can manage my organizations.",
 						},
@@ -482,6 +466,7 @@ const routes = [
 						name: ROUTER.ROUTE_NAME.ORGANIZATION_SERVICES,
 						component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings/OrganizationServices"),
 						meta: {
+							requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION_SERVICES],
 							breadcrumb: "Organization Services",
 							description: "This page is where you can manage organizations services.",
 						},
@@ -491,6 +476,7 @@ const routes = [
 						name: ROUTER.ROUTE_NAME.SYNC,
 						component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings/Sync"),
 						meta: {
+							requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_SYNC],
 							breadcrumb: "Sync",
 							description: "This page is where you can manage sync.",
 						},
@@ -503,7 +489,6 @@ const routes = [
 				component: RouterView,
 				redirect: { name: ROUTER.ROUTE_NAME.TRANSACTIONS.ASSISTANCES },
 				meta: {
-					permissions: [],
 					description: "",
 				},
 				children: [
@@ -512,7 +497,7 @@ const routes = [
 						name: ROUTER.ROUTE_NAME.TRANSACTIONS.ASSISTANCES,
 						component: () => import(/* webpackChunkName: "Products" */ "@/views/Transactions/Distributions"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.TRANSACTIONS],
 							breadcrumb: "Assistances",
 							description: "",
 						},
@@ -522,7 +507,7 @@ const routes = [
 						name: ROUTER.ROUTE_NAME.TRANSACTIONS.PURCHASES,
 						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Transactions/SmartcardPurchasesItems"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.TRANSACTIONS],
 							breadcrumb: "Purchases",
 							description: "",
 						},
@@ -534,7 +519,6 @@ const routes = [
 				name: ROUTER.ROUTE_NAME.PROFILE,
 				component: () => import(/* webpackChunkName: "Profile" */ "@/views/Profile"),
 				meta: {
-					permissions: [],
 					breadcrumb: "Profile",
 					description: "This page is where you can change your password",
 				},
@@ -569,7 +553,7 @@ router.beforeEach((to, from, next) => {
 		if (!token) {
 			return next({
 				name: ROUTER.ROUTE_NAME.LOGIN,
-				query: { redirect: to.query.redirect || to.fullPath }
+				query: { redirect: to.query.redirect || to.fullPath },
 			});
 		}
 

@@ -16,10 +16,11 @@
 		@update:sortBy="onSort"
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS)"
-		@rowClicked="(row) => onShowDetail(row.item)"
+		@rowClicked="(row) => onShowCustomFieldDetail(row.item)"
 	>
 		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD_CREATE"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
@@ -27,6 +28,7 @@
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD_CREATE"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
@@ -50,6 +52,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD_EXPORT"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -84,7 +87,11 @@ export default {
 		DataGrid,
 	},
 
-	mixins: [grid, permissions, identifierBuilder],
+	mixins: [
+		grid,
+		permissions,
+		identifierBuilder,
+	],
 
 	data() {
 		return {
@@ -186,6 +193,12 @@ export default {
 					target: targetType?.shortCut,
 				};
 			});
+		},
+
+		onShowCustomFieldDetail(item) {
+			if (this.isUserPermissionGranted(this.PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD_CREATE)) {
+				this.onShowDetail(item);
+			}
 		},
 	},
 };
