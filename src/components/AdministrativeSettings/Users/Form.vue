@@ -151,7 +151,6 @@ import { mapState } from "vuex";
 import { email, required, requiredIf } from "@vuelidate/validators";
 import CountriesService from "@/services/CountriesService";
 import ProjectService from "@/services/ProjectService";
-import SystemService from "@/services/SystemService";
 import UsersService from "@/services/UsersService";
 import DataInput from "@/components/Inputs/DataInput";
 import DataSelect from "@/components/Inputs/DataSelect";
@@ -234,7 +233,6 @@ export default {
 
 	async mounted() {
 		await Promise.all([
-			this.fetchRoles(),
 			this.fetchProjects(),
 			this.fetchCountries(),
 		]);
@@ -325,27 +323,6 @@ export default {
 			}
 
 			this.loading.isProjects = false;
-		},
-
-		async fetchRoles() {
-			try {
-				this.loading.isRoles = true;
-
-				const {
-					data: { data },
-					status,
-					message,
-				} = await SystemService.getRoles();
-
-				checkResponseStatus(status, message);
-
-				this.options.rights = data;
-			} catch (e) {
-				Notification(`${this.$t("Roles")}: ${e.message || e}`, "error");
-			} finally {
-				this.formModel.rights = getArrayOfCodeListByKey(this.formModel.roles, this.options.rights, "code");
-				this.loading.isRoles = false;
-			}
 		},
 
 		async fetchCountries() {

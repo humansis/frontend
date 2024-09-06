@@ -55,7 +55,6 @@ export default {
 				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.DONORS,
 				title: "Donors",
 				icon: "dollar-sign",
-				isUserAllowed: this.userCan.viewDonors,
 				pageName: ROUTER.ROUTE_NAME.DONORS,
 			},
 			{
