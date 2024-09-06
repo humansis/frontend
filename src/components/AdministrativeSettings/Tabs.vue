@@ -12,6 +12,7 @@
 			v-for="tab in tabs"
 			:key="tab.value"
 			:value="tab.value"
+			:disabled="!isUserPermissionGranted(tab.requiredPermissions)"
 			class="text-none"
 		>
 			<v-icon :icon="tab.icon" class="mr-2" />
@@ -50,30 +51,35 @@ export default {
 				title: "Users",
 				icon: "user",
 				pageName: ROUTER.ROUTE_NAME.USERS.ROOT,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_USER,
 			},
 			{
 				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.DONORS,
 				title: "Donors",
 				icon: "dollar-sign",
 				pageName: ROUTER.ROUTE_NAME.DONORS,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR,
 			},
 			{
 				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.MY_ORGANIZATIONS,
 				title: "My Organizations",
 				icon: "child",
 				pageName: ROUTER.ROUTE_NAME.MY_ORGANIZATIONS,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION,
 			},
 			{
 				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.ORGANIZATION_SERVICES,
 				title: "Organization Services",
 				icon: "th-large",
 				pageName: ROUTER.ROUTE_NAME.ORGANIZATION_SERVICES,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION_SERVICES,
 			},
 			{
 				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.SYNC,
 				title: "Sync",
 				icon: "th-large",
 				pageName: ROUTER.ROUTE_NAME.SYNC,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_SYNC,
 			},
 		];
 	},

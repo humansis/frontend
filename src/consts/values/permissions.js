@@ -1,5 +1,4 @@
 export default {
-	TEST_PERM: "test",
 	HOME_PAGE: "homePage",
 	PROJECT_MANAGEMENT: "projectManagement",
 	PROJECT_MANAGEMENT_MANAGE: "projectManagementManage",
@@ -41,8 +40,8 @@ export default {
 	REPORTS: "reports",
 	VOUCHERS: "vouchers",
 	COUNTRY_SETTINGS: "countrySettings",
+	COUNTRY_SETTINGS_PRODUCT_ITEMS: "countrySettingsProductItems",
 	COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE: "countrySettingsProductItemsCreate",
-	COUNTRY_SETTINGS_PRODUCT_ITEMS_CATEGORIES: "countrySettingsProductItemsCategories",
 	COUNTRY_SETTINGS_CUSTOM_FIELD: "countrySettingsCustomField",
 	COUNTRY_SETTINGS_CUSTOM_FIELD_CREATE: "countrySettingsCustomFieldCreate",
 	COUNTRY_SETTINGS_CUSTOM_FIELD_EXPORT: "countrySettingsCustomFieldExport",
@@ -56,6 +55,7 @@ export default {
 	ADMINISTRATIVE_SETTING_DONOR: "administrativeSettingDonor",
 	ADMINISTRATIVE_SETTING_ORGANIZATION: "administrativeSettingOrganization",
 	ADMINISTRATIVE_SETTING_ORGANIZATION_SERVICES: "administrativeSettingOrganizationServices",
+	ADMINISTRATIVE_SETTING_SYNC: "administrativeSettingSync",
 	ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT: "administrativeSettingRoleManagement",
 	ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT_DELETE: "administrativeSettingRoleManagementDelete",
 	TRANSACTIONS: "transactions",
