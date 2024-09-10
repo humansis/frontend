@@ -4,6 +4,7 @@
 			v-model="formModel.fullname"
 			:disabled="formDisabled"
 			:error-messages="validationMsg('fullname')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Donor Name"
 			name="donor-name"
 			class="mb-4"
@@ -14,6 +15,7 @@
 			v-model="formModel.shortname"
 			:disabled="formDisabled"
 			:error-messages="validationMsg('shortname')"
+			:data-cy="prepareComponentIdentifier()"
 			label="Short Name"
 			name="short-name"
 			class="mb-4"
@@ -27,6 +29,7 @@
 		<FileUpload
 			v-if="!formDisabled"
 			v-model="formModel.uploadedImage"
+			:data-cy="prepareComponentIdentifier()"
 			name="image"
 			prepend-icon=""
 			hide-details="auto"
@@ -39,6 +42,7 @@
 		<v-img
 			v-if="formDisabled && formModel.logo"
 			:src="formModel.logo"
+			:data-cy="prepareComponentIdentifier()"
 			alt="donor-image"
 			height="125"
 			class="mb-4"
@@ -47,6 +51,7 @@
 		<DataInput
 			v-model="formModel.notes"
 			:disabled="formDisabled"
+			:data-cy="prepareComponentIdentifier()"
 			label="Notes"
 			name="notes"
 			class="mb-4"
@@ -59,6 +64,7 @@
 
 		<v-btn
 			v-if="closeButton"
+			:data-cy="identifierBuilder('close-button')"
 			class="text-none"
 			color="blue-grey-lighten-4"
 			variant="elevated"
@@ -69,6 +75,7 @@
 
 		<v-btn
 			v-if="!formDisabled"
+			:data-cy="identifierBuilder(`${submitButtonLabel}-button`)"
 			color="primary"
 			class="text-none ml-3"
 			variant="elevated"
@@ -83,6 +90,7 @@
 import { required } from "@vuelidate/validators";
 import DataInput from "@/components/Inputs/DataInput";
 import FileUpload from "@/components/Inputs/FileUpload";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
 
 export default {
@@ -95,7 +103,7 @@ export default {
 		FileUpload,
 	},
 
-	mixins: [validation],
+	mixins: [validation, identifierBuilder],
 
 	validations() {
 		return {
@@ -119,6 +127,12 @@ export default {
 			type: String,
 			required: true,
 		},
+	},
+
+	data() {
+		return {
+			dataCy: "donors-form",
+		};
 	},
 
 	methods: {

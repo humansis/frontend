@@ -16,6 +16,7 @@
 	<div class="d-flex justify-end">
 		<v-btn
 			v-if="userCan.addEditDonors"
+			:data-cy="identifierBuilder('new-button')"
 			class="text-none ml-0 mb-3"
 			color="primary"
 			prepend-icon="plus"
@@ -41,6 +42,7 @@ import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import identifierBuilder from "@/mixins/identifierBuilder";
 
 export default {
 	name: "DonorPage",
@@ -51,7 +53,7 @@ export default {
 		DonorsList,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, identifierBuilder],
 
 	data() {
 		return {
@@ -68,6 +70,7 @@ export default {
 				logo: null,
 				notes: "",
 			},
+			dataCy: "donors",
 		};
 	},
 

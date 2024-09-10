@@ -47,7 +47,7 @@ export default {
 			return identifierParams.join("-");
 		},
 
-		prepareComponentIdentifier(externalComponentIdentifier, isDataCyIgnored = false) {
+		prepareComponentIdentifier(externalComponentIdentifier = "", isDataCyIgnored = false) {
 			if (externalComponentIdentifier?.length) {
 				return !isDataCyIgnored && this.dataCy?.length
 					? this.dataCy.concat("-", externalComponentIdentifier)

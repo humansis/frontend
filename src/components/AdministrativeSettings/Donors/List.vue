@@ -50,6 +50,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
+				data-cy="donors-export"
 				@export="onExportDonors"
 			/>
 		</template>
