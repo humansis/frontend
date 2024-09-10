@@ -445,6 +445,36 @@ const routes = [
 									description: "This page is where you can manage users.",
 								},
 							},
+							{
+								path: "add-user",
+								name: ROUTER.ROUTE_NAME.USERS.ADD,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE],
+									breadcrumb: "Add user",
+									description: "This page is a form to add a new user to a humansis.",
+								},
+							},
+							{
+								path: "user-detail/:userId",
+								name: ROUTER.ROUTE_NAME.USERS.DETAIL,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE],
+									breadcrumb: "User detail",
+									description: "This page is a form to show detail of a user in humansis.",
+								},
+							},
+							{
+								path: "user-edit/:userId",
+								name: ROUTER.ROUTE_NAME.USERS.EDIT,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE],
+									breadcrumb: "User edit",
+									description: "This page is a form to edit a user in humansis.",
+								},
+							},
 						],
 					},
 					{
