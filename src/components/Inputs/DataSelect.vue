@@ -39,7 +39,11 @@
 				:item="item"
 				name="custom-item"
 			>
-				<v-list-item v-bind="props" :title="$t(normalizeFirstLetter(item.title))" />
+				<v-list-item
+					v-bind="props"
+					:title="$t(normalizeFirstLetter(item.title))"
+					:disabled="item.raw?.isOptionDisabled"
+				/>
 			</slot>
 		</template>
 

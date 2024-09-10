@@ -26,7 +26,7 @@
 				:disabled="isDisabled"
 				:prepend-icon="icon"
 				:data-cy="identifierBuilder()"
-				color="primary"
+				color="blue-grey-lighten-4"
 				variant="elevated"
 				class="text-none"
 				@click.stop="onButtonClicked"

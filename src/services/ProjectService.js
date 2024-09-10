@@ -14,6 +14,12 @@ export default {
 		});
 	},
 
+	getListOfProjectsForDataAccess() {
+		return fetcher({
+			uri: "projects/data-accesses",
+		});
+	},
+
 	createProject(body) {
 		return fetcher({
 			uri: "projects",

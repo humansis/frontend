@@ -65,6 +65,21 @@ export default {
 			};
 		},
 
+		getUserEditPage(userId) {
+			return {
+				name: ROUTER.ROUTE_NAME.USERS.EDIT,
+				params: { userId },
+			};
+		},
+
+		getUserDetailPage(userId) {
+			return {
+				name: ROUTER.ROUTE_NAME.USERS.DETAIL,
+				params: { userId },
+			};
+		},
+
+
 		getImportPage(importId, query) {
 			return {
 				name: ROUTER.ROUTE_NAME.IMPORTS.NEW,
