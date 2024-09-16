@@ -22,15 +22,15 @@
 		/>
 
 		<FileUpload
-			v-model="formModel.dropFiles"
-			:error-messages="validationMsg('dropFiles')"
+			v-model="formModel.dropFile"
+			:error-messages="validationMsg('dropFile')"
 			:accept="allowedFileExtensions"
 			name="file"
 			prepend-icon=""
 			hide-details="auto"
 			variant="outlined"
 			density="compact"
-			@update:modelValue="onValidate('dropFiles')"
+			@update:modelValue="onValidate('dropFile')"
 		/>
 	</v-card-text>
 
@@ -47,7 +47,7 @@
 		</v-btn>
 
 		<v-btn
-			:disabled="formModel.dropFiles.length > 1"
+			:disabled="formModel.dropFile.name"
 			color="primary"
 			class="text-none ml-3"
 			variant="elevated"
@@ -83,7 +83,7 @@ export default {
 		return {
 			formModel: {
 				name: { required },
-				dropFiles: { required },
+				dropFile: { required },
 			},
 		};
 	},

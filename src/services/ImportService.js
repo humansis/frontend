@@ -38,12 +38,9 @@ export default {
 		});
 	},
 
-	uploadFilesIntoImport({ importId, files }) {
+	uploadFileIntoImport({ importId, file }) {
 		const formData = new FormData();
-
-		files.forEach((file) => {
-			formData.append(file.name, file);
-		});
+		formData.append(file.name, file);
 
 		return upload({
 			uri: `imports/${importId}/files`,

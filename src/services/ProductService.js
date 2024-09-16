@@ -39,7 +39,7 @@ export default {
 
 	uploadProductImage(image) {
 		const formData = new FormData();
-		formData.append("file", image[0]);
+		formData.append("file", image);
 
 		return upload({
 			uri: `products/images`,

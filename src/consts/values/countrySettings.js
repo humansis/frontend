@@ -61,7 +61,7 @@ export default {
 		SCORING_MODEL: {
 			name: "",
 			note: "",
-			dropFiles: [],
+			dropFile: [],
 			content: "",
 		},
 	},

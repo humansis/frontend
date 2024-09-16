@@ -2,7 +2,7 @@
 	<v-card class="pa-5">
 		<FileUpload
 			v-if="isUploadBoxVisible"
-			v-model="dropFiles"
+			v-model="dropFile"
 			:accept="allowedFileExtensions"
 			name="file"
 			prepend-icon=""
@@ -12,16 +12,6 @@
 			class="mt-4"
 			@update:modelValue="onFileUploadChange"
 		/>
-
-		<v-alert
-			v-if="dropFiles.length > 1"
-			variant="outlined"
-			type="warning"
-			border="top"
-			class="mt-4"
-		>
-			{{ $t('You can upload only one file.') }}
-		</v-alert>
 
 		<v-divider />
 
@@ -96,7 +86,7 @@ export default {
 
 	data() {
 		return {
-			dropFiles: [],
+			dropFile: [],
 			isFileValid: false,
 			changeStateButtonLoading: false,
 			startLoading: false,
@@ -107,7 +97,7 @@ export default {
 	computed: {
 		isStartImportDisabled() {
 			return this.importStatus !== IMPORT.STATUS.NEW
-				|| (this.dropFiles.length !== 1 || !this.importFiles.length)
+				|| (!this.dropFile.name && !this.importFiles.length)
 				|| !this.isFileValid;
 		},
 
@@ -150,28 +140,24 @@ export default {
 	},
 
 	methods: {
-		deleteDropFile(index) {
-			this.dropFiles.splice(index, 1);
-		},
-
 		async onStartImport() {
 			const { importId } = this.$route.params;
 			this.startLoading = true;
 
-			if (this.dropFiles.length) {
+			if (this.dropFile.name) {
 				try {
 					const {
 						status,
 						message,
-					} = await ImportService.uploadFilesIntoImport({
-						files: this.dropFiles,
+					} = await ImportService.uploadFileIntoImport({
+						file: this.dropFile,
 						importId,
 					});
 
 					checkResponseStatus(status, message);
 
 					Notification(this.$t("Uploaded Successfully"), "success");
-					this.dropFiles = [];
+					this.dropFile = [];
 					this.startLoading = false;
 					this.$emit("fetchStatistics");
 				} catch (e) {
@@ -195,7 +181,7 @@ export default {
 		},
 
 		onFileUploadChange() {
-			const file = this.dropFiles[0];
+			const file = this.dropFile;
 
 			this.isFileValid = file instanceof File
 				&& this.allowedFileExtensions.includes(file.type);
