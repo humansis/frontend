@@ -62,7 +62,7 @@ export default {
 				primaryColor: "",
 				secondaryColor: "",
 				footerContent: "",
-				uploadedImage: "",
+				uploadedImage: [],
 			},
 		};
 	},

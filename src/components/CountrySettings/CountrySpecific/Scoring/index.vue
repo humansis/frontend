@@ -75,13 +75,13 @@ export default {
 			const {
 				name,
 				note,
-				dropFiles,
+				dropFile,
 			} = scoringForm;
 
 			this.createScoring({
 				name,
 				note,
-				dropFiles,
+				dropFile,
 			});
 		},
 

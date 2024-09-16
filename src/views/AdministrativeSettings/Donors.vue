@@ -74,6 +74,7 @@ export default {
 				id: null,
 				fullname: "",
 				shortname: "",
+				uploadedImage: [],
 				logo: null,
 				notes: "",
 			},
