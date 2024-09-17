@@ -31,8 +31,8 @@ export default {
 		commit(CONST.STORE_GRID_FILTERS, gridFilters);
 	},
 
-	storeAvailableProjects: ({ commit }, projects) => {
-		commit(CONST.STORE_AVAILABLE_PROJECTS, projects);
+	storeAccessibleProjectIds: ({ commit }, projectIds) => {
+		commit(CONST.STORE_ACCESSIBLE_PROJECT_IDS, projectIds);
 	},
 
 	storeCountries: ({ commit }, countries) => {

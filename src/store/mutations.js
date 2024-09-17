@@ -45,8 +45,8 @@ export default {
 		});
 	},
 
-	[CONST.STORE_AVAILABLE_PROJECTS]: (state, projects) => {
-		state.availableProjects = projects;
+	[CONST.STORE_ACCESSIBLE_PROJECT_IDS]: (state, projectIds) => {
+		state.accessibleProjectIds = projectIds;
 	},
 
 	[CONST.STORE_GRID_FILTERS]: (state, gridFilters) => {

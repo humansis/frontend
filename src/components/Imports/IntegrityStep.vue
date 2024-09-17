@@ -72,7 +72,8 @@
 
 			<div class="d-flex flex-wrap ga-2 justify-space-between mt-4">
 				<v-btn
-					v-if="canCancelImport"
+					v-if="isCancelImportButtonVisible"
+					:disabled="!isAllProjectsAccessibleForThisImport"
 					color="error"
 					prepend-icon="ban"
 					class="text-none"
@@ -83,7 +84,8 @@
 
 				<div class="d-flex flex-wrap ga-2">
 					<v-btn
-						v-if="canUploadAndDownloadAffectedRecords"
+						v-if="isUploadAndDownloadAffectedRecordsButtonVisible"
+						:disabled="!isAllProjectsAccessibleForThisImport"
 						color="primary"
 						append-icon="file-upload"
 						class="text-none"
@@ -93,8 +95,9 @@
 					</v-btn>
 
 					<v-btn
-						v-if="canStartIntegrityCheckAgain"
+						v-if="isStartIntegrityCheckAgainButtonVisible"
 						:loading="startIntegrityCheckAgainLoading"
+						:disabled="!isAllProjectsAccessibleForThisImport"
 						color="primary"
 						append-icon="play-circle"
 						class="text-none"
@@ -104,8 +107,8 @@
 					</v-btn>
 
 					<v-btn
-						v-if="canStartIdentityCheck"
-						:disabled="!isImportLoaded || !isUserPermissionGranted(PERMISSIONS.IMPORT_MANAGE)"
+						v-if="isStartIdentityCheckButtonVisible"
+						:disabled="isStartIdentityCheckButtonDisabled"
 						:loading="changeStateButtonLoading"
 						color="primary"
 						append-icon="play-circle"
@@ -133,7 +136,7 @@
 
 	<v-card v-if="importFiles.length" class="pa-5 my-10">
 		<v-alert
-			v-if="canUploadAndDownloadAffectedRecords && isImportLoaded"
+			v-if="isUploadAndDownloadAffectedRecordsButtonVisible && isImportLoaded"
 			variant="outlined"
 			type="info"
 			border="start"
@@ -381,6 +384,11 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		isAllProjectsAccessibleForThisImport: {
+			type: Boolean,
+			default: true,
+		},
 	},
 
 	data() {
@@ -409,6 +417,12 @@ export default {
 			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK;
 		},
 
+		isStartIdentityCheckButtonDisabled() {
+			return !this.isImportLoaded
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_MANAGE)
+				|| !this.isAllProjectsAccessibleForThisImport;
+		},
+
 		totalEntries() {
 			return this.importStatistics?.totalEntries || 0;
 		},
@@ -429,21 +443,21 @@ export default {
 			return this.importStatistics?.amountIntegrityFailed || 0;
 		},
 
-		canStartIntegrityCheckAgain() {
+		isStartIntegrityCheckAgainButtonVisible() {
 			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED
 				&& this.dropFile.name;
 		},
 
-		canStartIdentityCheck() {
+		isStartIdentityCheckButtonVisible() {
 			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
 				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
-		canUploadAndDownloadAffectedRecords() {
+		isUploadAndDownloadAffectedRecordsButtonVisible() {
 			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
-		canCancelImport() {
+		isCancelImportButtonVisible() {
 			return this.importStatus !== IMPORT.STATUS.FINISH
 				&& this.importStatus !== IMPORT.STATUS.CANCEL
 				&& this.importStatus !== IMPORT.STATUS.IMPORTING;

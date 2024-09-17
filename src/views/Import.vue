@@ -69,6 +69,7 @@
 					:importFiles="importFiles"
 					:import-status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
+					:is-all-projects-accessible-for-this-import="isAllProjectsAccessibleForThisImport"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 					@moveStepForward="onChangeTab(2)"
@@ -84,6 +85,7 @@
 					:loading-change-state-button="loadingChangeStateButton"
 					:is-import-loaded="isImportLoaded"
 					:is-bad-file-version="isBadVersionOfImportFile"
+					:is-all-projects-accessible-for-this-import="isAllProjectsAccessibleForThisImport"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
@@ -94,6 +96,7 @@
 					:statistics="statistics"
 					:import-status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
+					:is-all-projects-accessible-for-this-import="isAllProjectsAccessibleForThisImport"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 					@updated="onFetchImportStatistics"
@@ -106,6 +109,7 @@
 					:statistics="statistics"
 					:import-status="importStatus"
 					:loading-change-state-button="loadingChangeStateButton"
+					:is-all-projects-accessible-for-this-import="isAllProjectsAccessibleForThisImport"
 					@canceledImport="onCancelImport"
 					@changeImportState="onChangeImportState"
 				/>
@@ -115,6 +119,7 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
 import ImportService from "@/services/ImportService";
 import ConfirmAction from "@/components/ConfirmAction";
 import FinalisationStep from "@/components/Imports/FinalisationStep";
@@ -122,6 +127,7 @@ import IdentityStep from "@/components/Imports/IdentityStep";
 import IntegrityStep from "@/components/Imports/IntegrityStep";
 import StartStep from "@/components/Imports/StartStep";
 import routerHelper from "@/mixins/routerHelper";
+import usersHelper from "@/mixins/usersHelper";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -138,7 +144,11 @@ export default {
 		ConfirmAction,
 	},
 
-	mixins: [vuetifyHelper, routerHelper],
+	mixins: [
+		vuetifyHelper,
+		routerHelper,
+		usersHelper,
+	],
 
 	data() {
 		return {
@@ -176,6 +186,8 @@ export default {
 	},
 
 	computed: {
+		...mapState(["user", "accessibleProjectIds"]),
+
 		importTitle() {
 			return this.importDetail?.title || "";
 		},
@@ -308,6 +320,12 @@ export default {
 		isBadVersionOfImportFile() {
 			return this.importFiles[0]?.failReason === IMPORT.FAIL_REASON.BAD_VERSION;
 		},
+
+		isAllProjectsAccessibleForThisImport() {
+			return this.importDetail?.projects?.map((project) => project.id).every(
+				(projectId) => this.accessibleProjectIds.includes(projectId),
+			);
+		},
 	},
 
 	watch: {
@@ -317,13 +335,14 @@ export default {
 	},
 
 	async created() {
-		this.fetchData();
+		await this.fetchData();
 		const currentStep = this.steps.find((step) => this.$route.query?.step === step?.slug);
 		this.activeStep = currentStep?.code || 1;
 	},
 
-	mounted() {
+	async mounted() {
 		this.isImportAutomaticallyCanceled(this.importStatus);
+		await this.getAndStoreUsersAccessibleProjectIds();
 	},
 
 	beforeUnmount() {
@@ -331,6 +350,10 @@ export default {
 	},
 
 	methods: {
+		...mapActions([
+			"storeAccessibleProjectIds",
+		]),
+
 		onChangeTab(data) {
 			const { slug, code } = this.steps.find((step) => step.code === data);
 
@@ -437,6 +460,11 @@ export default {
 			}
 		},
 
+		async getAndStoreUsersAccessibleProjectIds() {
+			const { projectIds } = await this.getDetailOfUser(this.user.userId);
+			await this.storeAccessibleProjectIds(projectIds);
+		},
+
 		stepsRedirect(status) {
 			const stepSlug = this.$route.query.step === IMPORT.STEPS_SLUG.FINALISATION
 				? IMPORT.STEPS_SLUG.FINALISATION
@@ -449,32 +477,39 @@ export default {
 				case IMPORT.STATUS.IMPORTING:
 				case IMPORT.STATUS.FINISH:
 					this.onChangeTab(4);
+
 					break;
 
 				case IMPORT.STATUS.SIMILARITY_CHECK_CORRECT:
 				case IMPORT.STATUS.SIMILARITY_CHECK_FAILED:
 				case IMPORT.STATUS.SIMILARITY_CHECK:
 					this.onChangeTab(4);
+
 					break;
 
 				case IMPORT.STATUS.IDENTITY_CHECK_CORRECT:
 					this.onChangeTab(tabIndex);
+
 					break;
 
 				case IMPORT.STATUS.IDENTITY_CHECK_FAILED:
 				case IMPORT.STATUS.IDENTITY_CHECK:
 					this.onChangeTab(3);
+
 					break;
 
 				case IMPORT.STATUS.INTEGRITY_CHECK_CORRECT:
 				case IMPORT.STATUS.INTEGRITY_CHECK_FAILED:
 				case IMPORT.STATUS.INTEGRITY_CHECK:
 					this.onChangeTab(2);
+
 					break;
 
 				case IMPORT.STATUS.NEW:
 				default:
 					this.onChangeTab(1);
+
+					break;
 			}
 		},
 

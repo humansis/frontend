@@ -88,6 +88,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ImportService from "@/services/ImportService";
 import DataGrid from "@/components/DataGrid";
 import Loading from "@/components/Loading";
@@ -192,6 +193,10 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["accessibleProjectIds"]),
+	},
+
 	created() {
 		this.getTotalCountOfDuplicities();
 		this.fetchData();
@@ -258,13 +263,20 @@ export default {
 
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
-				this.table.data[key].state = item.state;
-				this.table.data[key].familyName = [];
-				this.table.data[key].firstName = [];
-				this.table.data[key].idType = [];
-				this.table.data[key].idNumber = [];
-				this.table.data[key].recordFrom = [];
+				const isAllProjectsAccessibleForThisDuplicity = item.projectIds?.every(
+					(projectId) => this.accessibleProjectIds.includes(projectId),
+				);
+
+				this.table.data[key] = {
+					...item,
+					state: item.state,
+					familyName: [],
+					firstName: [],
+					idType: [],
+					idNumber: [],
+					recordFrom: [],
+					isAllProjectsAccessibleForThisDuplicity,
+				};
 
 				this.extractDataForTable(item, key);
 			});
@@ -505,12 +517,14 @@ export default {
 
 		isResolveFromHumansisButtonDisabled(index) {
 			return this.isDataForTableLoading(index)
+				|| !this.table.data[index].isAllProjectsAccessibleForThisDuplicity
 				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_RESOLVE_DUPLICITIES);
 		},
 
 		isResolveFromFileButtonDisabled(index) {
 			return this.isDataForTableLoading(index)
 				|| this.table.data[index].recordFrom?.includes("hasBeneficiaryIdDuplicity")
+				|| !this.table.data[index].isAllProjectsAccessibleForThisDuplicity
 				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_RESOLVE_DUPLICITIES);
 		},
 	},

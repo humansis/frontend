@@ -132,7 +132,8 @@
 
 		<div class="d-flex ga-2 flex-wrap mt-4">
 			<v-btn
-				v-if="canCancelImport"
+				v-if="isCancelImportVisible"
+				:disabled="!isAllProjectsAccessibleForThisImport"
 				color="warning"
 				prepend-icon="ban"
 				class="text-none"
@@ -142,8 +143,9 @@
 			</v-btn>
 
 			<v-btn
-				v-if="finalisationStepActive"
+				v-if="isFinalisationStepActive"
 				:loading="changeStateButtonLoading"
+				:disabled="!isAllProjectsAccessibleForThisImport"
 				color="primary"
 				prepend-icon="save"
 				class="text-none"
@@ -153,7 +155,7 @@
 			</v-btn>
 
 			<v-btn
-				v-if="finishedImport"
+				v-if="isImportFinished"
 				:to="{ name: ROUTER.ROUTE_NAME.IMPORTS.ROOT }"
 				:active="false"
 				color="primary"
@@ -163,7 +165,7 @@
 			</v-btn>
 
 			<v-btn
-				v-if="finishedImport"
+				v-if="isImportFinished"
 				:to="{ name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT }"
 				color="primary"
 				class="text-none"
@@ -172,7 +174,7 @@
 			</v-btn>
 
 			<v-btn
-				v-if="finishedImport && notImportedRows.length"
+				v-if="isImportFinished && notImportedRows.length"
 				color="info"
 				class="text-none"
 				@click="isNotImportedRowsVisible = true"
@@ -315,6 +317,11 @@ export default {
 			type: Boolean,
 			required: true,
 		},
+
+		isAllProjectsAccessibleForThisImport: {
+			type: Boolean,
+			default: true,
+		},
 	},
 
 	data() {
@@ -328,7 +335,7 @@ export default {
 	},
 
 	computed: {
-		finalisationStepActive() {
+		isFinalisationStepActive() {
 			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
@@ -364,7 +371,7 @@ export default {
 			return this.importStatistics?.amountEntriesToImport || 0;
 		},
 
-		finishedImport() {
+		isImportFinished() {
 			if (!this.importStatus) return false;
 
 			return this.importStatus === IMPORT.STATUS.FINISH
@@ -373,7 +380,7 @@ export default {
 				|| this.importStatus === IMPORT.STATUS.AUTOMATICALLY_CANCELED;
 		},
 
-		canCancelImport() {
+		isCancelImportVisible() {
 			return this.importStatus
 				&& this.importStatus !== IMPORT.STATUS.FINISH
 				&& this.importStatus !== IMPORT.STATUS.CANCEL
