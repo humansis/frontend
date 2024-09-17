@@ -11,18 +11,21 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION"
 				icon="print"
 				tooltip-text="Print"
 				@actionConfirmed="onPrint(row.id)"
@@ -36,6 +39,7 @@ import MyOrganizationsService from "@/services/MyOrganizationsService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -48,7 +52,7 @@ export default {
 		ButtonAction,
 	},
 
-	mixins: [grid],
+	mixins: [grid, permissions],
 
 	data() {
 		return {

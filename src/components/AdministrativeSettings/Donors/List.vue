@@ -13,22 +13,25 @@
 		@update:sortBy="onSort"
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.DONORS)"
-		@rowClicked="(row) => onShowDetail(row.item)"
+		@rowClicked="(row) => onShowDonorDetail(row.item)"
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"
@@ -137,6 +140,12 @@ export default {
 				Notification(`${this.$t("Donors")}: ${e.message || e}`, "error");
 			} finally {
 				this.isLoadingList = false;
+			}
+		},
+
+		onShowDonorDetail(item) {
+			if (this.isUserPermissionGranted(this.PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR)) {
+				this.onShowDetail(item);
 			}
 		},
 
