@@ -18,6 +18,7 @@
 
 		<div class="d-flex justify-end">
 			<v-btn
+				:disabled="!isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR)"
 				:data-cy="identifierBuilder('new-button')"
 				class="text-none ml-0 mb-3"
 				color="primary"

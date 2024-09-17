@@ -14,10 +14,11 @@
 		@update:sortBy="onSort"
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.DONORS)"
-		@rowClicked="(row) => onShowDetail(row.item)"
+		@rowClicked="(row) => onShowDonorDetail(row.item)"
 	>
 		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
@@ -25,6 +26,7 @@
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
@@ -32,6 +34,7 @@
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
@@ -144,6 +147,12 @@ export default {
 				Notification(`${this.$t("Donors")}: ${e.message || e}`, "error");
 			} finally {
 				this.isLoadingList = false;
+			}
+		},
+
+		onShowDonorDetail(item) {
+			if (this.isUserPermissionGranted(this.PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR)) {
+				this.onShowDetail(item);
 			}
 		},
 
