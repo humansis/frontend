@@ -100,7 +100,7 @@ export default {
 			"storeTranslations",
 			"storeCountries",
 			"storeCountry",
-			"storeAvailableProjects",
+			"storeAccessibleProjectIds",
 		]),
 
 		async login(accessToken) {
@@ -129,7 +129,7 @@ export default {
 
 				const userDetail = await this.getDetailOfUser(userId);
 
-				await this.storeAvailableProjects(userDetail.projectIds);
+				await this.storeAccessibleProjectIds(userDetail.projectIds);
 
 				const language = this.languages.find(({ key }) => key === userDetail?.language)
 					|| GENERAL.DEFAULT_LANGUAGE;

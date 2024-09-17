@@ -74,6 +74,7 @@
 				<div class="d-flex flex-wrap ga-2 justify-space-between mt-4">
 					<v-btn
 						v-if="canCancelImport"
+						:disabled="!isAllProjectsAccessibleForThisImport"
 						color="error"
 						prepend-icon="ban"
 						class="text-none"
@@ -120,7 +121,7 @@
 						<v-btn
 							v-if="isGoToFinalisationButtonVisible"
 							:loading="changeStateButtonLoading"
-							:disabled="!isUserPermissionGranted(PERMISSIONS.IMPORT_MANAGE)"
+							:disabled="isGoToFinalisationButtonDisabled"
 							color="primary"
 							append-icon="play-circle"
 							class="text-none"
@@ -188,6 +189,11 @@ export default {
 			type: String,
 			default: "",
 		},
+
+		isAllProjectsAccessibleForThisImport: {
+			type: Boolean,
+			default: true,
+		},
 	},
 
 	data() {
@@ -236,6 +242,11 @@ export default {
 
 		isCheckingIdentity() {
 			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK;
+		},
+
+		isGoToFinalisationButtonDisabled() {
+			return !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_MANAGE)
+				|| !this.isAllProjectsAccessibleForThisImport;
 		},
 
 		canResolveDuplicities() {

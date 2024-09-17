@@ -17,7 +17,8 @@
 
 		<div class="d-flex justify-space-between mt-4">
 			<v-btn
-				v-if="canCancelImport"
+				v-if="isCancelImportButtonVisible"
+				:disabled="!isAllProjectsAccessibleForThisImport"
 				color="warning"
 				class="text-none"
 				variant="elevated"
@@ -29,7 +30,7 @@
 
 			<v-btn
 				v-if="canStartImport"
-				:disabled="isStartImportDisabled || !isUserPermissionGranted(PERMISSIONS.IMPORT_MANAGE)"
+				:disabled="isStartImportButtonDisabled"
 				:loading="loadingChangeStateButton || startLoading"
 				color="primary"
 				class="text-none"
@@ -82,6 +83,11 @@ export default {
 			type: Boolean,
 			required: true,
 		},
+
+		isAllProjectsAccessibleForThisImport: {
+			type: Boolean,
+			default: true,
+		},
 	},
 
 	data() {
@@ -95,29 +101,22 @@ export default {
 	},
 
 	computed: {
-		isStartImportDisabled() {
+		isStartImportButtonDisabled() {
 			return this.importStatus !== IMPORT.STATUS.NEW
 				|| (!this.dropFile.name && !this.importFiles.length)
-				|| !this.isFileValid;
-		},
-
-		isStatusNew() {
-			return this.importStatus === IMPORT.STATUS.NEW;
+				|| !this.isFileValid
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_MANAGE)
+				|| !this.isAllProjectsAccessibleForThisImport;
 		},
 
 		canStartImport() {
 			return this.importStatus === IMPORT.STATUS.NEW || this.importFiles.length;
 		},
 
-		canCancelImport() {
+		isCancelImportButtonVisible() {
 			return this.importStatus !== IMPORT.STATUS.FINISH
 				&& this.importStatus !== IMPORT.STATUS.CANCEL
 				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
-		},
-
-		isUploadStarted() {
-			return this.startLoading
-				|| this.importStatus === IMPORT.STATUS.UPLOADING;
 		},
 
 		isUploadBoxVisible() {

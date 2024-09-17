@@ -28,7 +28,7 @@ export default {
 		username: null,
 	},
 	lastUsername: null,
-	availableProjects: null,
+	accessibleProjectIds: [],
 	countries: [],
 	country: {
 		name: null,
