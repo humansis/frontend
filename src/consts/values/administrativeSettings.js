@@ -5,5 +5,6 @@ export default {
 		MY_ORGANIZATIONS: "myOrganizations",
 		ORGANIZATION_SERVICES: "organizationServices",
 		SYNC: "sync",
+		ROLES: "roles",
 	},
 };

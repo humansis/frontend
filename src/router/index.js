@@ -517,6 +517,52 @@ const routes = [
 							description: "This page is where you can manage sync.",
 						},
 					},
+					{
+						path: "roles",
+						component: RouterView,
+						children: [
+							{
+								path: "",
+								name: ROUTER.ROUTE_NAME.ROLES.ROOT,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/Roles"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Roles",
+									description: "This page is where you can manage roles.",
+								},
+							},
+							{
+								path: "add-role",
+								name: ROUTER.ROUTE_NAME.ROLES.ADD,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/RolesManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Add role",
+									description: "This page is a form to add a new role to a humansis.",
+								},
+							},
+							{
+								path: "role-detail/:roleId",
+								name: ROUTER.ROUTE_NAME.ROLES.DETAIL,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/RolesManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Role detail",
+									description: "This page is a form to show detail of a role in humansis.",
+								},
+							},
+							{
+								path: "role-edit/:roleId",
+								name: ROUTER.ROUTE_NAME.ROLES.EDIT,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/RolesManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Role edit",
+									description: "This page is a form to edit a role in humansis.",
+								},
+							},
+						],
+					},
 				],
 			},
 			{

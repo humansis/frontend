@@ -19,6 +19,7 @@ export default {
 		PURCHASE_LIST: { key: "datePurchase", order: "desc" },
 		SMARTCARD_PURCHASED: { key: "datePurchase", order: "desc" },
 		USERS: { key: "id", order: "desc" },
+		ROLES: { key: "id", order: "desc" },
 		VENDORS: { key: "id", order: "asc" },
 		VOUCHERS: { key: "code", order: "desc" },
 	},
