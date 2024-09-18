@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		data-cy="donors-table"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
