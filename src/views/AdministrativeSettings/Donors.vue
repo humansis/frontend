@@ -9,8 +9,8 @@
 				:submit-button-label="donorModal.isEditing ? 'Update' : 'Create'"
 				:form-disabled="donorModal.isDetail"
 				close-button
-				@formSubmitted="submitDonorForm"
-				@formClosed="closeDonorModal"
+				@formSubmitted="onSubmitDonorForm"
+				@formClosed="onCloseDonorModal"
 			/>
 		</Modal>
 
@@ -23,7 +23,7 @@
 				class="text-none ml-0 mb-3"
 				color="primary"
 				prepend-icon="plus"
-				@click="addNewDonor"
+				@click="onAddNewDonor"
 			>
 				{{ $t('Add') }}
 			</v-btn>
@@ -31,9 +31,9 @@
 
 		<DonorsList
 			ref="donorsList"
-			@delete="removeDonor"
-			@showEdit="editDonor"
-			@showDetail="showDetail"
+			@delete="onRemoveDonor"
+			@showEdit="onEditDonor"
+			@showDetail="onShowDetail"
 		/>
 	</v-container>
 </template>
@@ -98,7 +98,7 @@ export default {
 	},
 
 	methods: {
-		showDetail(donor) {
+		onShowDetail(donor) {
 			this.mapToFormModel(donor);
 			this.donorModal = {
 				isEditing: false,
@@ -127,11 +127,11 @@ export default {
 			};
 		},
 
-		closeDonorModal() {
+		onCloseDonorModal() {
 			this.donorModal.isOpened = false;
 		},
 
-		editDonor(donor) {
+		onEditDonor(donor) {
 			this.mapToFormModel(donor);
 			this.donorModal = {
 				isEditing: true,
@@ -141,7 +141,7 @@ export default {
 			};
 		},
 
-		addNewDonor() {
+		onAddNewDonor() {
 			this.donorModal = {
 				isEditing: false,
 				isOpened: true,
@@ -159,7 +159,7 @@ export default {
 			};
 		},
 
-		submitDonorForm(donorForm) {
+		onSubmitDonorForm(donorForm) {
 			const {
 				id,
 				fullname,
@@ -198,7 +198,7 @@ export default {
 				await this.uploadImage(data.id, image);
 				Notification(this.$t("Donor Successfully Created"), "success");
 				await this.$refs.donorsList.fetchData();
-				this.closeDonorModal();
+				this.onCloseDonorModal();
 			} catch (e) {
 				Notification(`${this.$t("Donor")}: ${e.message || e}`, "error");
 			} finally {
@@ -221,7 +221,7 @@ export default {
 				await this.uploadImage(data.id, image);
 				Notification(this.$t("Donor Successfully Updated"), "success");
 				await this.$refs.donorsList.fetchData();
-				this.closeDonorModal();
+				this.onCloseDonorModal();
 			} catch (e) {
 				Notification(`${this.$t("Donor")}: ${e.message || e}`, "error");
 			} finally {
@@ -247,7 +247,7 @@ export default {
 			}
 		},
 
-		async removeDonor(id) {
+		async onRemoveDonor(id) {
 			try {
 				const {
 					status,

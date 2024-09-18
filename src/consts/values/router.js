@@ -53,6 +53,12 @@ export default {
 			DETAIL: "userDetail",
 			EDIT: "userEdit",
 		},
+		ROLES: {
+			ROOT: "roles",
+			ADD: "addRole",
+			DETAIL: "roleDetail",
+			EDIT: "roleEdit",
+		},
 		TRANSACTIONS: {
 			ROOT: "transactions",
 			ASSISTANCES: "transactionsAssistances",

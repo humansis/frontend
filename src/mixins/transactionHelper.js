@@ -70,7 +70,7 @@ export default {
 					const project = projects.find(({ id }) => id === item.projectId);
 
 					this.table.data[key].project = {
-						routeName: "Project",
+						routeName: ROUTER.ROUTE_NAME.ASSISTANCES.ROOT,
 						name: project?.name,
 						routeParams: { projectId: project?.id || 1 },
 					};

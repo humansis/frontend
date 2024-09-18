@@ -195,10 +195,10 @@
 		<v-row class="mt-5">
 			<v-col class="d-flex justify-end">
 				<v-btn
+					:to="{ name: ROUTER.ROUTE_NAME.USERS.ROOT }"
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="text-none"
-					@click="goBack"
 				>
 					{{ goBackButtonName }}
 				</v-btn>
@@ -262,6 +262,7 @@ export default {
 
 	data() {
 		return {
+			ROUTER,
 			pageTitle: "",
 			userAction: {},
 			dataForDataAccessCopy: [],
@@ -329,7 +330,7 @@ export default {
 		},
 	},
 
-	async mounted() {
+	async created() {
 		this.getUserAction();
 		this.loadLanguages();
 		this.mapSelects();
@@ -397,7 +398,7 @@ export default {
 
 				this.prepareDataForDataAccess(data);
 
-				if (!this.userAction.isCreate) {
+				if (!this.userAction.isCreate && !this.isUserRoleAdmin) {
 					await this.updateDataForDataAccess(this.formModel.countries, this.formModel.projectIds);
 					this.setupForAllFutureProjectsSettings();
 				}
@@ -418,7 +419,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await RolesService.getListOfRoles();
+				} = await RolesService.getListOfRoles({});
 
 				checkResponseStatus(status, message);
 
@@ -438,10 +439,6 @@ export default {
 
 			this.submitUserForm(this.formModel);
 			this.v$.$reset();
-		},
-
-		goBack() {
-			this.$router.push({ name: ROUTER.ROUTE_NAME.USERS.ROOT });
 		},
 
 		getUserAction() {
@@ -624,7 +621,7 @@ export default {
 			);
 		},
 
-		updateDataForDataAccess(countriesAccessData, projectIdsWithAccess) {
+		async updateDataForDataAccess(countriesAccessData, projectIdsWithAccess) {
 			countriesAccessData.forEach((countryAccess) => {
 				const countryData = this.formModel.dataForDataAccess.find(
 					(data) => data.iso3 === countryAccess.iso3,
@@ -745,7 +742,7 @@ export default {
 					...this.autoProjectManagerModal,
 					isOpened: true,
 					isUnselect: true,
-					title: "Unselect projects?",
+					title: "Unselect projects automatically?",
 					message: `If you want to remove the data access to the country (${this.autoProjectManagerModal.countryNameForLastEditedGroup}),
 					 it is necessary to remove data access to the following projects at the same time. Do you want to remove the data access automatically?`,
 				};
@@ -754,7 +751,7 @@ export default {
 					...this.autoProjectManagerModal,
 					isOpened: true,
 					isUnselect: false,
-					title: "Select country?",
+					title: "Select country automatically?",
 					message: `If you want to add the data access to the project (${this.autoProjectManagerModal.projectNameForLastEdit}),
 					 it is necessary to add data access to the following country at the same time. Do you want to add the data access automatically?`,
 				};
