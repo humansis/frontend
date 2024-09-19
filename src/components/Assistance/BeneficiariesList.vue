@@ -362,7 +362,7 @@ import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, GENERAL, INSTITUTION, PERMISSIONS, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, GENERAL, INSTITUTION, TABLE } from "@/consts";
 
 const statusTags = [
 	{ code: "To distribute", class: "status to-distribute" },
@@ -874,7 +874,7 @@ export default {
 			];
 
 			if (EXPORT_TYPES_UNDER_PERMISSION.includes(type)) {
-				this.exportRequiredPermissions = PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_EXPORTS;
+				this.exportRequiredPermissions = this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_EXPORTS;
 			} else {
 				this.exportRequiredPermissions = null;
 			}

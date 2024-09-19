@@ -1,4 +1,3 @@
-import { PERMISSIONS } from "@/consts";
 import getters from "@/store/getters";
 
 export const isUserPermissionGranted = (requiredPermissions) => {
@@ -14,5 +13,4 @@ export const isUserPermissionGranted = (requiredPermissions) => {
 
 export default {
 	isUserPermissionGranted,
-	PERMISSIONS,
 };

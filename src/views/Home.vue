@@ -20,7 +20,6 @@ import HomeSummary from "@/components/Home/HomeSummary";
 import UpcomingAssistances from "@/components/Home/UpcomingAssistances";
 import permissions from "@/mixins/permissions";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
-import { PERMISSIONS } from "@/consts";
 
 export default {
 	name: "HomePage",
@@ -32,11 +31,5 @@ export default {
 	},
 
 	mixins: [vuetifyHelper, permissions],
-
-	data() {
-		return {
-			PERMISSIONS,
-		};
-	},
 };
 </script>

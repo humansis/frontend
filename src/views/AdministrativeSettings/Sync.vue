@@ -62,12 +62,10 @@ export default {
 			};
 		},
 
-		mapToFormModel(
-			{
-				rawData,
-				violations,
-			},
-		) {
+		mapToFormModel({
+			rawData,
+			violations,
+		}) {
 			this.syncModel = {
 				...this.syncModel,
 				rawData: this.parseJSON(rawData),

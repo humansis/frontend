@@ -32,12 +32,12 @@
 		</v-tabs>
 
 		<v-window v-model="selectedTab">
-			<v-window-item value="items">
-				<Items v-if="isItemsVisible" />
+			<v-window-item v-if="isItemsVisible" value="items">
+				<Items />
 			</v-window-item>
 
-			<v-window-item value="categories">
-				<Categories v-if="isCategoriesVisible" />
+			<v-window-item v-if="isCategoriesVisible" value="categories">
+				<Categories />
 			</v-window-item>
 		</v-window>
 	</v-container>
