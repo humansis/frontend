@@ -414,11 +414,17 @@ const routes = [
 				redirect: () => {
 					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_USER)) {
 						return { name: ROUTER.ROUTE_NAME.USERS.ROOT };
-					} if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR)) {
+					}
+
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR)) {
 						return { name: ROUTER.ROUTE_NAME.DONORS };
-					} if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION)) {
+					}
+
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION)) {
 						return { name: ROUTER.ROUTE_NAME.MY_ORGANIZATIONS };
-					} if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION_SERVICES)) {
+					}
+
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION_SERVICES)) {
 						return { name: ROUTER.ROUTE_NAME.ORGANIZATION_SERVICES };
 					}
 

@@ -86,7 +86,7 @@ export default {
 
 	methods: {
 		onRedirectToTab(selectedTab) {
-			const pageName = this.tabs.find((tab) => tab.value === selectedTab)?.pageName;
+			const { pageName } = this.tabs.find((tab) => tab.value === selectedTab);
 
 			if (pageName) {
 				this.$router.push({ name: pageName });
