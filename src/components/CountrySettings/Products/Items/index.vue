@@ -77,7 +77,7 @@ export default {
 				unitPrice: 0,
 				currency: "",
 				image: [],
-				uploadedImage: [],
+				uploadedImage: null,
 			},
 			categories: [],
 			currencies: CURRENCIES,
@@ -195,7 +195,7 @@ export default {
 				unit: "",
 				unitPrice: 0,
 				currency: "",
-				uploadedImage: [],
+				uploadedImage: null,
 			};
 		},
 

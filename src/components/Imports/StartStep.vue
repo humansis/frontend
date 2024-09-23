@@ -92,7 +92,7 @@ export default {
 
 	data() {
 		return {
-			dropFile: [],
+			dropFile: null,
 			isFileValid: false,
 			changeStateButtonLoading: false,
 			startLoading: false,
