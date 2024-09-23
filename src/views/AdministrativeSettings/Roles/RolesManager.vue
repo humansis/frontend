@@ -56,6 +56,7 @@
 					is-note-panel-visible
 					@data-in-group-updated="checkboxStatusUpdatedInGroup"
 					@selected-all="selectedAllPermissionsInGroup"
+					@unselected-all="unselectedPermissionsInGroup"
 				/>
 			</v-card-text>
 		</v-card>
@@ -128,6 +129,7 @@ export default {
 				title: "",
 				message: "",
 				selectedPermission: {},
+				isSelectAllOrUnselectAll: false,
 			},
 		};
 	},
@@ -328,37 +330,58 @@ export default {
 					(permission) => permission.key === dependency,
 				);
 
-				if (dependencyPermission) {
-					if (!dependencyPermission.isSelected) {
-						unselectedPermissions.push(dependencyPermission);
-					}
+				if (!dependencyPermission) return;
 
-					if (dependencyPermission.dependencies && dependencyPermission.dependencies.length > 0) {
-						unselectedPermissions = [
-							...unselectedPermissions,
-							...this.getUnselectedDependencies(
-								dependencyPermission.dependencies,
-								allPermissions,
-							),
-						];
-					}
+				if (!dependencyPermission.isSelected) {
+					unselectedPermissions.push(dependencyPermission);
+				}
+
+				if (dependencyPermission.dependencies && dependencyPermission.dependencies.length > 0) {
+					unselectedPermissions = [
+						...unselectedPermissions,
+						...this.getUnselectedDependencies(
+							dependencyPermission.dependencies,
+							allPermissions,
+						),
+					];
 				}
 			});
 
 			return unselectedPermissions;
 		},
 
-		checkboxStatusUpdatedInGroup({ groupIndex, dataAccess }) {
-			if (!dataAccess) return;
+		getSelectedDependencies(dependencyKey, allPermissions) {
+			let selectedPermissions = [];
 
-			const { dependencies } = dataAccess;
+			allPermissions.forEach((permission) => {
+				if (!permission.dependencies.includes(dependencyKey) || !permission.isSelected) return;
+
+				selectedPermissions.push(permission);
+
+				if (!permission.dependencies || permission.dependencies.length === 0) return;
+
+				selectedPermissions = [
+					...selectedPermissions,
+					...this.getSelectedDependencies(permission.key, allPermissions),
+				];
+			});
+
+			return selectedPermissions;
+		},
+
+		checkboxStatusUpdatedInGroup({ group, groupIndex, dataAccess }) {
 			const selectedPermission = dataAccess;
 
 			this.autoPermissionManagerModal = {
 				...this.autoPermissionManagerModal,
 				selectedPermission,
+				group,
 				groupIndex,
 			};
+
+			if (!dataAccess) return;
+
+			const { dependencies } = dataAccess;
 
 			if (dataAccess.isSelected) {
 				const notSelectedPermissionsForDependencies = Object.values(
@@ -368,51 +391,86 @@ export default {
 					permissionsGroup.permissions,
 				));
 
-				if (notSelectedPermissionsForDependencies.length) {
-					this.autoPermissionManagerModal = {
-						...this.autoPermissionManagerModal,
-						isOpened: true,
-						isUnselect: false,
-						title: "Select permissions automatically?",
-						message: `If you want to select (${selectedPermission.label}) permission,
+				this.autoSelectModalData([selectedPermission.label], notSelectedPermissionsForDependencies);
+			} else {
+				const selectedPermissionsAsDependencies = Object.values(
+					this.formModel.dataForPermissions,
+				).flatMap((permissionsGroup) => this.getSelectedDependencies(
+					selectedPermission.key,
+					permissionsGroup.permissions,
+				));
+
+				this.autoUnselectModalData(
+					[selectedPermission.key],
+					[selectedPermission.label],
+					selectedPermissionsAsDependencies,
+				);
+			}
+		},
+
+		autoSelectModalData(
+			selectedPermissionsLabel,
+			notSelectedPermissionsForDependencies,
+			isSelectAllOrUnselectAll = false,
+		) {
+			if (!notSelectedPermissionsForDependencies.length) return;
+
+			const regardingPermissionsText = selectedPermissionsLabel
+				? `(${selectedPermissionsLabel.join(", ")})`
+				: "";
+
+			this.autoPermissionManagerModal = {
+				...this.autoPermissionManagerModal,
+				isOpened: true,
+				isUnselect: false,
+				title: "Select permissions automatically?",
+				message: `If you want to select ${regardingPermissionsText} permission,
 					 it is necessary to select prerequisites for this permission.
 					 Do you want to assign prerequisites permissions automatically?`,
-						dependenciesPermissions: notSelectedPermissionsForDependencies,
-					};
-				}
-			} else {
-				const selectedPermissionsAsDependencies = Object.values(this.formModel.dataForPermissions)
-					.flatMap((permissionsGroup) => permissionsGroup.permissions.filter(
-						(permission) => permission.dependencies.includes(selectedPermission.key)
-							&& permission.isSelected,
-					));
+				dependenciesPermissions: notSelectedPermissionsForDependencies,
+				isSelectAllOrUnselectAll,
+			};
+		},
 
-				if (selectedPermissionsAsDependencies.length) {
-					this.autoPermissionManagerModal = {
-						...this.autoPermissionManagerModal,
-						isOpened: true,
-						isUnselect: true,
-						title: "Unselect permissions automatically?",
-						message: `If you want to unselect (${selectedPermission.label}) permission,
+		autoUnselectModalData(
+			selectedPermissionsKeys,
+			selectedPermissionsLabel,
+			selectedPermissionsAsDependencies,
+			isSelectAllOrUnselectAll = false,
+		) {
+			if (!selectedPermissionsAsDependencies.length) return;
+
+			const regardingPermissionsText = selectedPermissionsLabel
+				? `(${selectedPermissionsLabel.join(", ")})`
+				: "";
+
+			this.autoPermissionManagerModal = {
+				...this.autoPermissionManagerModal,
+				isOpened: true,
+				isUnselect: true,
+				title: "Unselect permissions automatically?",
+				message: `If you want to unselect ${regardingPermissionsText} permission,
 					 it is necessary to unselected permissions which have this permission as prerequisites.
-					 Do you want to unassign permissions automatically?`,
-						dependenciesPermissions: selectedPermissionsAsDependencies,
-					};
-				}
-			}
+					 Do you want to un assign permissions automatically?`,
+				dependenciesPermissions: selectedPermissionsAsDependencies,
+				isSelectAllOrUnselectAll,
+				selectedPermissionsKeys,
+			};
 		},
 
 		unselectOrSelectPermissions() {
 			const {
+				selectedPermissionsKeys,
 				isUnselect,
 				dependenciesPermissions,
-				selectedPermission,
 			} = this.autoPermissionManagerModal;
 
 			if (isUnselect) {
 				Object.entries(this.formModel.dataForPermissions).forEach(([key]) => {
 					this.formModel.dataForPermissions[key].permissions.forEach((permission, index) => {
-						if (permission.dependencies.includes(selectedPermission.key)) {
+						if (selectedPermissionsKeys.some(
+							(selectedPermissionKey) => permission.dependencies.includes(selectedPermissionKey),
+						)) {
 							this.formModel.dataForPermissions[key].permissions[index].isSelected = false;
 						}
 					});
@@ -429,9 +487,16 @@ export default {
 		},
 
 		closeAutoPermissionsManagerModal() {
-			const { groupIndex, isUnselect, selectedPermission } = this.autoPermissionManagerModal;
+			const {
+				group,
+				groupIndex,
+				isUnselect,
+				selectedPermission,
+				isSelectAllOrUnselectAll,
+				dependenciesPermissions,
+			} = this.autoPermissionManagerModal;
 
-			if (isUnselect) {
+			if (isUnselect && !isSelectAllOrUnselectAll) {
 				const isDependenciesUnselected = Object.values(this.formModel.dataForPermissions)
 					.every((permissionsGroup) => permissionsGroup.permissions
 						.filter((permission) => permission.dependencies.includes(selectedPermission.key))
@@ -442,7 +507,7 @@ export default {
 				this.formModel.dataForPermissions[groupIndex].permissions.find(
 					(permission) => permission.key === selectedPermission.key,
 				).isSelected = true;
-			} else {
+			} else if (!isUnselect && !isSelectAllOrUnselectAll) {
 				const isDependenciesSelected = Object.values(this.formModel.dataForPermissions)
 					.every((permissionsGroup) => permissionsGroup.permissions
 						.filter((permission) => selectedPermission.dependencies.includes(permission.key))
@@ -453,25 +518,120 @@ export default {
 				this.formModel.dataForPermissions[groupIndex].permissions.find(
 					(permission) => permission.key === selectedPermission.key,
 				).isSelected = false;
+			} else if (!isUnselect && isSelectAllOrUnselectAll) {
+				const dependenciesPermissionsKeys = dependenciesPermissions.map(
+					(permission) => permission.key,
+				);
+				const isDependenciesSelected = Object.values(this.formModel.dataForPermissions)
+					.every((permissionsGroup) => permissionsGroup.permissions
+						.filter((permission) => dependenciesPermissionsKeys.includes(permission.key))
+						.every((permission) => permission.isSelected));
+
+				if (isDependenciesSelected) return;
+
+				this.$refs.accessManager.selectOrUnselectAllDataInGroup(
+					group,
+					groupIndex,
+					false,
+				);
+			} else {
+				const allGroupPermissionsKeys = this.formModel.dataForPermissions[groupIndex]
+					.permissions.map((permission) => permission.key);
+				const conflictedPermissions = Object.entries(this.formModel.dataForPermissions)
+					.flatMap(([, propertyValue]) => (
+						propertyValue.permissions.filter((permission) => permission.isSelected
+							&& permission.dependencies.some(
+								(dependency) => allGroupPermissionsKeys.includes(dependency),
+							))
+					));
+				const dependenciesPermissionsKeys = conflictedPermissions.map(
+					(permission) => permission.key,
+				);
+				const isConflictedPermissionSelected = Object.values(this.formModel.dataForPermissions)
+					.every((permissionsGroup) => permissionsGroup.permissions
+						.filter((permission) => dependenciesPermissionsKeys.includes(permission.key))
+						.every((permission) => permission.isSelected));
+				const conflictedPermissionsDependencies = [...new Set(conflictedPermissions.flatMap(
+					(permission) => permission.dependencies,
+				))];
+				const selectedPermissionsKeys = this.formModel.dataForPermissions[groupIndex].permissions
+					.filter((permission) => conflictedPermissionsDependencies.includes(permission.key))
+					.map((permission) => permission.key);
+
+				if (!isConflictedPermissionSelected) return;
+
+				Object.entries(this.formModel.dataForPermissions).forEach(([key]) => {
+					this.formModel.dataForPermissions[key].permissions.forEach((permission, index) => {
+						if (selectedPermissionsKeys.includes(permission.key)) {
+							this.formModel.dataForPermissions[key].permissions[index].isSelected = true;
+						}
+					});
+				});
 			}
 
 			this.autoPermissionManagerModal.isOpened = false;
 		},
 
-		selectedAllPermissionsInGroup(groupIndex) {
-			const allDependenciesForGroupPermissions = [
+		getAllDependenciesForGroupPermissions(groupIndex) {
+			return [
 				...new Set(this.formModel.dataForPermissions[groupIndex].permissions.flatMap(
 					(permission) => permission.dependencies,
 				)),
 			];
+		},
 
-			// eslint-disable-next-line no-unused-vars
+		selectedAllPermissionsInGroup(groupIndex) {
+			const allDependenciesForGroupPermissions = this.getAllDependenciesForGroupPermissions(
+				groupIndex,
+			);
+
 			const notSelectedPermissionsForDependencies = Object.values(
 				this.formModel.dataForPermissions,
 			).flatMap((permissionsGroup) => this.getUnselectedDependencies(
 				allDependenciesForGroupPermissions,
 				permissionsGroup.permissions,
 			));
+			const conflictedPermissions = this.formModel.dataForPermissions[groupIndex].permissions
+				.filter((permission) => permission.dependencies.some(
+					(dependency) => notSelectedPermissionsForDependencies
+						.map((notSelectedDependency) => notSelectedDependency.key).includes(dependency),
+				));
+			const selectedPermissionsLabel = conflictedPermissions.map((permission) => permission.label);
+
+			this.autoSelectModalData(
+				selectedPermissionsLabel,
+				notSelectedPermissionsForDependencies,
+				true,
+			);
+		},
+
+		unselectedPermissionsInGroup(groupIndex) {
+			const allGroupPermissionsKeys = this.formModel.dataForPermissions[groupIndex].permissions.map(
+				(permission) => permission.key,
+			);
+			const conflictedPermissions = Object.entries(this.formModel.dataForPermissions)
+				.flatMap(([, propertyValue]) => (
+					propertyValue.permissions.filter((permission) => permission.isSelected
+						&& permission.dependencies.some(
+							(dependency) => allGroupPermissionsKeys.includes(dependency),
+						))
+				));
+			const conflictedPermissionsDependencies = [...new Set(conflictedPermissions.flatMap(
+				(permission) => permission.dependencies,
+			))];
+			const selectedPermissionsLabel = this.formModel.dataForPermissions[groupIndex].permissions
+				.filter((permission) => conflictedPermissionsDependencies.includes(permission.key))
+				.map((permission) => permission.label);
+			const conflictedPermissionsKeys = this.formModel.dataForPermissions[groupIndex].permissions
+				.filter((permission) => conflictedPermissionsDependencies.includes(permission.key))
+				.map((permission) => permission.key);
+
+			this.autoUnselectModalData(
+				conflictedPermissionsKeys,
+				selectedPermissionsLabel,
+				conflictedPermissions,
+				true,
+			);
 		},
 
 		getRoleAction() {
