@@ -396,7 +396,7 @@ export default {
 			amountIntegrityCorrectIncrement: 0,
 			amountIntegrityFailedIncrement: 0,
 			importStatistics: {},
-			dropFile: [],
+			dropFile: null,
 			startIntegrityCheckAgainLoading: false,
 			downloadAffectedRecordsLoading: false,
 			changeStateButtonLoading: false,

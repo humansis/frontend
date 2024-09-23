@@ -1,16 +1,16 @@
 <template>
-	<v-container fluid>
+	<v-container v-if="isUserPermissionGranted(PERMISSIONS.HOME_PAGE)" fluid>
 		<v-row :class="{ 'flex-column': isMobile }">
-			<v-col v-if="isUserPermissionGranted(PERMISSIONS.HOME_PAGE)" class="mb-4">
+			<v-col class="mb-4">
 				<DistributionMap />
 			</v-col>
 
-			<v-col v-if="isUserPermissionGranted(PERMISSIONS.HOME_PAGE)" class="mb-4">
+			<v-col class="mb-4">
 				<HomeSummary />
 			</v-col>
 		</v-row>
 
-		<UpcomingAssistances v-if="isUserPermissionGranted(PERMISSIONS.HOME_PAGE)" />
+		<UpcomingAssistances />
 	</v-container>
 </template>
 
