@@ -22,8 +22,18 @@
 			@update:modelValue="onValidate('shortname')"
 		/>
 
-		<span v-if="!formDisabled">{{ $t('Image') }}
-			<i class="optional-text">- {{ $t('Optional') }}</i>
+		<span
+			v-if="!formDisabled"
+			:data-cy="identifierBuilder('image-text')"
+		>
+			{{ $t('Image') }}
+
+			<i
+				:data-cy="identifierBuilder('image-optional-text')"
+				class="optional-text"
+			>
+				- {{ $t('Optional') }}
+			</i>
 		</span>
 
 		<FileUpload
@@ -42,7 +52,7 @@
 		<v-img
 			v-if="formDisabled && formModel.logo"
 			:src="formModel.logo"
-			:data-cy="prepareComponentIdentifier()"
+			:data-cy="identifierBuilder('image')"
 			alt="donor-image"
 			height="125"
 			class="mb-4"

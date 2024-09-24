@@ -6,7 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
-		data-cy="donors-table"
+		:data-cy="dataCy"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -16,8 +16,9 @@
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.DONORS)"
 		@rowClicked="(row) => onShowDetail(row.item)"
 	>
-		<template v-slot:actions="{ row }">
+		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
@@ -25,6 +26,7 @@
 
 			<ButtonAction
 				v-if="userCan.addEditDonors"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
@@ -32,6 +34,7 @@
 
 			<ButtonAction
 				v-if="userCan.addEditDonors"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"
@@ -64,6 +67,7 @@ import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
@@ -80,7 +84,7 @@ export default {
 		DataGrid,
 	},
 
-	mixins: [grid, permissions],
+	mixins: [grid, permissions, identifierBuilder],
 
 	data() {
 		return {
@@ -107,6 +111,7 @@ export default {
 				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.DONORS.key,
 				searchPhrase: "",
 			},
+			dataCy: "donors-table",
 		};
 	},
 
