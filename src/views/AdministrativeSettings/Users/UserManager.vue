@@ -7,8 +7,8 @@
 			close-button-color="blue-grey-lighten-4"
 			confirm-button-name="Yes"
 			confirm-button-color="primary"
-			@modalClosed="closeAutoProjectManagerModal"
-			@actionConfirmed="unselectOrSelectProjectForGroup"
+			@modalClosed="onCloseAutoProjectManagerModal"
+			@actionConfirmed="onUnselectOrSelectProjectForGroup"
 		>
 			<template v-slot:customContent>
 				<p class="text-body-2">{{ $t(autoProjectManagerModal.message) }}</p>
@@ -138,7 +138,7 @@
 						:is-form-disabled="isDataAccessFormDisabled"
 						property-name-for-access-group="projects"
 						property-name-for-access-label="name"
-						@data-in-group-updated="checkboxStatusUpdatedInGroup"
+						@data-in-group-updated="onCheckboxStatusUpdatedInGroup"
 					>
 						<template v-slot:default="{ index }">
 							<div class="d-flex align-center mr-4">
@@ -149,7 +149,7 @@
 									name="enabled"
 									class="checkbox my-checkbox head"
 									hide-details
-									@update:modelValue="handleAllFutureProjects(index)"
+									@update:modelValue="onHandleAllFutureProjects(index)"
 								/>
 
 								<v-tooltip
@@ -172,7 +172,7 @@
 									name="enabled"
 									class="checkbox my-checkbox head"
 									hide-details
-									@update:modelValue="filterProjectsAfterEndDate(index)"
+									@update:modelValue="onFilterProjectsAfterEndDate(index)"
 								/>
 
 								<v-tooltip
@@ -207,7 +207,7 @@
 					v-if="!userAction.isDetail"
 					color="primary"
 					class="text-none ml-3"
-					@click="validateNewUser"
+					@click="onValidateNewUser"
 				>
 					{{ validateButtonName }}
 				</v-btn>
@@ -432,7 +432,7 @@ export default {
 			}
 		},
 
-		validateNewUser() {
+		onValidateNewUser() {
 			this.v$.$touch();
 
 			if (this.v$.$invalid) return;
@@ -652,7 +652,7 @@ export default {
 						project.isSelected = true;
 					}
 
-					this.checkboxStatusUpdatedInGroup({
+					this.onCheckboxStatusUpdatedInGroup({
 						group,
 						groupIndex,
 						dataAccess: null,
@@ -661,7 +661,7 @@ export default {
 			});
 		},
 
-		filterProjectsAfterEndDate(index) {
+		onFilterProjectsAfterEndDate(index) {
 			if (this.formModel.dataForDataAccess[index].isHideAfterEndDateEnabled) {
 				this.formModel.dataForDataAccess[index].projects = this.formModel
 					.dataForDataAccess[index].projects.filter(
@@ -678,7 +678,7 @@ export default {
 			}
 		},
 
-		handleAllFutureProjects(index) {
+		onHandleAllFutureProjects(index) {
 			if (this.formModel.dataForDataAccess[index].isAllFutureProjectsEnabled) {
 				this.$refs.accessManager.selectOrUnselectAllDataInGroup(
 					this.formModel.dataForDataAccess[index],
@@ -707,17 +707,17 @@ export default {
 
 		filterProjectByEndDateFilter() {
 			this.countries.forEach((_, index) => {
-				this.filterProjectsAfterEndDate(index);
+				this.onFilterProjectsAfterEndDate(index);
 			});
 		},
 
 		setupForAllFutureProjectsSettings() {
 			this.countries.forEach((_, index) => {
-				this.handleAllFutureProjects(index);
+				this.onHandleAllFutureProjects(index);
 			});
 		},
 
-		checkboxStatusUpdatedInGroup({ group, groupIndex, dataAccess }) {
+		onCheckboxStatusUpdatedInGroup({ group, groupIndex, dataAccess }) {
 			const isCountryChecked = group.projects[0]?.isSelected;
 			const checkedProjectsInGroup = group.projects.filter(
 				(project, index) => project.isSelected && index > 0,
@@ -758,7 +758,7 @@ export default {
 			}
 		},
 
-		unselectOrSelectProjectForGroup() {
+		onUnselectOrSelectProjectForGroup() {
 			const { group, groupIndex, isUnselect } = this.autoProjectManagerModal;
 
 			if (isUnselect) {
@@ -780,7 +780,7 @@ export default {
 			this.autoProjectManagerModal.isOpened = false;
 		},
 
-		closeAutoProjectManagerModal() {
+		onCloseAutoProjectManagerModal() {
 			const { groupIndex, isUnselect, dataAccess } = this.autoProjectManagerModal;
 
 			if (isUnselect) {
