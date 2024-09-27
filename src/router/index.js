@@ -48,6 +48,11 @@ const routes = [
 		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoPermission"),
 	},
 	{
+		path: "/no-country-assigned",
+		name: ROUTER.ROUTE_NAME.NO_COUNTRY_ASSIGNED,
+		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoCountryAssigned"),
+	},
+	{
 		path: "/not-found",
 		name: ROUTER.ROUTE_NAME.NOT_FOUND,
 		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),

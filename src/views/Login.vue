@@ -172,7 +172,7 @@ export default {
 						});
 					}
 				} else {
-					Notification(this.$t("No Countries"), "warning");
+					this.$router.push({ name: ROUTER.ROUTE_NAME.NO_COUNTRY_ASSIGNED });
 				}
 			} catch (e) {
 				Notification(`${this.$t("Login")} ${e.message || e}`, "error");

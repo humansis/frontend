@@ -678,7 +678,7 @@ export default {
 			}
 		},
 
-		onHandleAllFutureProjects(index) {
+		onHandleAllFutureProjects(index, isFetchedData = false) {
 			if (this.formModel.dataForDataAccess[index].isAllFutureProjectsEnabled) {
 				this.$refs.accessManager.selectOrUnselectAllDataInGroup(
 					this.formModel.dataForDataAccess[index],
@@ -687,6 +687,8 @@ export default {
 				);
 				this.setValuesForDisabledProperties(index, true);
 			} else {
+				if (isFetchedData) return;
+
 				this.$refs.accessManager.selectOrUnselectAllDataInGroup(
 					this.formModel.dataForDataAccess[index],
 					index,
@@ -713,7 +715,7 @@ export default {
 
 		setupForAllFutureProjectsSettings() {
 			this.countries.forEach((_, index) => {
-				this.onHandleAllFutureProjects(index);
+				this.onHandleAllFutureProjects(index, true);
 			});
 		},
 
