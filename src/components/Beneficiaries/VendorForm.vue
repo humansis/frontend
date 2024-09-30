@@ -179,11 +179,14 @@
 
 <script>
 import { required, requiredIf } from "@vuelidate/validators";
+import RolesService from "@/services/RolesService";
 import DataInput from "@/components/Inputs/DataInput";
 import LocationForm from "@/components/Inputs/LocationForm";
 import SvgIcon from "@/components/SvgIcon";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
+import { checkResponseStatus } from "@/utils/fetcher";
+import { Notification } from "@/utils/UI";
 
 export default {
 	name: "VendorForm",
@@ -271,7 +274,32 @@ export default {
 		},
 	},
 
+	async mounted() {
+		if (!this.formDisabled) {
+			await this.fetchVendorRole();
+		}
+	},
+
 	methods: {
+		async fetchVendorRole() {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await RolesService.getListOfRoles({
+					filters: { includeVendorRole: true },
+					search: "Vendor",
+				});
+
+				checkResponseStatus(status, message);
+
+				this.formModel.roleId = data[0].id;
+			} catch (e) {
+				Notification(`${this.$t("Roles")}: ${e.message || e}`, "error");
+			}
+		},
+
 		isLastCategoryType(index) {
 			return index === (this.options.categoryTypes.length - 1);
 		},

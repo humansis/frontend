@@ -13,7 +13,7 @@
 		@update:sortBy="onSort"
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.ROLES)"
-		@rowClicked="(row) => onShowDetail(row.item)"
+		@rowClicked="(row) => onShowDetail(row.item.id)"
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction

@@ -128,67 +128,68 @@
 					</v-col>
 				</v-row>
 
-				<template v-if="!isUserRoleAdmin">
-					<h2 class="text-h6 font-weight-bold mb-1 mt-3">{{ $t('Data Access') }}</h2>
+				<h2 class="text-h6 font-weight-bold mb-1 mt-3">{{ $t('Data Access') }}</h2>
 
-					<DataAccessManager
-						v-model:groups="formModel.dataForDataAccess"
-						ref="accessManager"
-						:is-loading="loading.isDataAccess"
-						:is-form-disabled="isDataAccessFormDisabled"
-						property-name-for-access-group="projects"
-						property-name-for-access-label="name"
-						@data-in-group-updated="onCheckboxStatusUpdatedInGroup"
-					>
-						<template v-slot:default="{ index }">
-							<div class="d-flex align-center mr-4">
-								<v-checkbox
-									v-model="formModel.dataForDataAccess[index].isAllFutureProjectsEnabled"
-									:label="$t('All projects, even future one')"
-									:disabled="userAction.isDetail"
-									name="enabled"
-									class="checkbox my-checkbox head"
-									hide-details
-									@update:modelValue="onHandleAllFutureProjects(index)"
-								/>
+				<DataAccessManager
+					v-if="!isUserRoleAdmin"
+					v-model:groups="formModel.dataForDataAccess"
+					ref="accessManager"
+					:is-loading="loading.isDataAccess"
+					:is-form-disabled="isDataAccessFormDisabled"
+					property-name-for-access-group="projects"
+					property-name-for-access-label="name"
+					@data-in-group-updated="onCheckboxStatusUpdatedInGroup"
+				>
+					<template v-slot:default="{ index }">
+						<div class="d-flex align-center mr-4">
+							<v-checkbox
+								v-model="formModel.dataForDataAccess[index].isAllFutureProjectsEnabled"
+								:label="$t('All projects, even future ones')"
+								:disabled="userAction.isDetail"
+								name="enabled"
+								class="checkbox my-checkbox head"
+								hide-details
+								@update:modelValue="onHandleAllFutureProjects(index)"
+							/>
 
-								<v-tooltip
-									text="User will get access to all existing projects within this country, and to all other projects that will be created in the future."
-									location="top"
-									color="red"
-									content-class="tooltip-top"
-								>
-									<template v-slot:activator="{ props }">
-										<v-icon v-bind="props" icon="circle-info" class="ml-2" />
-									</template>
-								</v-tooltip>
-							</div>
+							<v-tooltip
+								text="User will get access to all existing projects within this country, and to all other projects that will be created in the future."
+								location="top"
+								color="red"
+								content-class="tooltip-top"
+							>
+								<template v-slot:activator="{ props }">
+									<v-icon v-bind="props" icon="circle-info" class="ml-2" />
+								</template>
+							</v-tooltip>
+						</div>
 
-							<div class="d-flex align-center mr-4">
-								<v-checkbox
-									v-model="formModel.dataForDataAccess[index].isHideAfterEndDateEnabled"
-									:label="$t('Hide projects after end date')"
-									:disabled="userAction.isDetail"
-									name="enabled"
-									class="checkbox my-checkbox head"
-									hide-details
-									@update:modelValue="onFilterProjectsAfterEndDate(index)"
-								/>
+						<div class="d-flex align-center mr-4">
+							<v-checkbox
+								v-model="formModel.dataForDataAccess[index].isHideAfterEndDateEnabled"
+								:label="$t('Hide projects after end date')"
+								:disabled="userAction.isDetail"
+								name="enabled"
+								class="checkbox my-checkbox head"
+								hide-details
+								@update:modelValue="onFilterProjectsAfterEndDate(index)"
+							/>
 
-								<v-tooltip
-									text="Hide projects with older end date than today."
-									location="top"
-									color="red"
-									content-class="tooltip-top"
-								>
-									<template v-slot:activator="{ props }">
-										<v-icon v-bind="props" icon="circle-info" class="ml-2" />
-									</template>
-								</v-tooltip>
-							</div>
-						</template>
-					</DataAccessManager>
-				</template>
+							<v-tooltip
+								text="Hide projects with older end date than today."
+								location="top"
+								color="red"
+								content-class="tooltip-top"
+							>
+								<template v-slot:activator="{ props }">
+									<v-icon v-bind="props" icon="circle-info" class="ml-2" />
+								</template>
+							</v-tooltip>
+						</div>
+					</template>
+				</DataAccessManager>
+
+				<p v-else class="text-body-1">{{ $t("Admin has access to all projects") }}</p>
 			</v-card-text>
 		</v-card>
 

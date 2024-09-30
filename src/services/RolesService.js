@@ -8,9 +8,9 @@ export default {
 		});
 	},
 
-	getListOfRoles({ page, size, sort, search }) {
+	getListOfRoles({ page, size, sort, search, filters }) {
 		return fetcher({
-			uri: `roles${queryBuilder({ page, size, sort, search })}`,
+			uri: `roles${queryBuilder({ page, size, sort, search, filters })}`,
 		});
 	},
 

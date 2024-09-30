@@ -166,13 +166,13 @@ export default {
 			if (!value && this.isNotePanelVisible) {
 				window.addEventListener("scroll", this.handleScroll);
 
-				this.updatePadding();
-
 				this.$nextTick(() => {
 					const element = document.getElementById("note-panel");
 					const { top } = element.getBoundingClientRect();
 					this.distance = top;
 				});
+
+				this.updatePadding();
 			}
 		},
 	},
@@ -206,7 +206,7 @@ export default {
 			this.padding = window.pageYOffset || document.documentElement.scrollTop;
 
 			if (this.$refs.notePanel && this.padding > this.distance) {
-				this.$refs.notePanel.style.paddingTop = `${this.padding - this.distance}px`;
+				this.$refs.notePanel.style.paddingTop = `${(this.padding - this.distance)}px`;
 			}
 		},
 

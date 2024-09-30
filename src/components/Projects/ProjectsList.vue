@@ -133,6 +133,10 @@ export default {
 		...mapState(["availableProjects"]),
 	},
 
+	watch: {
+		$route: "fetchData",
+	},
+
 	created() {
 		this.fetchData();
 	},

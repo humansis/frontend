@@ -115,6 +115,7 @@ export default {
 				contractNo: "",
 				canDoRemoteDistributions: false,
 				userId: null,
+				roleId: null,
 			},
 			selectedVendor: null,
 		};
@@ -286,8 +287,10 @@ export default {
 				user,
 				vendorNo,
 				contractNo,
+				roleId,
 				canDoRemoteDistributions,
 			} = vendorForm;
+
 			const vendorBody = {
 				name,
 				addressStreet,
@@ -309,9 +312,8 @@ export default {
 				username,
 				email: username,
 				password,
+				roleId,
 				phoneNumber: null,
-				// TODO edit after BE will implement permissions
-				roles: ["ROLE_VENDOR"],
 				changePassword: false,
 			};
 			if (this.vendorModal.isEditing && id) {
