@@ -15,7 +15,7 @@
 
 				<ul class="pl-7 pt-3">
 					<li
-						v-for="permission in autoPermissionManagerModal.dependenciesPermissions"
+						v-for="permission in dependencyPermissionsForModal"
 						:key="permission.key"
 					>
 						{{ permission.label }}
@@ -150,6 +150,10 @@ export default {
 		isDataAccessFormDisabled() {
 			return this.roleAction.isDetail
 				|| !this.isUserPermissionGranted(this.PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT);
+		},
+
+		dependencyPermissionsForModal() {
+			return [...new Set(this.autoPermissionManagerModal.dependenciesPermissions)];
 		},
 	},
 
@@ -447,7 +451,7 @@ export default {
 				title: "Unselect permissions automatically?",
 				message: `If you want to unselect ${regardingPermissionsText} permission,
 					 it is necessary to unselected permissions which have this permission as prerequisites.
-					 Do you want to un assign permissions automatically?`,
+					 Do you want to un-assign permissions automatically?`,
 				dependenciesPermissions: selectedPermissionsAsDependencies,
 				isSelectAllOrUnselectAll,
 				selectedPermissionsKeys,
