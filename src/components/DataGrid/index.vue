@@ -142,6 +142,7 @@
 							hide-spin-buttons
 							hide-details
 							dense
+							@input="preventNegativePageNumber"
 							@click:appendInner="onGoToPage"
 							@keyup.enter="onGoToPage"
 						/>
@@ -372,6 +373,14 @@ export default {
 
 		searchValue() {
 			return this.$refs.search?.value;
+		},
+
+		preventNegativePageNumber() {
+			if (this.page === 0) {
+				this.page = this.currentPage;
+			} else if (this.page < 0) {
+				this.page = Math.abs((this.page));
+			}
 		},
 	},
 };
