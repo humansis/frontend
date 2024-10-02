@@ -9,7 +9,7 @@
 		</h2>
 
 		<v-btn
-			:to="{ name: redirect.pageName, params: { countryCode: 'SYR' } }"
+			:to="{ name: redirect.pageName, params: { countryCode: country.iso3 } }"
 			size="x-large"
 			color="light-blue-lighten-4"
 			prepend-icon="home"
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import permissions from "@/mixins/permissions";
 import { ROUTER } from "@/consts";
 
@@ -32,24 +33,16 @@ export default {
 	data() {
 		return {
 			ROUTER,
-			redirect: {
-				buttonName: "",
-				pageName: "",
-			},
+			redirect: {},
 		};
 	},
 
-	created() {
-		this.getRedirectPage();
+	computed: {
+		...mapState(["country"]),
 	},
 
-	methods: {
-		getRedirectPage() {
-			this.redirect = {
-				buttonName: "Go to Profile page",
-				pageName: ROUTER.ROUTE_NAME.HOME,
-			};
-		},
+	created() {
+		this.redirect = this.getAllowedPageForRedirect();
 	},
 };
 </script>

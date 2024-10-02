@@ -38,11 +38,15 @@ export default {
 	},
 
 	[CONST.STORE_USER_PERMISSIONS]: (state, permissions) => {
-		permissions.forEach((permission) => {
-			const camelCasePermission = permission.replace(/_./g, (x) => x[1].toUpperCase());
+		if (Array.isArray(permissions)) {
+			state.userPermissions = {};
 
-			state.userPermissions[camelCasePermission] = true;
-		});
+			permissions.forEach((permission) => {
+				const camelCasePermission = permission.replace(/_./g, (x) => x[1].toUpperCase());
+
+				state.userPermissions[camelCasePermission] = true;
+			});
+		}
 	},
 
 	[CONST.STORE_ACCESSIBLE_PROJECT_IDS]: (state, projectIds) => {
