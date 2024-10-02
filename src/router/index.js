@@ -197,7 +197,6 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD,
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/Assistance/AddAssistance"),
 								meta: {
-									permissions: ["addDistribution"],
 									breadcrumb: "Add Assistance",
 									description: "This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",
@@ -392,7 +391,6 @@ const routes = [
 						name: ROUTER.ROUTE_NAME.PRODUCTS,
 						component: () => import(/* webpackChunkName: "Products" */ "@/views/CountrySettings/Products"),
 						meta: {
-							permissions: ["viewProducts"],
 							breadcrumb: "Products",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights.",
 						},
@@ -413,7 +411,6 @@ const routes = [
 				name: ROUTER.ROUTE_NAME.ADMINISTRATIVE_SETTINGS,
 				component: RouterView,
 				meta: {
-					permissions: ["adminSettings"],
 					breadcrumb: "Administrative Settings",
 				},
 				redirect: () => {
