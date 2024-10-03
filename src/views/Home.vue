@@ -10,7 +10,9 @@
 			</v-col>
 		</v-row>
 
-		<UpcomingAssistances />
+		<UpcomingAssistances
+			v-if="isUserPermissionGranted(PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT)"
+		/>
 	</v-container>
 </template>
 

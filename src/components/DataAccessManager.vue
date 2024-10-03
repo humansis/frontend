@@ -205,8 +205,13 @@ export default {
 		updatePadding() {
 			this.padding = window.pageYOffset || document.documentElement.scrollTop;
 
-			if (this.$refs.notePanel && this.padding > this.distance) {
-				this.$refs.notePanel.style.paddingTop = `${(this.padding - this.distance)}px`;
+			if (!this.$refs.notePanel) return;
+
+			if (this.padding > this.distance) {
+				this.$refs.notePanel.style.paddingTop = `${(this.padding - this.distance) + 45}px`;
+			} else {
+				this.$refs.notePanel.style.paddingTop = `0px`;
+
 			}
 		},
 
