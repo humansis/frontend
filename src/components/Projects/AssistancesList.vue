@@ -383,10 +383,7 @@ export default {
 	},
 
 	mounted() {
-		if (this.isUserPermissionGranted(this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT)
-			&& this.upcoming) {
-			this.fetchData();
-		}
+		this.fetchData();
 	},
 
 	methods: {

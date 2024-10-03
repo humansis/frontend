@@ -248,6 +248,11 @@ export default {
 				});
 			});
 
+			if (!permissions.length) {
+				Notification(`${this.$t("Please select at least one permission to create a role.")}`, "error");
+				return;
+			}
+
 			const roleBody = {
 				name: roleName,
 				permissions,
