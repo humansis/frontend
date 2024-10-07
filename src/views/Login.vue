@@ -120,8 +120,6 @@ export default {
 
 				await setCookie("token", token, user.exp - user.iat);
 
-				await this.storeUser(user);
-
 				if (user.roles[0] === ROLE.GUEST) {
 					await this.$router.push({ name: ROUTER.ROUTE_NAME.ACCOUNT_CREATED });
 					return;
@@ -129,6 +127,7 @@ export default {
 
 				const userDetail = await this.getDetailOfUser(userId);
 
+				await this.storeUser({ ...user, countries: userDetail?.countries });
 				await this.storeAccessibleProjectIds(userDetail.projectIds);
 
 				const language = this.languages.find(({ key }) => key === userDetail?.language)

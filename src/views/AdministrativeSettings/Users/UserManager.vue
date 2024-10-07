@@ -145,7 +145,7 @@
 							<v-checkbox
 								v-model="formModel.dataForDataAccess[index].isAllFutureProjectsEnabled"
 								:label="$t('All projects, even future ones')"
-								:disabled="userAction.isDetail"
+								:disabled="isAllFutureProjectsCheckboxDisabled(index)"
 								name="enabled"
 								class="checkbox my-checkbox head"
 								hide-details
@@ -307,7 +307,7 @@ export default {
 	},
 
 	computed: {
-		...mapState(["languages", "countries"]),
+		...mapState(["languages", "countries", "user"]),
 
 		validateButtonName() {
 			return this.$t(this.userAction.isCreate ? "Create" : "Update");
@@ -814,6 +814,13 @@ export default {
 			}
 
 			this.autoProjectManagerModal.isOpened = false;
+		},
+
+		isAllFutureProjectsCheckboxDisabled(index) {
+			return this.userAction.isDetail
+				|| !this.user.countries.find(
+					(country) => country.iso3 === this.formModel.dataForDataAccess[index].iso3,
+				)?.hasAccessToAllProjects;
 		},
 	},
 };
