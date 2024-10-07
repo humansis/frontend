@@ -44,7 +44,7 @@
 					</v-col>
 				</v-row>
 
-				<h2 class="text-h6 font-weight-bold mb-1 mt-3">{{ $t('Data Access') }}</h2>
+				<h2 class="text-h6 font-weight-bold mb-1 mt-3">{{ $t('Permissions') }}</h2>
 
 				<DataAccessManager
 					v-model:groups="formModel.dataForPermissions"
@@ -309,6 +309,23 @@ export default {
 			permissions.forEach((permission) => {
 				if (!permission.isAssignable) return;
 
+				const prerequisitesPermission = permissions.filter(
+					(prerequisitePermission) => permission.dependencies.some(
+						(dependencyPermission) => dependencyPermission === prerequisitePermission.key,
+					),
+				);
+				const prerequisitesLabelWithTag = prerequisitesPermission.flatMap(
+					(prerequisitePermission) => `<li>${prerequisitePermission.label}</li>`,
+				);
+				const allowedActionsWithTags = `<h3><b>${this.$t("Allowed actions:")}</b></h3>${permission.description}<br>`;
+				const prerequisitesWithTags = prerequisitesLabelWithTag.length
+					? `<h3><b>${this.$t("Prerequisites:")}</b></h3><ul>${prerequisitesLabelWithTag.join("")}</ul>`
+					: "";
+				const modifiedPermission = {
+					...permission,
+					description: allowedActionsWithTags + prerequisitesWithTags,
+				};
+
 				if (!permissionsGroups[permission.group]) {
 					const groupIcon = ROLE.DATA_ACCESS_GROUP_ICONS[
 						permission.group.toUpperCase().replace(" ", "_")
@@ -321,7 +338,7 @@ export default {
 					};
 				}
 
-				permissionsGroups[permission.group].permissions.push(permission);
+				permissionsGroups[permission.group].permissions.push(modifiedPermission);
 			});
 
 			this.formModel.dataForPermissions = permissionsGroups;
