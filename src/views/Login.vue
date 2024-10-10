@@ -125,6 +125,22 @@ export default {
 					return;
 				}
 
+				if (lastLoggedUsername !== user.username) {
+					await this.storeCountry({});
+				}
+
+				const countries = await this.fetchUserCountries(userId);
+
+				if (countries.length) {
+					await this.storeCountries(countries);
+
+					if (lastLoggedUsername === user.username) {
+						await this.storeCountry(this.country);
+					} else {
+						await this.storeCountry(countries[0]);
+					}
+				}
+
 				const userDetail = await this.getDetailOfUser(userId);
 
 				await this.storeUser({ ...user, countries: userDetail?.countries });
@@ -143,18 +159,6 @@ export default {
 					await this.storeLanguage(this.language);
 				} else {
 					await this.storeLanguage(language);
-				}
-
-				const countries = await this.fetchUserCountries(userId);
-
-				if (countries.length) {
-					await this.storeCountries(countries);
-
-					if (lastLoggedUsername === user.username) {
-						await this.storeCountry(this.country);
-					} else {
-						await this.storeCountry(countries[0]);
-					}
 				}
 
 				this.storeUserPermissions(userDetail.role.permissions);
