@@ -213,9 +213,7 @@ export default {
 			this.redemptionCurrency = batch.currency;
 			this.redemptionSummary = true;
 			this.header = "Vendor Redemption Summary";
-		},
-
-		getProjectName(id) {
+		}, getProjectName(id) {
 			return this.projects.find((project) => project.id === id)?.name;
 		},
 

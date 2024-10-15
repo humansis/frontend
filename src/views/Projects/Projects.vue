@@ -3,15 +3,14 @@
 		<div class="d-flex mb-4">
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Projects') }}</h2>
 
-			<v-btn
-				:disabled="!isUserPermissionGranted(PERMISSIONS.PROJECT_MANAGEMENT_MANAGE)"
+			<ButtonAction
+				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT_MANAGE"
 				:to="{ name: ROUTER.ROUTE_NAME.PROJECTS.ADD }"
+				:is-only-icon="false"
 				color="primary"
-				prepend-icon="plus"
-				class="text-none ml-0"
-			>
-				{{ $t('New') }}
-			</v-btn>
+				icon="plus"
+				label="New"
+			/>
 		</div>
 
 		<ProjectsList
@@ -26,6 +25,7 @@
 <script>
 import { mapState } from "vuex";
 import ProjectService from "@/services/ProjectService";
+import ButtonAction from "@/components/ButtonAction";
 import ProjectsList from "@/components/Projects/ProjectsList";
 import permissions from "@/mixins/permissions";
 import routerHelper from "@/mixins/routerHelper";
@@ -37,6 +37,7 @@ export default {
 	name: "Projects",
 
 	components: {
+		ButtonAction,
 		ProjectsList,
 	},
 

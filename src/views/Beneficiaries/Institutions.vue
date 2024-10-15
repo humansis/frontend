@@ -3,15 +3,14 @@
 		<div class="d-flex mb-4">
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Institutions') }}</h2>
 
-			<v-btn
-				:disabled="!isUserPermissionGranted(PERMISSIONS.INSTITUTION_CREATE)"
+			<ButtonAction
+				:required-permissions="PERMISSIONS.INSTITUTION_CREATE"
 				:to="{ name: ROUTER.ROUTE_NAME.INSTITUTIONS.ADD }"
+				:is-only-icon="false"
 				color="primary"
-				prepend-icon="plus"
-				class="text-none ml-0"
-			>
-				{{ $t('Add') }}
-			</v-btn>
+				icon="plus"
+				label="Add"
+			/>
 		</div>
 
 		<InstitutionsList
@@ -26,6 +25,7 @@
 <script>
 import InstitutionService from "@/services/InstitutionService";
 import InstitutionsList from "@/components/Beneficiaries/InstitutionsList";
+import ButtonAction from "@/components/ButtonAction";
 import permissions from "@/mixins/permissions";
 import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
@@ -36,6 +36,7 @@ export default {
 	name: "InstitutionPage",
 
 	components: {
+		ButtonAction,
 		InstitutionsList,
 	},
 

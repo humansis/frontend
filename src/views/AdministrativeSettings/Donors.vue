@@ -17,15 +17,15 @@
 		<Tabs :pre-selected-tab-value="ADMINISTRATIVE_SETTINGS.TABS_VALUE.DONORS" />
 
 		<div class="d-flex justify-end">
-			<v-btn
-				:disabled="!isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR)"
-				class="text-none ml-0 mb-3"
+			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR"
+				:is-only-icon="false"
 				color="primary"
-				prepend-icon="plus"
-				@click="onAddNewDonor"
-			>
-				{{ $t('Add') }}
-			</v-btn>
+				icon="plus"
+				label="Add"
+				class="mb-3"
+				@actionConfirmed="onAddNewDonor"
+			/>
 		</div>
 
 		<DonorsList
@@ -42,6 +42,7 @@ import DonorService from "@/services/DonorService";
 import DonorForm from "@/components/AdministrativeSettings/Donors/Form";
 import DonorsList from "@/components/AdministrativeSettings/Donors/List";
 import Tabs from "@/components/AdministrativeSettings/Tabs";
+import ButtonAction from "@/components/ButtonAction";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
@@ -52,6 +53,7 @@ export default {
 	name: "DonorPage",
 
 	components: {
+		ButtonAction,
 		Modal,
 		DonorForm,
 		DonorsList,
