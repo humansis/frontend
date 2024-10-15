@@ -3,16 +3,15 @@
 		<div class="d-flex mb-4">
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Vendors') }}</h2>
 
-			<v-btn
-				:disabled="!isUserPermissionGranted(PERMISSIONS.VENDOR_CREATE)"
+			<ButtonAction
+				:required-permissions="PERMISSIONS.VENDOR_CREATE"
 				:data-cy="identifierBuilder('new-button')"
+				:is-only-icon="false"
 				color="primary"
-				prepend-icon="plus"
-				class="text-none ml-0"
-				@click="onAddNewVendor"
-			>
-				{{ $t('Add') }}
-			</v-btn>
+				icon="plus"
+				label="Add"
+				@actionConfirmed="onAddNewVendor"
+			/>
 		</div>
 
 		<Modal
@@ -59,6 +58,7 @@ import VendorService from "@/services/VendorService";
 import VendorSummary from "@/components/Beneficiaries/Smartcard/VendorSummary";
 import VendorForm from "@/components/Beneficiaries/VendorForm";
 import VendorsList from "@/components/Beneficiaries/VendorsList";
+import ButtonAction from "@/components/ButtonAction";
 import Modal from "@/components/Inputs/Modal";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
@@ -70,6 +70,7 @@ export default {
 	name: "Vendors",
 
 	components: {
+		ButtonAction,
 		VendorSummary,
 		VendorsList,
 		Modal,

@@ -83,17 +83,16 @@
 				{{ $t('Advanced Search') }}
 			</v-btn>
 
-			<v-btn
-				v-show="!isBookletsSelected"
-				:disabled="!isUserPermissionGranted(PERMISSIONS.VOUCHERS)"
-				:loading="printSelectionLoading"
+			<ButtonAction
+				v-if="!isBookletsSelected"
+				:required-permissions="PERMISSIONS.VOUCHERS"
+				:is-loading="printSelectionLoading"
+				:is-only-icon="false"
 				color="primary"
-				variant="elevated"
-				class="ml-4 text-none"
-				@click="onPrintSelection"
-			>
-				{{ $t('Print Selection') }}
-			</v-btn>
+				label="Print Selection"
+				class="ml-4"
+				@actionConfirmed="onPrintSelection"
+			/>
 		</template>
 
 		<template v-slot:advancedControls>
@@ -145,7 +144,7 @@ export default {
 		permissions,
 		grid,
 		voucherHelper,
-		urlFiltersHelper
+		urlFiltersHelper,
 	],
 
 	data() {

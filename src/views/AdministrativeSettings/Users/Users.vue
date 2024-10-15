@@ -3,15 +3,16 @@
 		<Tabs :pre-selected-tab-value="ADMINISTRATIVE_SETTINGS.TABS_VALUE.USERS" />
 
 		<div class="d-flex justify-end">
-			<v-btn
-				:disabled="!isUserPermissionGranted(PERMISSIONS.INSTITUTION_CREATE)"
+
+			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE"
 				:to="{ name: ROUTER.ROUTE_NAME.USERS.ADD }"
-				class="text-none ml-0 mb-3"
+				:is-only-icon="false"
+				label="Add"
 				color="primary"
-				prepend-icon="plus"
-			>
-				{{ $t('Add') }}
-			</v-btn>
+				icon="plus"
+				class="mb-3"
+			/>
 		</div>
 
 		<UsersList
@@ -27,6 +28,7 @@
 import UsersService from "@/services/UsersService";
 import Tabs from "@/components/AdministrativeSettings/Tabs";
 import UsersList from "@/components/AdministrativeSettings/Users/List";
+import ButtonAction from "@/components/ButtonAction";
 import permissions from "@/mixins/permissions";
 import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
@@ -38,6 +40,7 @@ export default {
 
 	components: {
 		UsersList,
+		ButtonAction,
 		Tabs,
 	},
 

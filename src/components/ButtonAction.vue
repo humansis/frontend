@@ -37,9 +37,12 @@
 			<v-btn
 				v-else
 				v-bind="props"
-				:class="['text-none action-button texted-button', { disabled: isDisabled }]"
+				:class="['text-none action-button texted-button', $attrs.class, { disabled: isDisabled }]"
 				:disabled="isDisabled"
+				:loading="isLoading"
 				:size="buttonSize"
+				:color="color"
+				:to="!isDisabled ? to : null"
 				:data-cy="identifierBuilder()"
 				@click.stop="onButtonClicked"
 			>
@@ -114,6 +117,16 @@ export default {
 		iconColor: {
 			type: String,
 			default: "",
+		},
+
+		color: {
+			type: String,
+			default: "",
+		},
+
+		to: {
+			type: Object,
+			default: () => {},
 		},
 
 		isConfirmAction: {

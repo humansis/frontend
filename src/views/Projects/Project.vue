@@ -5,16 +5,14 @@
 		<div class="d-flex mb-4">
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Project Assistances') }}</h2>
 
-			<v-btn
-				v-if="beneficiariesCount"
-				:disabled="!isUserPermissionGranted(PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION)"
+			<ButtonAction
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION"
+				:to="{ name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD }"
+				:is-only-icon="false"
 				color="primary"
-				prepend-icon="plus"
-				class="text-none ml-0"
-				@click="$router.push({ name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD })"
-			>
-				{{ $t('New') }}
-			</v-btn>
+				icon="plus"
+				label="New"
+			/>
 		</div>
 
 		<Modal
@@ -60,6 +58,7 @@ import AssistancesService from "@/services/AssistancesService";
 import ProjectService from "@/services/ProjectService";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import AssistanceMoveForm from "@/components/Assistance/AssistanceMoveForm";
+import ButtonAction from "@/components/ButtonAction";
 import Modal from "@/components/Inputs/Modal";
 import AssistancesList from "@/components/Projects/AssistancesList";
 import ProjectSummary from "@/components/Projects/ProjectSummary";
@@ -72,6 +71,7 @@ export default {
 	name: "Project",
 
 	components: {
+		ButtonAction,
 		AssistanceForm,
 		AssistanceMoveForm,
 		AssistancesList,

@@ -47,7 +47,6 @@ import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import identifierBuilder from "@/mixins/identifierBuilder";
 import { ADMINISTRATIVE_SETTINGS } from "@/consts";
 
 export default {
