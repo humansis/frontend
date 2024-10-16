@@ -15,6 +15,7 @@ import ROLE from "./values/role";
 import ROUTER from "./values/router";
 import SCORING from "./values/scoring";
 import TABLE from "./values/table";
+import TRANSACTIONS from "./values/transactions";
 
 export {
 	ASSISTANCE,
@@ -34,4 +35,5 @@ export {
 	ADMINISTRATIVE_SETTINGS,
 	ROUTER,
 	PERMISSIONS,
+	TRANSACTIONS,
 };
