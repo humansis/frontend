@@ -97,7 +97,7 @@ import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, ROUTER, TABLE, TRANSACTIONS } from "@/consts";
+import { ASSISTANCE, EXPORT, PERMISSIONS, ROUTER, TABLE, TRANSACTIONS } from "@/consts";
 
 const statusTags = [
 	{ code: ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED, class: "status distributed" },
@@ -135,11 +135,30 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "beneficiaryId", title: "Beneficiary", type: "link", sortable: false },
+					{
+						key: "beneficiaryId",
+						title: "Beneficiary",
+						type: "link",
+						permissionsForLinkVisibility: [
+							PERMISSIONS.HOUSEHOLD_VIEW,
+							PERMISSIONS.TRANSACTIONS,
+						],
+						sortable: false,
+					},
 					{ key: "localGivenName", sortable: false },
 					{ key: "localFamilyName", sortable: false },
-					{ key: "project", type: "link", sortable: false },
-					{ key: "assistance", type: "link", sortable: false },
+					{
+						key: "project",
+						type: "link",
+						permissionsForLinkVisibility: PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT,
+						sortable: false,
+					},
+					{
+						key: "assistance",
+						type: "link",
+						permissionsForLinkVisibility: PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE,
+						sortable: false,
+					},
 					{ key: "fullLocationNames", title: "Location", sortable: false },
 					{ key: "dateDistribution", title: "Assistance Date", type: "datetime" },
 					{ key: "commodity", sortable: false },

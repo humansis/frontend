@@ -1,3 +1,4 @@
+import { isUserPermissionGranted } from "@/utils/permissions";
 import i18n from "@/plugins/i18n";
 
 const { global: { t } } = i18n;
@@ -43,17 +44,25 @@ export const normalizeFirstLetter = (text = "") => text.replace(/^.| ./g, (str) 
 export const generateColumns = ((columns) => {
 	const preparedColumns = [];
 
-	columns.forEach(({ key, title, withoutLabel, ...rest }) => {
+	columns.forEach(({ key, type, permissionsForLinkVisibility, title, withoutLabel, ...rest }) => {
 		let preparedTitle = "";
+		let columnType = type;
 
 		if (!withoutLabel) {
 			preparedTitle = t(title || normalizeText(key));
+		}
+
+		if (permissionsForLinkVisibility && type === "link") {
+			columnType = isUserPermissionGranted(permissionsForLinkVisibility)
+				? type
+				: "text";
 		}
 
 		preparedColumns.push({
 			...rest,
 			key,
 			title: preparedTitle,
+			type: columnType,
 		});
 	});
 
