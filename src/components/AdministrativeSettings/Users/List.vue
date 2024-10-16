@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:is-row-click-disabled="!isUserGrantedToOpenUserDetail"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -17,12 +18,14 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
@@ -117,6 +120,10 @@ export default {
 
 	computed: {
 		...mapState(["user"]),
+
+		isUserGrantedToOpenUserDetail() {
+			return this.isUserPermissionGranted(this.PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE);
+		},
 	},
 
 	async created() {

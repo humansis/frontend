@@ -97,7 +97,7 @@ import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, ROUTER, TABLE } from "@/consts";
+import { EXPORT, PERMISSIONS, ROUTER, TABLE } from "@/consts";
 
 export default {
 	name: "SmartcardPurchasesItems",
@@ -130,12 +130,31 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "beneficiaryId", title: "Beneficiary", type: "link", sortable: false },
+					{
+						key: "beneficiaryId",
+						title: "Beneficiary",
+						type: "link",
+						permissionsForLinkVisibility: [
+							PERMISSIONS.HOUSEHOLD_VIEW,
+							PERMISSIONS.TRANSACTIONS,
+						],
+						sortable: false,
+					},
 					{ key: "localGivenName", sortable: false },
 					{ key: "localFamilyName", sortable: false },
 					{ key: "idNumber", sortable: false },
-					{ key: "project", type: "link", sortable: false },
-					{ key: "assistance", type: "link", sortable: false },
+					{
+						key: "project",
+						type: "link",
+						permissionsForLinkVisibility: PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT,
+						sortable: false,
+					},
+					{
+						key: "assistance",
+						type: "link",
+						permissionsForLinkVisibility: PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE,
+						sortable: false,
+					},
 					{ key: "fullLocationNames", title: "Location", sortable: false },
 					{ key: "datePurchase", title: "Purchased Date", type: "datetime" },
 					{ key: "smartcardCode", title: "Card No.", sortable: false },

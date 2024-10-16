@@ -7,6 +7,7 @@
 		:total-count="table.total"
 		:loading="isLoadingList"
 		:data-cy="dataCy"
+		:is-row-click-disabled="!isUserGrantedToOpenCustomFieldDetail"
 		class="custom-fields-table"
 		reset-sort-button
 		is-search-visible
@@ -16,7 +17,7 @@
 		@update:sortBy="onSort"
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.CUSTOM_FIELDS)"
-		@rowClicked="(row) => onShowCustomFieldDetail(row.item)"
+		@rowClicked="(row) => onShowDetail(row.item)"
 	>
 		<template v-slot:actions="{ row, index }">
 			<ButtonAction
@@ -123,6 +124,12 @@ export default {
 		};
 	},
 
+	computed: {
+		isUserGrantedToOpenCustomFieldDetail() {
+			return this.isUserPermissionGranted(this.PERMISSIONS.TEST);
+		},
+	},
+
 	created() {
 		this.fetchData();
 	},
@@ -193,12 +200,6 @@ export default {
 					target: targetType?.shortCut,
 				};
 			});
-		},
-
-		onShowCustomFieldDetail(item) {
-			if (this.isUserPermissionGranted(this.PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD_CREATE)) {
-				this.onShowDetail(item);
-			}
 		},
 	},
 };

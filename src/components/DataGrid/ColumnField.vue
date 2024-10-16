@@ -1,6 +1,6 @@
 <template>
 	<template v-if="(!column.type || (column.type === 'text'))">
-		<div v-html-secure="cellData" :data-cy="identifierBuilder()" />
+		<div v-html-secure="cellData?.name || cellData" :data-cy="identifierBuilder()" />
 	</template>
 
 	<template v-if="column.type === 'object'">
@@ -244,6 +244,7 @@ import ColorPicker from "@/components/Inputs/ColorPicker";
 import SvgIcon from "@/components/SvgIcon";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import { normalizeText } from "@/utils/datagrid";
+import { isUserPermissionGranted } from "@/utils/permissions";
 import { ROUTER } from "@/consts";
 
 export default {
@@ -325,6 +326,7 @@ export default {
 	},
 
 	methods: {
+		isUserPermissionGranted,
 		normalizeText,
 
 		prepareRoute() {

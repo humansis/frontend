@@ -107,6 +107,7 @@
 			reset-filters-button
 			reset-sort-button
 			is-search-visible
+			is-row-click-disabled
 			show-select
 			@update:sortBy="onSort"
 			@search="onSearch"
@@ -117,7 +118,7 @@
 		>
 			<template v-slot:actions="{ row: { householdId }, index }">
 				<ButtonAction
-					:required-permissions="PERMISSIONS.HOUSEHOLD_DETAIL"
+					:required-permissions="PERMISSIONS.HOUSEHOLD_VIEW"
 					:disabled="!householdsSelects"
 					:data-cy="`table-row-${index + 1}-show-detail-button`"
 					icon="search"
@@ -261,7 +262,7 @@ import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/dat
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, ROUTER, TABLE } from "@/consts";
+import { EXPORT, PERMISSIONS, ROUTER, TABLE } from "@/consts";
 
 export default {
 	name: "HouseholdPage",
@@ -303,7 +304,16 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "id", title: "Household ID", type: "link", sortable: false },
+					{
+						key: "id",
+						title: "Household ID",
+						type: "link",
+						permissionsForLinkVisibility: [
+							PERMISSIONS.HOUSEHOLD_VIEW,
+							PERMISSIONS.TRANSACTIONS,
+						],
+						sortable: false,
+					},
 					{ key: "familyName", title: "Local family name", sortKey: "localFamilyName" },
 					{ key: "givenName", title: "Local given name", sortKey: "localFirstName" },
 					{ key: "members", sortKey: "dependents" },

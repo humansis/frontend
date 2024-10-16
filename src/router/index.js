@@ -188,6 +188,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.ASSISTANCES.EDIT,
 								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/Assistance/AssistanceEdit"),
 								meta: {
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Edit Assistance",
 									description: "",
 								},
@@ -197,6 +198,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD,
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/Assistance/AddAssistance"),
 								meta: {
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION],
 									breadcrumb: "Add Assistance",
 									description: "This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",
@@ -207,6 +209,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.ASSISTANCES.DETAIL,
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/Assistance/AssistanceDetail"),
 								meta: {
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Assistance Detail",
 									description: "",
 								},
@@ -216,6 +219,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.ASSISTANCES.CREATION_PROGRESS,
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/Assistance/AssistanceCreationProgress"),
 								meta: {
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Assistance Creation Progress",
 									description: "This page shows the progress of creating the specific assistance.",
 								},
