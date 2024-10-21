@@ -112,7 +112,6 @@ import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
-import { getUniqueIds } from "@/utils/customValidators";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
@@ -236,13 +235,8 @@ export default {
 			this.$refs.vendorsList.onResetSort();
 		},
 
-		async prepareDataForTable(data) {
-			const locationIds = getUniqueIds(data, "locationId");
-			const userIds = getUniqueIds(data, "userId");
-
+		prepareDataForTable(data) {
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
-
 				const categoryTypes = [];
 
 				if (item.canSellFood) {
@@ -257,29 +251,13 @@ export default {
 					categoryTypes.push({ code: "Cashback", value: "Cashback" });
 				}
 
-				// TODO Temporary hidden (not implemented yet)
-				// this.table.data[key].invoicing = "syncRequired";
-				this.table.data[key].categoryType = categoryTypes;
+				this.table.data[key] = {
+					...item,
+					categoryType: categoryTypes,
+					location: item.location.name,
+					username: item.user.name,
+				};
 			});
-
-			this.getUsers(userIds)
-				.then((users) => {
-					this.table.data.map(async (item, key) => {
-						this.table.data[key] = item;
-						this.table.data[key].username = this.prepareEntityForTable(item.userId, users, "username");
-					});
-					this.reload();
-				});
-
-			this.getLocations(locationIds)
-				.then((locations) => {
-					this.table.data.map(async (item, key) => {
-						this.table.data[key] = item;
-						this.table.data[key].location = this
-							.prepareLocationEntityForTable(item.locationId, locations, "name");
-					});
-					this.reload();
-				});
 		},
 
 		onShowSummary(vendor) {

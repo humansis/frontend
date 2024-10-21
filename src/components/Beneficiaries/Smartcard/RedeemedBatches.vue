@@ -49,11 +49,6 @@ export default {
 	mixins: [grid, identifierBuilder],
 
 	props: {
-		projects: {
-			type: Array,
-			required: true,
-		},
-
 		vendorId: {
 			type: Number,
 			required: true,
@@ -110,11 +105,12 @@ export default {
 
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
-				this.table.data[key].date = this.$moment(item.date).format("YYYY-MM-DD HH:mm");
-				this.table.data[key].total = this.formatPrice(item.value, item.currency);
-				this.table.data[key].project = this.projects
-					.find((project) => project.id === item.projectId)?.name;
+				this.table.data[key] = {
+					...item,
+					date: this.$moment(item.date).format("YYYY-MM-DD HH:mm"),
+					total: this.formatPrice(item.value, item.currency),
+					project: item.project.name,
+				};
 			});
 		},
 

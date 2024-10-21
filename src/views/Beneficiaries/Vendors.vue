@@ -205,6 +205,7 @@ export default {
 		},
 
 		onShowDetail(vendor) {
+			console.log(vendor);
 			this.mapToFormModel(vendor);
 			this.vendorModal = {
 				isEditing: false,
@@ -225,7 +226,7 @@ export default {
 				adm2Id,
 				adm3Id,
 				adm4Id,
-				userId,
+				user,
 				vendorNo,
 				contractNo,
 				canSellFood,
@@ -234,8 +235,6 @@ export default {
 				canDoRemoteDistributions,
 			},
 		) {
-			const user = await this.getDetailOfUser(userId);
-
 			const categoryType = [];
 
 			if (canSellFood) {
@@ -254,7 +253,7 @@ export default {
 				...this.vendorModel,
 				id,
 				shop,
-				username: user.username,
+				username: user.name,
 				name,
 				categoryType,
 				addressStreet,
@@ -264,7 +263,7 @@ export default {
 				adm2Id,
 				adm3Id,
 				adm4Id,
-				userId,
+				userId: user.id,
 				user,
 				vendorNo,
 				contractNo,
