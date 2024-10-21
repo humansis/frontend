@@ -1,16 +1,16 @@
 <template>
 	<v-card-text>
 		<DataSelect
-			v-model="formModel.projectId"
+			v-model="formModel.project"
 			:items="options.projects"
 			:disabled="formDisabled || isEditing"
-			:error-messages="validationMsg('projectId')"
+			:error-messages="validationMsg('project')"
 			label="Project"
 			name="project"
 			item-title="name"
 			item-value="id"
 			class="mb-4"
-			@update:modelValue="onValidate('projectId')"
+			@update:modelValue="onValidate('project')"
 		/>
 
 		<DataInput
@@ -173,7 +173,7 @@ export default {
 					required,
 					maxLengthValue: maxLength(this.formModel.quantityOfVouchers),
 				},
-				projectId: { required },
+				project: { required },
 				password: { required: requiredIf(this.formModel.defineAPassword) },
 				status: {},
 				currency: { required },
@@ -209,7 +209,10 @@ export default {
 	},
 
 	async mounted() {
-		await this.fetchProjects();
+		if (!this.formDisabled) {
+			await this.fetchProjects();
+		}
+
 		this.mapToFormModel();
 	},
 
@@ -217,9 +220,6 @@ export default {
 		mapToFormModel() {
 			if (this.formModel.currency) {
 				this.formModel.currency = getArrayOfCodeListByKey([this.formModel.currency], CURRENCIES, "value");
-			}
-			if (this.formModel.projectId) {
-				this.formModel.projectId = getArrayOfCodeListByKey([this.formModel.projectId], this.options.projects, "id");
 			}
 		},
 
