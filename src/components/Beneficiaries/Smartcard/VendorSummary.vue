@@ -19,7 +19,7 @@
 				</span>
 
 				<v-btn
-					:disabled="isProjectsLoading || !isUserPermissionGranted(PERMISSIONS.VENDOR_SUMMARY)"
+					:disabled="!isUserPermissionGranted(PERMISSIONS.VENDOR_SUMMARY)"
 					:data-cy="identifierBuilder(`history-button`)"
 					variant="outlined"
 					class="text-none text-right"
@@ -40,7 +40,7 @@
 						</p>
 
 						<p>
-							<strong>{{ $t("Project") }}: </strong> {{ getProjectName(batch.projectId) }}
+							<strong>{{ $t("Project") }}: </strong> {{ batch.project.name }}
 						</p>
 
 						<p>
@@ -75,7 +75,6 @@
 
 		<RedeemedBatches
 			v-else-if="!redemptionSummary"
-			:projects="projects"
 			:vendor-id="vendor.id"
 			@showRedemptionSummary="onShowRedemptionSummary"
 		/>
@@ -137,12 +136,10 @@
 </template>
 
 <script>
-import ProjectService from "@/services/ProjectService";
 import SmartcardService from "@/services/SmartcardService";
 import VendorService from "@/services/VendorService";
 import RedeemedBatches from "@/components/Beneficiaries/Smartcard/RedeemedBatches";
 import RedemptionSummary from "@/components/Beneficiaries/Smartcard/RedemptionSummary";
-import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
@@ -158,7 +155,6 @@ export default {
 	},
 
 	mixins: [
-		grid,
 		identifierBuilder,
 		permissions,
 	],
@@ -186,10 +182,8 @@ export default {
 			redemptionSummary: false,
 			redeemButtonPressed: false,
 			printButtonVisible: true,
-			isProjectsLoading: false,
 			isBatchesLoading: false,
 			batches: [],
-			projects: [],
 			totalNumberOfTransactions: "",
 			redemptionCurrency: "",
 		};
@@ -198,7 +192,6 @@ export default {
 	created() {
 		this.fetchVendorSummary();
 		this.fetchSmartcardRedemptions();
-		this.fetchProjects();
 	},
 
 	methods: {
@@ -206,15 +199,13 @@ export default {
 			this.printButtonVisible = true;
 			this.redemptionBatch = batch;
 
-			if (!this.getProjectName(batch.projectId)) {
+			if (!batch.project.name) {
 				this.printButtonVisible = false;
 			}
 
 			this.redemptionCurrency = batch.currency;
 			this.redemptionSummary = true;
 			this.header = "Vendor Redemption Summary";
-		}, getProjectName(id) {
-			return this.projects.find((project) => project.id === id)?.name;
 		},
 
 		onGoBack() {
@@ -284,26 +275,6 @@ export default {
 				this.totalNumberOfTransactions = data?.redeemedSmartcardPurchasesTotalCount || 0;
 			} catch (e) {
 				Notification(`${this.$t("Vendor summary")}: ${e.message || e}`, "error");
-			}
-		},
-
-		async fetchProjects() {
-			try {
-				this.isProjectsLoading = true;
-
-				const {
-					data: { data },
-					status,
-					message,
-				} = await ProjectService.getShortListOfProjects();
-
-				checkResponseStatus(status, message);
-
-				this.projects = data;
-			} catch (e) {
-				Notification(`${this.$t("Projects")}: ${e.message || e}`, "error");
-			} finally {
-				this.isProjectsLoading = false;
 			}
 		},
 
