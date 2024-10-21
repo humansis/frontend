@@ -113,19 +113,6 @@ export default {
 			return assistance.name;
 		},
 
-		async prepareVendorForTable(vendorIds) {
-			const vendors = await this.getVendors(vendorIds);
-
-			this.table.data.forEach((item, key) => {
-				const vendor = this.prepareEntityForTable(item.vendorId, vendors);
-				this.table.data[key].vendor = vendor.name;
-				this.table.data[key].vendorNo = vendor.vendorNo;
-			});
-
-			this.table.progress += 10;
-			this.reload();
-		},
-
 		async prepareProductForTable(productIds) {
 			const products = await this.getProducts(productIds);
 
