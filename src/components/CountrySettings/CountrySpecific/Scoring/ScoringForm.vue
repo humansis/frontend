@@ -47,7 +47,7 @@
 		</v-btn>
 
 		<v-btn
-			:disabled="formModel.dropFile.name"
+			:disabled="!formModel.dropFile?.name"
 			color="primary"
 			class="text-none ml-3"
 			variant="elevated"

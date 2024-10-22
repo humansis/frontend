@@ -968,10 +968,10 @@ export default {
 				this.loading.isCustomFields = true;
 
 				const {
-					data: { data, totalCount },
+					data: { data },
 					status,
 					message,
-				} = await CustomFieldsService.getListOfCustomFields({
+				} = await CustomFieldsService.getShortListOfCustomFields({
 					sort: "label.asc",
 					filters: { type: "number" },
 				});
@@ -980,7 +980,7 @@ export default {
 
 				checkResponseStatus(status, message);
 
-				if (totalCount) {
+				if (data.length) {
 					this.prepareCustomFieldsForSelect(data);
 				}
 			} catch (e) {
