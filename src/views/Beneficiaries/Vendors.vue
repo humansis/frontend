@@ -205,7 +205,6 @@ export default {
 		},
 
 		onShowDetail(vendor) {
-			console.log(vendor);
 			this.mapToFormModel(vendor);
 			this.vendorModal = {
 				isEditing: false,

@@ -248,7 +248,6 @@ export default {
 			options: {
 				scoringTypes: [AssistancesService.getDefaultScoringType()],
 			},
-			filters: { enabled: true },
 			minimumSelectionScore: null,
 			scoringType: AssistancesService.getDefaultScoringType(),
 			loading: {
@@ -417,11 +416,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await AssistancesService.getScoringTypes(
-					null,
-					null,
-					this.filters,
-				);
+				} = await AssistancesService.getShortListOfScoringTypes();
 
 				checkResponseStatus(status, message);
 

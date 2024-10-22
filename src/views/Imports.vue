@@ -226,7 +226,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await ProjectService.getListOfProjects({});
+				} = await ProjectService.getShortListOfProjects();
 
 				checkResponseStatus(status, message);
 

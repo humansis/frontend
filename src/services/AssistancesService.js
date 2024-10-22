@@ -72,6 +72,12 @@ export default {
 		});
 	},
 
+	getShortListOfScoringTypes() {
+		return fetcher({
+			uri: "catalogs/scorings",
+		});
+	},
+
 	async createScoring(body) {
 		return new Promise((resolve, reject) => {
 			const { name, note, dropFile } = body;

@@ -71,7 +71,7 @@
 
 		<template v-slot:advancedControls>
 			<v-expansion-panels v-model="isAdvancedSearchVisible">
-				<v-expansion-panel :value="true">
+				<v-expansion-panel :value="true" eager>
 					<v-expansion-panel-text>
 						<InstitutionsFilter
 							@filtersChanged="onFiltersChange"

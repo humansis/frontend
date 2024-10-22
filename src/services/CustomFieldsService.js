@@ -8,6 +8,12 @@ export default {
 		});
 	},
 
+	getShortListOfCustomFields({ sort, filters }) {
+		return fetcher({
+			uri: `catalogs/country-specifics${queryBuilder({ sort, filters })}`,
+		});
+	},
+
 	createCustomField(body) {
 		return fetcher({
 			uri: "country-specifics",

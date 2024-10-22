@@ -546,7 +546,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await DonorService.getListOfDonors({});
+				} = await DonorService.getShortListOfDonors();
 
 				checkResponseStatus(status, message);
 
