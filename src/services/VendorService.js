@@ -8,6 +8,12 @@ export default {
 		});
 	},
 
+	getShortListOfVendors() {
+		return fetcher({
+			uri: "catalogs/vendors",
+		});
+	},
+
 	createVendor(body) {
 		return fetcher({
 			uri: "vendors",

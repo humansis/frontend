@@ -147,7 +147,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await AssistancesService.getListOfAssistances({});
+				} = await AssistancesService.getShortListOfAssistance({});
 
 				checkResponseStatus(status, message);
 

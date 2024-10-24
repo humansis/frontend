@@ -75,6 +75,7 @@ export default {
 					type: GENERAL.LOCATION_TYPE.temporarySettlement.type,
 				};
 			}
+
 			return null;
 		},
 

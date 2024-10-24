@@ -1,5 +1,4 @@
 import AssistancesService from "@/services/AssistancesService";
-import BeneficiariesService from "@/services/BeneficiariesService";
 import institutionHelper from "@/mixins/institutionHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -261,7 +260,7 @@ export default {
 			};
 		},
 
-		async showInstitutionDetail(detailedInstitution) {
+		async showInstitutionDetail(beneficiary) {
 			this.institutionModal = {
 				isOpened: true,
 				isEditing: false,
@@ -278,22 +277,7 @@ export default {
 					this.fetchInstitutionTypes(),
 				]);
 
-				try {
-					const {
-						data,
-						status,
-						message,
-					} = await BeneficiariesService.getInstitution({
-						id: detailedInstitution.institution.id,
-						filters: { includeArchived: true },
-					});
-
-					checkResponseStatus(status, message);
-
-					this.institutionModel = this.mapToModel(data);
-				} catch (e) {
-					Notification(`${this.$t("Institution")}: ${e.message || e}`, "error");
-				}
+				this.institutionModel = this.mapToModel(beneficiary.institution);
 			} catch (e) {
 				Notification(`${this.$t("Institution detail")}: ${e.message || e}`, "error");
 			} finally {
