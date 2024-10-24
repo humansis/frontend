@@ -356,7 +356,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await VendorService.getListOfVendors({});
+				} = await VendorService.getShortListOfVendors();
 
 				checkResponseStatus(status, message);
 

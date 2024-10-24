@@ -428,6 +428,7 @@ export default {
 					filters: this.filters,
 					sort,
 				});
+
 				this.table.data = [];
 				this.table.progress = 0;
 
@@ -636,117 +637,69 @@ export default {
 			}
 		},
 
-		prepareDataForTable(data) {
-			this.table.progress = 5;
-			const projectIds = [];
-			const beneficiaryIds = [];
-			const addresses = [];
+		async prepareDataForTable(data) {
+			const vulnerabilitiesList = await this.getVulnerabilities();
 
 			data.forEach((item, key) => {
 				const { id } = item;
 				const address = this.getAddressTypeAndId(item);
-
-				projectIds.push(...item.projectIds);
-				beneficiaryIds.push(item.householdHeadId);
+				const householdHead = item.beneficiaries.find(
+					(beneficiary) => beneficiary.id === item.householdHeadId,
+				);
 
 				this.table.data[key] = {
 					...item,
+					...this.prepareBeneficiaryForTable(householdHead, vulnerabilitiesList),
+					projects: item.projects.map((project) => project.name).join(" "),
 					vulnerabilities: item.householdHeadId
 						? item.vulnerabilities
 						: null,
 					householdId: id,
 					address,
-					members: item.beneficiaryIds.length,
+					members: item.beneficiaries.length,
+					currentLocation: item.residenceAddress.locationName,
+					idNumbers: this.prepareIdNumbers(householdHead.nationalIds),
 					id: {
 						routeParams: { householdId: id },
 						routeName: ROUTER.ROUTE_NAME.HOUSEHOLD_INFORMATION_SUMMARY,
 						name: id,
 					},
 				};
-
-				if (address) {
-					addresses.push(address);
-				}
-			});
-
-			this.prepareProjectForTable([...new Set(projectIds)]);
-
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
-
-			this.prepareAddressForTable(addresses);
-
-			this.table.progress = 100;
-		},
-
-		async prepareBeneficiaryForTable(beneficiaryIds) {
-			const beneficiaries = await this.getBeneficiaries(beneficiaryIds);
-			const vulnerabilitiesList = await this.getVulnerabilities();
-
-			this.table.progress += 10;
-
-			const modifiedTable = await Promise.all(this.table.data.map(async (item, key) => {
-				const {
-					nationalIds,
-				} = await this.prepareBeneficiaries(
-					item.householdId,
-					item.householdHeadId,
-					beneficiaries,
-					key,
-				);
-
-				const preparedVulnerabilities = item.vulnerabilities
-					? vulnerabilitiesList?.filter(
-						({ code }) => item.vulnerabilities.includes(code),
-					)
-					: null;
-
-				return {
-					...item,
-					vulnerabilities: preparedVulnerabilities,
-					nationalIds,
-					supportDateReceived: item.supportDateReceived
-						? new Date(item.supportDateReceived)
-						: null,
-				};
-			}));
-
-			this.table.data = [...modifiedTable];
-
-			this.table.progress += 5;
-			this.table.data.forEach((item, key) => {
-				let idsText = "";
-
-				if (item.nationalIds) {
-					item.nationalIds.forEach((nationalId, index) => {
-						if (index !== 0) {
-							idsText += "<br />";
-						}
-
-						if (nationalId) {
-							idsText += `${nationalId.type}: <b>${nationalId.number}</b>`;
-						}
-					});
-				}
-				this.table.data[key].idNumbers = idsText || this.$t("None");
 			});
 		},
 
-		async prepareAddressForTable(address) {
-			await this.getPreparedLocations(address);
+		async prepareBeneficiaryForTable(householdHead, vulnerabilitiesList) {
+			const preparedVulnerabilities = householdHead.vulnerabilities
+				? vulnerabilitiesList?.filter(
+					({ code }) => householdHead.vulnerabilities.includes(code),
+				)
+				: null;
 
-			this.table.data.map(async (item, key) => {
-				this.table.data[key]
-					.currentLocation = item.address.locationName;
-			});
-			this.table.progress += 5;
+			return {
+				...householdHead,
+				vulnerabilities: preparedVulnerabilities,
+				supportDateReceived: householdHead.supportDateReceived
+					? new Date(householdHead.supportDateReceived)
+					: null,
+			};
 		},
 
-		async prepareProjectForTable(projectIds) {
-			const projects = await this.getProjects(projectIds);
-			this.table.progress += 10;
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].projects = this.prepareProjects(item, projects);
-			});
+		prepareIdNumbers(nationalIds) {
+			let idsText = "";
+
+			if (nationalIds) {
+				nationalIds.forEach((nationalId, index) => {
+					if (index !== 0) {
+						idsText += "<br />";
+					}
+
+					if (nationalId) {
+						idsText += `${nationalId.type}: <b>${nationalId.number}</b>`;
+					}
+				});
+			}
+
+			return idsText || this.$t("None");
 		},
 
 		async getVulnerabilities() {
@@ -827,23 +780,6 @@ export default {
 			}
 
 			this.table.data[tableIndex].loading = false;
-			return result;
-		},
-
-		prepareProjects(item, projects) {
-			let result = "";
-
-			item.projectIds.forEach((id) => {
-				const foundProject = projects.find((project) => project.id === id);
-				if (foundProject) {
-					if (result === "") {
-						result = foundProject.name;
-					} else {
-						result += `, ${foundProject.name}`;
-					}
-				}
-			});
-
 			return result;
 		},
 

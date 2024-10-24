@@ -124,6 +124,7 @@
 		<template v-slot:tableControls>
 			<ExportControl
 				v-if="!upcoming"
+				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT_EXPORT"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
