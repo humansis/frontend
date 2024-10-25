@@ -134,7 +134,7 @@ export default {
 		...mapState(["availableProjects"]),
 
 		isUserGrantedToGoToProject() {
-			return this.isUserPermissionGranted(this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_VIEW);
+			return this.isUserPermissionGranted(this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT);
 		},
 	},
 
