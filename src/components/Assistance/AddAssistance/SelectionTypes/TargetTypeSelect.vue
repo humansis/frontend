@@ -110,9 +110,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await InstitutionService.getListOfInstitutions({
-					filters: { projects: [this.projectId] },
-				});
+				} = await InstitutionService.getShortListOfProjectInstitutions(this.projectId);
 
 				checkResponseStatus(status, message);
 

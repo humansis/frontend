@@ -95,7 +95,7 @@
 									v-bind="props"
 									:title="$t(sideBarItem.title)"
 									:to="getRouteAddress(sideBarItem)"
-									:disabled="!isUserPermissionGranted(sideBarItem.requiredPermissions)"
+									:disabled="isListGroupItemDisabled(sideBarItem)"
 								>
 									<template v-slot:prepend>
 										<v-tooltip
@@ -119,7 +119,7 @@
 								<v-list-item
 									:title="$t(subItem.title)"
 									:to="getRouteAddress(subItem)"
-									:disabled="!isUserPermissionGranted(subItem.requiredPermissions)"
+									:disabled="isListItemDisabled(subItem)"
 									:data-cy="identifierBuilder(`${subItem.title}-button`, false)"
 								>
 									<template v-slot:prepend>
@@ -200,6 +200,12 @@ export default {
 				{
 					title: "Beneficiaries",
 					prependIcon: "user-friends",
+					requiredPermissions: [
+						PERMISSIONS.HOUSEHOLD,
+						PERMISSIONS.INSTITUTION,
+						PERMISSIONS.VENDOR,
+					],
+					isAtLeastOnePermissionGranted: true,
 					subItems: [
 						{
 							title: "Households",
@@ -243,6 +249,12 @@ export default {
 				{
 					title: "Country Settings",
 					prependIcon: "globe-africa",
+					requiredPermissions: [
+						PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS,
+						PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD,
+						PERMISSIONS.COUNTRY_SETTINGS_SCORING,
+					],
+					isAtLeastOnePermissionGranted: true,
 					subItems: [
 						{
 							title: "Products",
@@ -252,6 +264,11 @@ export default {
 						},
 						{
 							title: "Country specifics",
+							requiredPermissions: [
+								PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD,
+								PERMISSIONS.COUNTRY_SETTINGS_SCORING,
+							],
+							isAtLeastOnePermissionGranted: true,
 							prependIcon: "map-marker-alt",
 							to: { name: ROUTER.ROUTE_NAME.COUNTRY_SPECIFICS },
 						},
@@ -344,9 +361,26 @@ export default {
 		},
 
 		getRouteAddress(sideBarItem) {
-			return this.isUserPermissionGranted(sideBarItem.requiredPermissions)
+			return this.isUserPermissionGranted(
+				sideBarItem.requiredPermissions,
+				sideBarItem.isAtLeastOnePermissionGranted,
+			)
 				? sideBarItem.to
 				: null;
+		},
+
+		isListGroupItemDisabled(sideBarItem) {
+			return !this.isUserPermissionGranted(
+				sideBarItem.requiredPermissions,
+				sideBarItem.isAtLeastOnePermissionGranted,
+			);
+		},
+
+		isListItemDisabled(subItem) {
+			return !this.isUserPermissionGranted(
+				subItem.requiredPermissions,
+				subItem.isAtLeastOnePermissionGranted,
+			);
 		},
 	},
 };

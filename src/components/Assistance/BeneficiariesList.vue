@@ -217,6 +217,7 @@
 
 			<ButtonAction
 				v-if="isUnDistributionApprovalButtonVisible(row.reliefPackages[0])"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_APPROVALS"
 				icon="flag"
 				tooltip-text="Approve Un-distribution"
 				@actionConfirmed="onSetApproveUnDistribution(row.id, row.reliefPackages[0])"
@@ -236,6 +237,7 @@
 
 			<ButtonAction
 				v-if="isInvalidationApprovalButtonVisible(row.reliefPackages[0])"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_APPROVALS"
 				icon="flag"
 				tooltip-text="Approve Invalidation"
 				@actionConfirmed="onSetApproveInvalidation(row.id, row.reliefPackages[0])"
@@ -1321,6 +1323,12 @@ export default {
 							const isCanceled = reliefPackages.length && reliefPackages.every(
 								(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.CANCELED,
 							);
+							const selectable = !isDistributed
+								&& !isCanceled
+								&& !this.isAssistanceClosed
+								&& this.isUserPermissionGranted(
+									this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_DISTRIBUTION,
+								);
 
 							this.table.data[key] = {
 								...this.table.data[key],
@@ -1328,7 +1336,7 @@ export default {
 								toDistribute,
 								distributed,
 								lastModified,
-								selectable: !isDistributed && !isCanceled && !this.isAssistanceClosed,
+								selectable,
 							};
 
 							if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
@@ -1384,6 +1392,12 @@ export default {
 						const isCanceled = reliefPackages.length && reliefPackages.every(
 							(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.CANCELED,
 						);
+						const selectable = !isDistributed
+							&& !isCanceled
+							&& !this.isAssistanceClosed
+							&& this.isUserPermissionGranted(
+								this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_DISTRIBUTION,
+							);
 
 						this.table.data[key] = {
 							...item,
@@ -1401,7 +1415,7 @@ export default {
 							spent,
 							lastModified,
 							phone,
-							selectable: !isDistributed && !isCanceled && !this.isAssistanceClosed,
+							selectable,
 						};
 
 						if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);

@@ -9,8 +9,8 @@ export default {
 	},
 
 	methods: {
-		isUserPermissionGranted(permissions) {
-			return isUserPermissionGranted(permissions);
+		isUserPermissionGranted(permissions, isAtLeastOnePermissionGranted = false) {
+			return isUserPermissionGranted(permissions, isAtLeastOnePermissionGranted);
 		},
 
 		getAllowedPageForRedirect() {

@@ -638,7 +638,7 @@ export default {
 		},
 
 		async prepareDataForTable(data) {
-			const vulnerabilitiesList = await this.getVulnerabilities();
+			const vulnerabilitiesCriteriaList = await this.getVulnerabilities();
 
 			data.forEach((item, key) => {
 				const { id } = item;
@@ -646,19 +646,32 @@ export default {
 				const householdHead = item.beneficiaries.find(
 					(beneficiary) => beneficiary.id === item.householdHeadId,
 				);
+				const preparedVulnerabilitiesCriteria = householdHead.vulnerabilityCriteria
+					? vulnerabilitiesCriteriaList?.filter(
+						({ code }) => householdHead.vulnerabilityCriteria.includes(code),
+					)
+					: null;
 
 				this.table.data[key] = {
 					...item,
-					...this.prepareBeneficiaryForTable(householdHead, vulnerabilitiesList),
 					projects: item.projects.map((project) => project.name).join(" "),
-					vulnerabilities: item.householdHeadId
-						? item.vulnerabilities
+					vulnerabilities: preparedVulnerabilitiesCriteria,
+					supportDateReceived: householdHead.supportDateReceived
+						? new Date(householdHead.supportDateReceived)
 						: null,
 					householdId: id,
 					address,
 					members: item.beneficiaries.length,
 					currentLocation: item.residenceAddress.locationName,
 					idNumbers: this.prepareIdNumbers(householdHead.nationalIds),
+					familyName: this.prepareName(
+						householdHead.localGivenName,
+						householdHead.enGivenName,
+					),
+					givenName: this.prepareName(
+						householdHead.localGivenName,
+						householdHead.enGivenName,
+					),
 					id: {
 						routeParams: { householdId: id },
 						routeName: ROUTER.ROUTE_NAME.HOUSEHOLD_INFORMATION_SUMMARY,
@@ -666,22 +679,6 @@ export default {
 					},
 				};
 			});
-		},
-
-		async prepareBeneficiaryForTable(householdHead, vulnerabilitiesList) {
-			const preparedVulnerabilities = householdHead.vulnerabilities
-				? vulnerabilitiesList?.filter(
-					({ code }) => householdHead.vulnerabilities.includes(code),
-				)
-				: null;
-
-			return {
-				...householdHead,
-				vulnerabilities: preparedVulnerabilities,
-				supportDateReceived: householdHead.supportDateReceived
-					? new Date(householdHead.supportDateReceived)
-					: null,
-			};
 		},
 
 		prepareIdNumbers(nationalIds) {
@@ -718,69 +715,6 @@ export default {
 			}
 
 			return [];
-		},
-
-		async getProjects(ids) {
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await ProjectService.getShortListOfProjects(ids);
-
-				checkResponseStatus(status, message);
-
-				return data;
-			} catch (e) {
-				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-			}
-
-			return [];
-		},
-
-		async getBeneficiaries(ids) {
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await BeneficiariesService.getBeneficiaries({ ids });
-
-				checkResponseStatus(status, message);
-
-				return data;
-			} catch (e) {
-				Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
-			}
-
-			return [];
-		},
-
-		async prepareBeneficiaries(id, householdHeadId, beneficiaries, tableIndex) {
-			if (!beneficiaries?.length) return "";
-
-			this.table.data[tableIndex].loading = true;
-			const result = {
-				nationalIds: [],
-			};
-			const beneficiary = beneficiaries.find((item) => item.id === householdHeadId);
-
-			if (beneficiary) {
-				const { nationalIds } = beneficiary;
-
-				this.table.data[tableIndex].givenName = this.prepareName(
-					beneficiary.localGivenName,
-					beneficiary.enGivenName,
-				);
-				this.table.data[tableIndex].familyName = this.prepareName(
-					beneficiary.localFamilyName,
-					beneficiary.enFamilyName,
-				);
-				result.nationalIds = nationalIds;
-			}
-
-			this.table.data[tableIndex].loading = false;
-			return result;
 		},
 
 		normalizeText(text) {
