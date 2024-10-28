@@ -662,7 +662,7 @@ export default {
 					householdId: id,
 					address,
 					members: item.beneficiaries.length,
-					currentLocation: item.residenceAddress.locationName,
+					currentLocation: address?.locationName || address?.name,
 					idNumbers: this.prepareIdNumbers(householdHead.nationalIds),
 					familyName: this.prepareName(
 						householdHead.localGivenName,
