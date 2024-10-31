@@ -101,7 +101,7 @@ export default {
 				value: null,
 			},
 		],
-		payloadDivisionCodFields: [
+		payloadDivisionCodLimitedFields: [
 			{
 				rangeFrom: 1,
 				rangeTo: 3,
@@ -109,6 +109,28 @@ export default {
 			},
 			{
 				rangeFrom: 4,
+				rangeTo: null,
+				value: null,
+			},
+		],
+		payloadDivisionCodExpandedFields: [
+			{
+				rangeFrom: 1,
+				rangeTo: 3,
+				value: null,
+			},
+			{
+				rangeFrom: 4,
+				rangeTo: 5,
+				value: null,
+			},
+			{
+				rangeFrom: 6,
+				rangeTo: 9,
+				value: null,
+			},
+			{
+				rangeFrom: 10,
 				rangeTo: null,
 				value: null,
 			},
@@ -132,7 +154,8 @@ export default {
 		allowedProductCategoryTypes: false,
 		householdMembersNwsFields: false,
 		householdMembersNesFields: false,
-		householdMembersCodFields: false,
+		householdMembersCodLimitedFields: false,
+		householdMembersCodExpandedFields: false,
 		dateExpiration: false,
 	},
 	MODALITY: {
@@ -164,16 +187,28 @@ export default {
 		DISTRIBUTION: {
 			PER_HOUSEHOLD: "Per Household",
 			PER_INDIVIDUAL: "Per Individual",
-			PER_MEMBER_CODE: "Per Household Member",
-			PER_MEMBER_LABEL: "Per Member (uniformly)",
-			PER_MEMBERS_CODE: "Per Household Members",
-			PER_MEMBERS_NWS_CODE: "Per Members NWS",
-			PER_MEMBERS_NES_CODE: "Per Members NES",
-			PER_MEMBERS_COD_CODE: "Per Members COD",
-			PER_MEMBERS_NWS_LABEL: "Per Members NWS (1, 2, 3, 4, 5+)",
-			PER_MEMBERS_NES_LABEL: "Per Members NES (1-3, 4-6, 7-9, 10+)",
-			PER_MEMBERS_COD_LABEL: "Per Members COD (1-3, 4+)",
 			PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD: "Per Custom Amount By Custom Field",
+			PER_MEMBERS_CODE: "Per Household Members",
+			PER_MEMBER: {
+				CODE: "Per Household Member",
+				LABEL: "Per Member (uniformly)",
+			},
+			PER_MEMBERS_NWS: {
+				CODE: "Per Members NWS",
+				LABEL: "Per Members NWS (1, 2, 3, 4, 5+)",
+			},
+			PER_MEMBERS_NES: {
+				CODE: "Per Members NES",
+				LABEL: "Per Members NES (1-3, 4-6, 7-9, 10+)",
+			},
+			PER_MEMBERS_COD_LIMITED: {
+				CODE: "Per Members COD Limited",
+				LABEL: "Per Members COD (1-3, 4+)",
+			},
+			PER_MEMBERS_COD_EXPANDED: {
+				CODE: "Per Members COD Expanded",
+				LABEL: "Per Members COD (1-3, 4-5, 6-9, 10+)",
+			},
 		},
 	},
 	FIELD_TYPE: {
