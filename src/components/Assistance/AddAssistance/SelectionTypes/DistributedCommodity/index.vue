@@ -180,7 +180,7 @@ export default {
 				isOpened: false,
 			},
 			dateExpiration: "",
-			formModel: { ...ASSISTANCE.DEFAULT_FORM_MODEL },
+			formModel: JSON.parse(JSON.stringify(ASSISTANCE.DEFAULT_FORM_MODEL)),
 			table: {
 				data: [],
 				columns: [
@@ -440,7 +440,7 @@ export default {
 
 		onAddNewCommodity() {
 			this.commodityModal.isOpened = true;
-			this.formModel = { ...ASSISTANCE.DEFAULT_FORM_MODEL };
+			this.formModel = JSON.parse(JSON.stringify(ASSISTANCE.DEFAULT_FORM_MODEL));
 		},
 
 		onCloseCommodityModal() {
@@ -449,6 +449,7 @@ export default {
 
 		onSubmitCommodityForm(commodityForm) {
 			this.table.data.push(commodityForm);
+			this.formModel = JSON.parse(JSON.stringify(ASSISTANCE.DEFAULT_FORM_MODEL));
 			this.commodityModal.isOpened = false;
 
 			this.toggleColumnsVisibility();
@@ -502,7 +503,7 @@ export default {
 
 		clearComponent() {
 			this.table.data = [];
-			this.formModel = { ...ASSISTANCE.DEFAULT_FORM_MODEL };
+			this.formModel = JSON.parse(JSON.stringify(ASSISTANCE.DEFAULT_FORM_MODEL));
 			this.$emit("updatedData", this.preparedCommodities);
 		},
 	},
