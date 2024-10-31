@@ -267,7 +267,8 @@ export default {
 					value,
 					payloadDivisionNwsFields,
 					payloadDivisionNesFields,
-					payloadDivisionCodFields,
+					payloadDivisionCodLimitedFields,
+					payloadDivisionCodExpandedFields,
 					currency,
 					secondUnit,
 					secondQuantity,
@@ -284,8 +285,10 @@ export default {
 					payloadDivision = payloadDivisionNwsFields;
 				} else if (this.isPerMembersNes(division)) {
 					payloadDivision = payloadDivisionNesFields;
+				} else if (this.isPerMembersCodLimited(division)) {
+					payloadDivision = payloadDivisionCodLimitedFields;
 				} else {
-					payloadDivision = payloadDivisionCodFields;
+					payloadDivision = payloadDivisionCodExpandedFields;
 				}
 
 				// TODO modalityTypeCode is temporary solution for bug on prod, it will be refactored
@@ -388,9 +391,10 @@ export default {
 		getDivision(divisionString) {
 			switch (divisionString) {
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE:
-				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
-				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
-				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS.CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES.CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_LIMITED.CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_EXPANDED.CODE:
 					return ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE;
 				default:
 					return divisionString || null;
@@ -476,19 +480,25 @@ export default {
 			const divisionStr = this.getDivisionStr(division);
 
 			return divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_CODE
-				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE
-				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE
-				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE;
+				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS.CODE
+				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES.CODE
+				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_LIMITED.CODE
+				|| divisionStr === ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_EXPANDED.CODE;
 		},
 
 		isPerMembersNws(division) {
 			return this.getDivisionStr(division) === ASSISTANCE
-				.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE;
+				.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS.CODE;
 		},
 
 		isPerMembersNes(division) {
 			return this.getDivisionStr(division) === ASSISTANCE
-				.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE;
+				.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES.CODE;
+		},
+
+		isPerMembersCodLimited(division) {
+			return this.getDivisionStr(division) === ASSISTANCE
+				.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_LIMITED.CODE;
 		},
 
 		getDivisionStr(division) {
