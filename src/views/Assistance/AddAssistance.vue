@@ -657,7 +657,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await CustomFieldsService.getListOfCustomFields({});
+				} = await CustomFieldsService.getShortListOfCustomFields({});
 
 				checkResponseStatus(status, message);
 
