@@ -21,11 +21,6 @@ export default {
 					buttonName: "Go to Project page",
 				},
 				{
-					permission: this.PERMISSIONS.HOME_PAGE,
-					pageName: ROUTER.ROUTE_NAME.HOME,
-					buttonName: "Go to Home page",
-				},
-				{
 					permission: this.PERMISSIONS.HOUSEHOLD,
 					pageName: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT,
 					buttonName: "Go to Household page",
@@ -59,6 +54,11 @@ export default {
 					permission: this.PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS,
 					pageName: ROUTER.ROUTE_NAME.VOUCHERS,
 					buttonName: "Go to Product page",
+				},
+				{
+					permission: this.PERMISSIONS.HOME_PAGE,
+					pageName: ROUTER.ROUTE_NAME.HOME,
+					buttonName: "Go to Home page",
 				},
 				{
 					permission: this.PERMISSIONS.TRANSACTIONS,

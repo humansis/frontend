@@ -201,6 +201,7 @@
 		</v-btn>
 
 		<ButtonAction
+			:required-permissions="requiredPermissions"
 			:is-confirm-action="isDataModifiedForDistributionProtocol"
 			:confirm-message="updateButtonMessage"
 			:is-only-icon="false"

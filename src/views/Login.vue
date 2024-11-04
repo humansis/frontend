@@ -44,6 +44,7 @@ import { mapActions, mapState } from "vuex";
 import CountriesService from "@/services/CountriesService";
 import LoginService from "@/services/LoginService";
 import TranslationService from "@/services/TranslationService";
+import permissions from "@/mixins/permissions";
 import usersHelper from "@/mixins/usersHelper";
 import { setCookie } from "@/utils/cookie";
 import { checkResponseStatus } from "@/utils/fetcher";
@@ -55,13 +56,14 @@ import { jwtDecode } from "jwt-decode";
 export default {
 	name: "LoginPage",
 
-	mixins: [usersHelper],
+	mixins: [usersHelper, permissions],
 
 	data() {
 		return {
 			gitInfo,
 			keyCloakAuthenticationUrl: "",
 			loginButtonLoading: false,
+			redirect: {},
 		};
 	},
 
@@ -162,13 +164,14 @@ export default {
 				}
 
 				this.storeUserPermissions(userDetail.role.permissions);
+				this.redirect = this.getAllowedPageForRedirect();
 
 				if (countries.length) {
 					if (this.$route.query.redirect) {
 						this.$router.push(this.$route.query.redirect.toString());
 					} else {
 						this.$router.push({
-							name: ROUTER.ROUTE_NAME.PROJECTS.ROOT,
+							name: this.redirect.pageName,
 							params: {
 								countryCode: this.country?.iso3 || countries[0].iso3,
 							},
