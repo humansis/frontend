@@ -18,7 +18,7 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
-				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE"
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"

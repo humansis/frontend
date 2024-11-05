@@ -434,6 +434,10 @@ const routes = [
 						return { name: ROUTER.ROUTE_NAME.ORGANIZATION_SERVICES };
 					}
 
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT)) {
+						return { name: ROUTER.ROUTE_NAME.ROLES.ROOT };
+					}
+
 					return { name: ROUTER.ROUTE_NAME.SYNC };
 				},
 				children: [
@@ -466,7 +470,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.USERS.DETAIL,
 								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
 								meta: {
-									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE],
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER],
 									breadcrumb: "User detail",
 									description: "This page is a form to show detail of a user in humansis.",
 								},

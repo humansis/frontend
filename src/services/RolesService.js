@@ -14,6 +14,12 @@ export default {
 		});
 	},
 
+	getShortListOfRoles({ search, filters }) {
+		return fetcher({
+			uri: `catalogs/roles${queryBuilder({ search, filters })}`,
+		});
+	},
+
 	getDetailOfRole(id) {
 		return fetcher({
 			uri: `roles/${id}`,

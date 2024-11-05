@@ -200,12 +200,18 @@
 					</template>
 
 					<v-list>
-						<v-list-item @click="onShowAddToProjectModal">
+						<v-list-item
+							:disabled="!isUserPermissionGranted(PERMISSIONS.HOUSEHOLD_EDIT)"
+							@click="onShowAddToProjectModal"
+						>
 							<v-icon class="mr-1" icon="plus" />
 							{{ $t('Add to Project') }}
 						</v-list-item>
 
-						<v-list-item @click="removeHouseholdModal.isOpened = true">
+						<v-list-item
+							:disabled="!isUserPermissionGranted(PERMISSIONS.HOUSEHOLD_DELETE)"
+							@click="removeHouseholdModal.isOpened = true"
+						>
 							<v-icon class="mr-1" icon="trash" />
 							{{ $t('Delete') }}
 						</v-list-item>
@@ -665,8 +671,8 @@ export default {
 					currentLocation: address?.locationName || address?.name,
 					idNumbers: this.prepareIdNumbers(householdHead.nationalIds),
 					familyName: this.prepareName(
-						householdHead.localGivenName,
-						householdHead.enGivenName,
+						householdHead.localFamilyName,
+						householdHead.enFamilyName,
 					),
 					givenName: this.prepareName(
 						householdHead.localGivenName,

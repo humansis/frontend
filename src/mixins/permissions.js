@@ -52,8 +52,13 @@ export default {
 				},
 				{
 					permission: this.PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS,
-					pageName: ROUTER.ROUTE_NAME.VOUCHERS,
+					pageName: ROUTER.ROUTE_NAME.PRODUCTS,
 					buttonName: "Go to Product page",
+				},
+				{
+					permission: this.PERMISSIONS.COUNTRY_SETTINGS_SCORING,
+					pageName: ROUTER.ROUTE_NAME.COUNTRY_SPECIFICS,
+					buttonName: "Go to Country Specifics page",
 				},
 				{
 					permission: this.PERMISSIONS.HOME_PAGE,
