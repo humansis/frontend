@@ -392,19 +392,38 @@ export default {
 					}),
 				...(this.isCountryCOD
 					&& {
-						payloadDivisionCodFields: {
+						payloadDivisionCodLimitedFields: {
 							$each: helpers.forEach({
 								value: {
-									required: requiredIf(function isHouseholdMembersCodFields() {
-										return this.displayedFields.householdMembersCodFields;
+									required: requiredIf(function isHouseholdMembersCodLimitedFields() {
+										return this.displayedFields.householdMembersCodLimitedFields;
 									}),
-									...(function isHouseholdMembersCodFields() {
-										return this.displayedFields.householdMembersCodFields;
+									...(function isHouseholdMembersCodLimitedFields() {
+										return this.displayedFields.householdMembersCodLimitedFields;
 									} && {
 										minValue: minValue(this.minValueForFields),
 									}),
-									...(function isHouseholdMembersCodFields() {
-										return this.displayedFields.householdMembersCodFields;
+									...(function isHouseholdMembersCodLimitedFields() {
+										return this.displayedFields.householdMembersCodLimitedFields;
+									} && {
+										...this.decimalPartValidationRule(),
+									}),
+								},
+							}),
+						},
+						payloadDivisionCodExpandedFields: {
+							$each: helpers.forEach({
+								value: {
+									required: requiredIf(function isHouseholdMembersCodExpandedFields() {
+										return this.displayedFields.householdMembersCodExpandedFields;
+									}),
+									...(function isHouseholdMembersCodExpandedFields() {
+										return this.displayedFields.householdMembersCodExpandedFields;
+									} && {
+										minValue: minValue(this.minValueForFields),
+									}),
+									...(function isHouseholdMembersCodExpandedFields() {
+										return this.displayedFields.householdMembersCodExpandedFields;
 									} && {
 										...this.decimalPartValidationRule(),
 									}),
@@ -501,23 +520,27 @@ export default {
 						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD),
 					},
 					{
-						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE,
-						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER_LABEL),
+						code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER.CODE,
+						value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER.LABEL),
 					},
 					...(this.isCountrySYR ? [
 						{
-							code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE,
-							value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_LABEL),
+							code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS.CODE,
+							value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS.LABEL),
 						},
 						{
-							code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE,
-							value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_LABEL),
+							code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES.CODE,
+							value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES.LABEL),
 						},
 					] : []),
 					...(this.isCountryCOD ? [
 						{
-							code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE,
-							value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_LABEL),
+							code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_LIMITED.CODE,
+							value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_LIMITED.LABEL),
+						},
+						{
+							code: ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_EXPANDED.CODE,
+							value: this.$t(ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_EXPANDED.LABEL),
 						},
 					] : []),
 				]
@@ -563,21 +586,27 @@ export default {
 			let max = this.formModel[this.valueOrQuantity];
 
 			switch (this.formModel.division?.code) {
-				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS.CODE:
 					max = Math.max(
 						...this.formModel.payloadDivisionNwsFields.map(({ value }) => Number(value)),
 					);
 
 					break;
-				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES.CODE:
 					max = Math.max(
 						...this.formModel.payloadDivisionNesFields.map(({ value }) => Number(value)),
 					);
 
 					break;
-				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_LIMITED.CODE:
 					max = Math.max(
-						...this.formModel.payloadDivisionCodFields.map(({ value }) => Number(value)),
+						...this.formModel.payloadDivisionCodLimitedFields.map(({ value }) => Number(value)),
+					);
+
+					break;
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_EXPANDED.CODE:
+					max = Math.max(
+						...this.formModel.payloadDivisionCodExpandedFields.map(({ value }) => Number(value)),
 					);
 
 					break;
@@ -591,24 +620,32 @@ export default {
 		showDivisionFields() {
 			return this.displayedFields.householdMembersNwsFields
 				|| this.displayedFields.householdMembersNesFields
-				|| this.displayedFields.householdMembersCodFields;
+				|| this.displayedFields.householdMembersCodLimitedFields
+				|| this.displayedFields.householdMembersCodExpandedFields;
 		},
 
 		divisionFieldsValidationString() {
 			if (this.displayedFields.householdMembersNwsFields) {
 				return "payloadDivisionNwsFields";
-			} if (this.displayedFields.householdMembersNesFields) {
+			}
+
+			if (this.displayedFields.householdMembersNesFields) {
 				return "payloadDivisionNesFields";
 			}
 
-			return "payloadDivisionCodFields";
+			if (this.displayedFields.householdMembersCodLimitedFields) {
+				return "payloadDivisionCodLimitedFields";
+			}
+
+			return "payloadDivisionCodExpandedFields";
 		},
 
 		divisionFields() {
 			return {
 				payloadDivisionNwsFields: this.divisionNwsFields,
 				payloadDivisionNesFields: this.divisionNesFields,
-				payloadDivisionCodFields: this.divisionCodFields,
+				payloadDivisionCodLimitedFields: this.divisionCodLimitedFields,
+				payloadDivisionCodExpandedFields: this.divisionCodExpandedFields,
 			};
 		},
 
@@ -671,10 +708,19 @@ export default {
 			];
 		},
 
-		divisionCodFields() {
+		divisionCodLimitedFields() {
 			return [
-				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityCodField1" },
-				{ label: this.$t(`${this.valueOrQuantityLabel} (4+ members)`), fieldName: "quantityCodField2" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityCodLimitedField1" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (4+ members)`), fieldName: "quantityCodLimitedField2" },
+			];
+		},
+
+		divisionCodExpandedFields() {
+			return [
+				{ label: this.$t(`${this.valueOrQuantityLabel} (1 - 3 members)`), fieldName: "quantityCodExpandedField1" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (4 - 5 members)`), fieldName: "quantityCodExpandedField2" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (6 - 9 members)`), fieldName: "quantityCodExpandedField3" },
+				{ label: this.$t(`${this.valueOrQuantityLabel} (10+ members)`), fieldName: "quantityCodExpandedField4" },
 			];
 		},
 
@@ -812,7 +858,8 @@ export default {
 				quantity: false,
 				householdMembersNwsFields: false,
 				householdMembersNesFields: false,
-				householdMembersCodFields: false,
+				householdMembersCodLimitedFields: false,
+				householdMembersCodExpandedFields: false,
 				customField: false,
 				amountMultiplier: false,
 				currency: true,
@@ -821,21 +868,25 @@ export default {
 			switch (code) {
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_HOUSEHOLD:
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_INDIVIDUAL:
-				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBER.CODE:
 					this.displayedFields.value = true;
 					this.displayedFields.quantity = this.isModalityInKind;
 
 					break;
-				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NWS.CODE:
 					this.displayedFields.householdMembersNwsFields = true;
 
 					break;
-				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES_CODE:
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_NES.CODE:
 					this.displayedFields.householdMembersNesFields = true;
 
 					break;
-				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_CODE:
-					this.displayedFields.householdMembersCodFields = true;
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_LIMITED.CODE:
+					this.displayedFields.householdMembersCodLimitedFields = true;
+
+					break;
+				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_MEMBERS_COD_EXPANDED.CODE:
+					this.displayedFields.householdMembersCodExpandedFields = true;
 
 					break;
 				case ASSISTANCE.COMMODITY.DISTRIBUTION.PER_CUSTOM_AMOUNT_BY_CUSTOM_FIELD:
