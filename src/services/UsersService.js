@@ -11,7 +11,7 @@ export default {
 
 	getListOfUsersProjects(userId) {
 		return fetcher({
-			uri: `users/${userId}/projects`,
+			uri: `users/${userId}/data-accesses`,
 		});
 	},
 

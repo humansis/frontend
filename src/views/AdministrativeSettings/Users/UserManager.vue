@@ -220,7 +220,6 @@
 <script>
 import { mapState } from "vuex";
 import { email, required } from "@vuelidate/validators";
-import ProjectService from "@/services/ProjectService";
 import RolesService from "@/services/RolesService";
 import UsersService from "@/services/UsersService";
 import ConfirmAction from "@/components/ConfirmAction";
@@ -393,7 +392,7 @@ export default {
 					data,
 					status,
 					message,
-				} = await ProjectService.getListOfProjectsForDataAccess();
+				} = await UsersService.getListOfUsersProjects(this.user.userId);
 
 				checkResponseStatus(status, message);
 
