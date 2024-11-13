@@ -43,6 +43,7 @@ export default {
 	COUNTRY_SETTINGS: "countrySettings",
 	COUNTRY_SETTINGS_PRODUCT_ITEMS: "countrySettingsProductItems",
 	COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE: "countrySettingsProductItemsCreate",
+	COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE_CATEGORIES: "countrySettingsProductItemsCreateCategories",
 	COUNTRY_SETTINGS_CUSTOM_FIELD: "countrySettingsCustomField",
 	COUNTRY_SETTINGS_CUSTOM_FIELD_CREATE: "countrySettingsCustomFieldCreate",
 	COUNTRY_SETTINGS_CUSTOM_FIELD_EXPORT: "countrySettingsCustomFieldExport",

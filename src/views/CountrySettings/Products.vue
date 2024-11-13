@@ -9,7 +9,7 @@
 			class="mt-5 mb-5"
 		>
 			<v-tab
-				:disabled="!isItemsVisible"
+				:disabled="isTabDisabled"
 				:data-cy="identifierBuilder('items-tab-button')"
 				value="items"
 				class="text-none"
@@ -20,7 +20,7 @@
 			</v-tab>
 
 			<v-tab
-				:disabled="!isCategoriesVisible"
+				:disabled="isTabDisabled"
 				:data-cy="identifierBuilder('categories-tab-button')"
 				value="categories"
 				class="text-none"
@@ -32,11 +32,11 @@
 		</v-tabs>
 
 		<v-window v-model="selectedTab">
-			<v-window-item v-if="isItemsVisible" value="items">
+			<v-window-item v-if="!isTabDisabled" value="items">
 				<Items />
 			</v-window-item>
 
-			<v-window-item v-if="isCategoriesVisible" value="categories">
+			<v-window-item v-if="!isTabDisabled" value="categories">
 				<Categories />
 			</v-window-item>
 		</v-window>
@@ -66,14 +66,8 @@ export default {
 	},
 
 	computed: {
-		isItemsVisible() {
-			return this.isUserPermissionGranted(this.PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS);
-		},
-
-		isCategoriesVisible() {
-			return this.isUserPermissionGranted(
-				this.PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE,
-			);
+		isTabDisabled() {
+			return !this.isUserPermissionGranted(this.PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS);
 		},
 	},
 };

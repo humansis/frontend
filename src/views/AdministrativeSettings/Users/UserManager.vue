@@ -419,7 +419,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await RolesService.getListOfRoles({});
+				} = await RolesService.getShortListOfRoles({});
 
 				checkResponseStatus(status, message);
 

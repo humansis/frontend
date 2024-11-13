@@ -16,7 +16,7 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
-			:disabled="!isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE)"
+			:disabled="isNewButtonDisabled"
 			:data-cy="identifierBuilder('categories-new-button')"
 			class="text-none ml-0 mb-3"
 			color="primary"
@@ -86,6 +86,12 @@ export default {
 			}
 
 			return "Create New Category";
+		},
+
+		isNewButtonDisabled() {
+			return !this.isUserPermissionGranted(
+				this.PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE_CATEGORIES,
+			);
 		},
 
 		...mapState(["country"]),

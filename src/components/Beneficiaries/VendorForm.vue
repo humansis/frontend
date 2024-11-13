@@ -289,6 +289,7 @@ export default {
 					message,
 				} = await RolesService.getShortListOfRoles({
 					filters: { includeVendorRole: true },
+					search: "Vendor",
 				});
 
 				checkResponseStatus(status, message);
