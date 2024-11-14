@@ -146,13 +146,13 @@ export default {
 					{
 						key: "project",
 						type: "link",
-						permissionsForLinkVisibility: PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT,
+						permissionsForLinkVisibility: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT],
 						sortable: false,
 					},
 					{
 						key: "assistance",
 						type: "link",
-						permissionsForLinkVisibility: PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE,
+						permissionsForLinkVisibility: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 						sortable: false,
 					},
 					{ key: "fullLocationNames", title: "Location", sortable: false },

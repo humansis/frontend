@@ -1,5 +1,4 @@
 export default {
-	TEST: "test",
 	HOME_PAGE: "homePage",
 	PROJECT_MANAGEMENT: "projectManagement",
 	PROJECT_MANAGEMENT_MANAGE: "projectManagementManage",

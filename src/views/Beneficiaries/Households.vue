@@ -660,7 +660,7 @@ export default {
 
 				this.table.data[key] = {
 					...item,
-					projects: item.projects.map((project) => project.name).join(" "),
+					projects: item.projects.map((project) => project.name).join(", "),
 					vulnerabilities: preparedVulnerabilitiesCriteria,
 					supportDateReceived: householdHead.supportDateReceived
 						? new Date(householdHead.supportDateReceived)
