@@ -249,12 +249,7 @@ export default {
 				{
 					title: "Country Settings",
 					prependIcon: "globe-africa",
-					requiredPermissions: [
-						PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS,
-						PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD,
-						PERMISSIONS.COUNTRY_SETTINGS_SCORING,
-					],
-					isAtLeastOnePermissionGranted: true,
+					requiredPermissions: PERMISSIONS.COUNTRY_SETTINGS,
 					subItems: [
 						{
 							title: "Products",
