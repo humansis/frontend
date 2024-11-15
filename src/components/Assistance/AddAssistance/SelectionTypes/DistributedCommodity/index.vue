@@ -3,6 +3,7 @@
 		<h2 class="text-h6 mt-5 text-left font-weight-bold">{{ $t('Distributed Commodity') }}</h2>
 
 		<v-btn
+			:disabled="isAlreadyCreatedDistributedCommodity"
 			color="primary"
 			prepend-icon="plus"
 			class="text-none"
@@ -347,6 +348,10 @@ export default {
 		formattedDate() {
 			const date = this.table.data[0]?.dateExpiration;
 			return date ? this.$moment(date).format("YYYY-MM-DD") : "";
+		},
+
+		isAlreadyCreatedDistributedCommodity() {
+			return this.table.data.length > 0;
 		},
 
 		preparedTableColumns() {
