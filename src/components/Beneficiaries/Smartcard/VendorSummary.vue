@@ -51,7 +51,7 @@
 
 					<v-col class="d-flex justify-end align-center">
 						<v-btn
-							:disabled="!batch.canRedeem || !isUserPermissionGranted(PERMISSIONS.VENDOR_SUMMARY)"
+							:disabled="isRedeemDisabled(batch)"
 							:loading="redeemLoading === batch"
 							color="primary"
 							class="text-none text-right"
@@ -136,6 +136,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import SmartcardService from "@/services/SmartcardService";
 import VendorService from "@/services/VendorService";
 import RedeemedBatches from "@/components/Beneficiaries/Smartcard/RedeemedBatches";
@@ -189,6 +190,10 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["accessibleProjectIds"]),
+	},
+
 	created() {
 		this.fetchVendorSummary();
 		this.fetchSmartcardRedemptions();
@@ -230,6 +235,14 @@ export default {
 		onShowHistory() {
 			this.history = true;
 			this.header = "Redeemed Batches";
+		},
+
+		isRedeemDisabled(batch) {
+			return !batch.canRedeem
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.VENDOR_SUMMARY)
+				|| !this.accessibleProjectIds.find(
+					(accessibleProjectId) => accessibleProjectId === batch.project.id,
+				);
 		},
 
 		formatPrice(price, currency) {

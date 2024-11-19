@@ -1,6 +1,5 @@
 import { checkResponseStatus, download, fetcher } from "@/utils/fetcher";
-import { queryBuilder } from "@/utils/helpers";
-import CryptoJS from "crypto-js";
+import { queryBuilder, saltPassword } from "@/utils/helpers";
 
 export default {
 	getListOfUsers({ page, size, sort, search, ids, idsParam, filters }) {
@@ -27,7 +26,7 @@ export default {
 			const userBody = body;
 
 			if (userBody.password) {
-				userBody.password = this.saltPassword(salt, userBody.password);
+				userBody.password = saltPassword(salt, userBody.password);
 			}
 
 			checkResponseStatus(status, message);
@@ -57,17 +56,6 @@ export default {
 		});
 	},
 
-	saltPassword(salt, password) {
-		const salted = `${password}{${salt}}`;
-		let digest = CryptoJS.SHA512(salted);
-
-		for (let i = 1; i < 5000; i += 1) {
-			digest = CryptoJS.SHA512(digest.concat(CryptoJS.enc.Utf8.parse(salted)));
-		}
-
-		return CryptoJS.enc.Base64.stringify(digest);
-	},
-
 	getDetailOfUser(id) {
 		return fetcher({
 			uri: `users/${id}`,
@@ -85,7 +73,7 @@ export default {
 			} = await this.requestSalt(body.username);
 
 			userBody.password = userBody.password
-				? this.saltPassword(salt, userBody.password)
+				? saltPassword(salt, userBody.password)
 				: null;
 
 			checkResponseStatus(status, message);

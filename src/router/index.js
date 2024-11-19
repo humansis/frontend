@@ -198,7 +198,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD,
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/Assistance/AddAssistance"),
 								meta: {
-									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION],
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Add Assistance",
 									description: "This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",

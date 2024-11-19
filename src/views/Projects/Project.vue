@@ -6,7 +6,7 @@
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Project Assistances') }}</h2>
 
 			<ButtonAction
-				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE"
 				:to="{ name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD }"
 				:is-only-icon="false"
 				color="primary"

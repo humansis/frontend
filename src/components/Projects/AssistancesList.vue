@@ -83,7 +83,7 @@
 				<v-list>
 					<v-list-item class="dropdown-actions">
 						<ButtonAction
-							:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION"
+							:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE"
 							:is-only-icon="false"
 							icon="copy"
 							label="Duplicate"
@@ -124,7 +124,7 @@
 		<template v-slot:tableControls>
 			<ExportControl
 				v-if="!upcoming"
-				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT_EXPORT"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_EXPORTS"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"

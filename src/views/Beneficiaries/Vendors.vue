@@ -53,7 +53,6 @@
 </template>
 
 <script>
-import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
 import VendorSummary from "@/components/Beneficiaries/Smartcard/VendorSummary";
 import VendorForm from "@/components/Beneficiaries/VendorForm";
@@ -116,7 +115,6 @@ export default {
 				contractNo: "",
 				canDoRemoteDistributions: false,
 				userId: null,
-				roleId: null,
 			},
 			selectedVendor: null,
 		};
@@ -286,7 +284,6 @@ export default {
 				user,
 				vendorNo,
 				contractNo,
-				roleId,
 				canDoRemoteDistributions,
 			} = vendorForm;
 
@@ -311,9 +308,7 @@ export default {
 				username,
 				email: username,
 				password,
-				roleId,
 				phoneNumber: null,
-				changePassword: false,
 			};
 			if (this.vendorModal.isEditing && id) {
 				await this.updateVendor(id, userBody, vendorBody);
@@ -329,7 +324,7 @@ export default {
 					data,
 					status,
 					message,
-				} = await UsersService.createUser(userBody);
+				} = await VendorService.createVendorUser(userBody);
 
 				checkResponseStatus(status, message);
 
@@ -360,7 +355,7 @@ export default {
 				const {
 					status,
 					message,
-				} = await UsersService.updateUser({
+				} = await VendorService.updateVendorUser({
 					id: userBody.id,
 					body: userBody,
 				});
