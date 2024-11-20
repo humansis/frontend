@@ -220,6 +220,8 @@
 <script>
 import { mapState } from "vuex";
 import { email, required } from "@vuelidate/validators";
+import CountriesService from "@/services/CountriesService";
+import ProjectService from "@/services/ProjectService";
 import RolesService from "@/services/RolesService";
 import UsersService from "@/services/UsersService";
 import ConfirmAction from "@/components/ConfirmAction";
@@ -384,6 +386,24 @@ export default {
 			}
 		},
 
+		async getAllCountriesForUserDetail() {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await CountriesService.getListOfCountries();
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("All Countries")}: ${e.message || e}`, "error");
+			}
+
+			return [];
+		},
+
 		async getProjectsForDataAccess() {
 			try {
 				this.loading.isDataAccess = true;
@@ -392,11 +412,14 @@ export default {
 					data,
 					status,
 					message,
-				} = await UsersService.getListOfUsersProjects(this.user.userId);
+				} = this.userAction.isDetail
+					? await ProjectService.getShortListOfAllProjects()
+					: await UsersService.getListOfUsersProjects(this.user.userId);
 
 				checkResponseStatus(status, message);
 
-				this.prepareDataForDataAccess(data);
+				const projects = this.userAction.isDetail ? data.data : data;
+				await this.prepareDataForDataAccess(projects);
 
 				if (!this.userAction.isCreate && !this.isUserRoleAdmin) {
 					await this.updateDataForDataAccess(this.formModel.countries, this.formModel.projectIds);
@@ -594,8 +617,12 @@ export default {
 			}));
 		},
 
-		prepareDataForDataAccess(projects) {
-			this.formModel.dataForDataAccess = this.countries.map((country) => {
+		async prepareDataForDataAccess(projects) {
+			const countries = this.userAction.isDetail
+				? await this.getAllCountriesForUserDetail()
+				: this.countries;
+
+			this.formModel.dataForDataAccess = countries.map((country) => {
 				const projectsGroupedByCountry = projects.filter(
 					(project) => project.iso3 === country.iso3,
 				);
