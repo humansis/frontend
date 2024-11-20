@@ -63,7 +63,7 @@ export default {
 				data: [],
 				columns: generateColumns([
 					{ key: "date" },
-					{ key: "project" },
+					{ key: "projectName", title: "Project" },
 					{ key: "quantity" },
 					{ key: "total", title: "Total" },
 					{ key: "actions", value: "actions", sortable: false },
@@ -109,7 +109,7 @@ export default {
 					...item,
 					date: this.$moment(item.date).format("YYYY-MM-DD HH:mm"),
 					total: this.formatPrice(item.value, item.currency),
-					project: item.project.name,
+					projectName: item.project.name,
 				};
 			});
 		},

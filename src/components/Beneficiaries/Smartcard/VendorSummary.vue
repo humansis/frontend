@@ -6,7 +6,7 @@
 	</v-card-title>
 
 	<v-card-text>
-		<template v-if="!history">
+		<template v-if="!isHistory">
 			<div class="d-flex justify-space-between">
 				<span>
 					<span
@@ -29,7 +29,7 @@
 				</v-btn>
 			</div>
 
-			<template v-if="!isBatchesLoading">
+			<template v-if="!loading.isBatches">
 				<v-row v-for="batch in batches" :key="batch.id" class="mt-2">
 					<v-divider :thickness="2" color="bg-black" class="border-opacity-100" />
 
@@ -52,7 +52,7 @@
 					<v-col class="d-flex justify-end align-center">
 						<v-btn
 							:disabled="isRedeemDisabled(batch)"
-							:loading="redeemLoading === batch"
+							:loading="loading.isRedeemButton === batch"
 							color="primary"
 							class="text-none text-right"
 							@click="onRedeem(batch)"
@@ -74,7 +74,7 @@
 		</template>
 
 		<RedeemedBatches
-			v-else-if="!redemptionSummary"
+			v-else-if="!isRedemptionSummary"
 			:vendor-id="vendor.id"
 			@showRedemptionSummary="onShowRedemptionSummary"
 		/>
@@ -90,7 +90,7 @@
 		<v-spacer />
 
 		<v-btn
-			v-if="history"
+			v-if="isHistory"
 			:data-cy="identifierBuilder(`back-button`)"
 			class="text-none"
 			color="blue-grey-lighten-4"
@@ -111,8 +111,9 @@
 		</v-btn>
 
 		<v-btn
-			v-if="redemptionSummary"
-			:loading="legacyPrintLoading"
+			v-if="isRedemptionSummary"
+			:disabled="isPrintButtonDisabled"
+			:loading="loading.isLegacyPrintButton"
 			class="text-none ml-2"
 			color="primary"
 			variant="elevated"
@@ -122,9 +123,9 @@
 		</v-btn>
 
 		<v-btn
-			v-if="redemptionSummary && printButtonVisible"
-			:disabled="!isUserPermissionGranted(PERMISSIONS.VENDOR_SUMMARY)"
-			:loading="printLoading"
+			v-if="isRedemptionSummary && isPrintButtonVisible"
+			:disabled="isPrintButtonDisabled"
+			:loading="loading.isPrintButton"
 			class="text-none ml-2"
 			color="primary"
 			variant="elevated"
@@ -175,15 +176,18 @@ export default {
 	data() {
 		return {
 			header: "Vendor Transaction Summary",
-			legacyPrintLoading: false,
-			printLoading: false,
-			redeemLoading: false,
-			history: false,
+			isPrintButtonDisabled: false,
+			loading: {
+				isLegacyPrintButton: false,
+				isPrintButton: false,
+				isRedeemButton: false,
+				isBatches: false,
+			},
+			isRedemptionSummary: false,
+			isRedeemButtonPressed: false,
+			isPrintButtonVisible: true,
+			isHistory: false,
 			redemptionBatch: null,
-			redemptionSummary: false,
-			redeemButtonPressed: false,
-			printButtonVisible: true,
-			isBatchesLoading: false,
 			batches: [],
 			totalNumberOfTransactions: "",
 			redemptionCurrency: "",
@@ -201,39 +205,39 @@ export default {
 
 	methods: {
 		onShowRedemptionSummary(batch) {
-			this.printButtonVisible = true;
+			this.isPrintButtonVisible = !!batch.project.name;
+			this.isPrintButtonDisabled = !this.isUserPermissionGranted(this.PERMISSIONS.VENDOR_SUMMARY)
+				|| !this.accessibleProjectIds.find(
+					(accessibleProjectId) => accessibleProjectId === batch.project.id,
+				);
 			this.redemptionBatch = batch;
 
-			if (!batch.project.name) {
-				this.printButtonVisible = false;
-			}
-
 			this.redemptionCurrency = batch.currency;
-			this.redemptionSummary = true;
+			this.isRedemptionSummary = true;
 			this.header = "Vendor Redemption Summary";
 		},
 
 		onGoBack() {
 			this.fetchSmartcardRedemptions();
 
-			if (!this.redeemButtonPressed) {
-				if (this.redemptionSummary) {
-					this.redemptionSummary = false;
+			if (!this.isRedeemButtonPressed) {
+				if (this.isRedemptionSummary) {
+					this.isRedemptionSummary = false;
 					this.header = "Redeemed Batches";
-				} else if (this.history) {
-					this.history = false;
+				} else if (this.isHistory) {
+					this.isHistory = false;
 					this.header = "Vendor Transaction Summary";
 				}
-			} else if (this.redeemButtonPressed && this.redemptionSummary && this.history) {
-				this.redemptionSummary = false;
-				this.history = false;
-				this.redeemButtonPressed = false;
+			} else if (this.isRedeemButtonPressed && this.isRedemptionSummary && this.history) {
+				this.isRedemptionSummary = false;
+				this.isHistory = false;
+				this.isRedeemButtonPressed = false;
 				this.header = "Vendor Transaction Summary";
 			}
 		},
 
 		onShowHistory() {
-			this.history = true;
+			this.isHistory = true;
 			this.header = "Redeemed Batches";
 		},
 
@@ -256,7 +260,7 @@ export default {
 
 		async fetchSmartcardRedemptions() {
 			try {
-				this.isBatchesLoading = true;
+				this.loading.isBatches = true;
 
 				const {
 					data: { data },
@@ -271,7 +275,7 @@ export default {
 				Notification(`${this.$t("Smartcard Redemption")}: ${e.message || e}`, "error");
 			} finally {
 				this.$emit("loaded");
-				this.isBatchesLoading = false;
+				this.loading.isBatches = false;
 			}
 		},
 
@@ -293,7 +297,7 @@ export default {
 
 		async onRedeem(batch) {
 			try {
-				this.redeemLoading = batch;
+				this.loading.isRedeemButton = batch;
 
 				const {
 					data,
@@ -306,21 +310,21 @@ export default {
 
 				checkResponseStatus(status, message);
 
-				this.history = true;
-				this.redemptionSummary = true;
-				this.redeemButtonPressed = true;
+				this.isHistory = true;
+				this.isRedemptionSummary = true;
+				this.isRedeemButtonPressed = true;
 				this.redemptionBatch = data;
 				this.redemptionCurrency = batch.currency;
 			} catch (e) {
 				Notification(`${this.$t("Redeem Batch")}: ${e.message || e}`, "error");
 			} finally {
-				this.redeemLoading = null;
+				this.loading.isRedeemButton = null;
 			}
 		},
 
 		async onPrint() {
 			try {
-				this.printLoading = true;
+				this.loading.isPrintButtons = true;
 
 				const filename = `Smartcard_Invoice_${this.vendor.name}_${this.redemptionBatch.date}`;
 				const {
@@ -333,13 +337,13 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Print")}: ${e.message || e}`, "error");
 			} finally {
-				this.printLoading = false;
+				this.loading.isPrintButtons = false;
 			}
 		},
 
 		async onLegacyPrint() {
 			try {
-				this.legacyPrintLoading = true;
+				this.loading.isLegacyPrintButton = true;
 
 				const filename = `Legacy_Smartcard_Invoice_${this.vendor.name}_${this.redemptionBatch.date}`;
 				const {
@@ -352,7 +356,7 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Legacy Print")}: ${e.message || e}`, "error");
 			} finally {
-				this.legacyPrintLoading = false;
+				this.loading.isLegacyPrintButton = false;
 			}
 		},
 	},
