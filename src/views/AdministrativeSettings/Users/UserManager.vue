@@ -610,7 +610,10 @@ export default {
 		},
 
 		prepareRolesOptions(roles) {
-			this.isUserRoleEditable = roles.find((role) => role.name === this.formModel.role.name);
+			if (!this.userAction.isCreate) {
+				this.isUserRoleEditable = roles.find((role) => role.name === this.formModel.role.name);
+			}
+
 			this.options.roles = roles.map((role) => ({
 				...role,
 				isOptionDisabled: role.name === ROLE.ADMIN
