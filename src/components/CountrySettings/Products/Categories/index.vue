@@ -70,7 +70,8 @@ export default {
 				iso3: "",
 				name: "",
 				type: "",
-				image: "",
+				image: [],
+				uploadedImage: null,
 			},
 		};
 	},
@@ -155,6 +156,7 @@ export default {
 				name: "",
 				image: null,
 				type: "",
+				uploadedImage: null,
 			};
 		},
 
