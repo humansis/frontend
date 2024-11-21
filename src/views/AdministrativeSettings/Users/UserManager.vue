@@ -86,7 +86,7 @@
 							:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE"
 							:items="options.roles"
 							:loading="loading.isRoles"
-							:disabled="userAction.isDetail"
+							:disabled="userAction.isDetail || !isUserRoleEditable"
 							:error-messages="validationMsg('role')"
 							label="Role"
 							name="role"
@@ -268,6 +268,7 @@ export default {
 			pageTitle: "",
 			userAction: {},
 			dataForDataAccessCopy: [],
+			isUserRoleEditable: true,
 			formModel: {
 				id: null,
 				username: "",
@@ -609,6 +610,7 @@ export default {
 		},
 
 		prepareRolesOptions(roles) {
+			this.isUserRoleEditable = roles.find((role) => role.name === this.formModel.role.name);
 			this.options.roles = roles.map((role) => ({
 				...role,
 				isOptionDisabled: role.name === ROLE.ADMIN
