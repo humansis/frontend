@@ -648,7 +648,6 @@ export default {
 
 			data.forEach((item, key) => {
 				const { id } = item;
-				const address = this.getAddressTypeAndId(item);
 				const householdHead = item.beneficiaries.find(
 					(beneficiary) => beneficiary.id === item.householdHeadId,
 				);
@@ -666,9 +665,8 @@ export default {
 						? new Date(householdHead.supportDateReceived)
 						: null,
 					householdId: id,
-					address,
 					members: item.beneficiaries.length,
-					currentLocation: address?.locationName || address?.name,
+					currentLocation: item.locationName,
 					idNumbers: this.prepareIdNumbers(householdHead.nationalIds),
 					familyName: this.prepareName(
 						householdHead.localFamilyName,
