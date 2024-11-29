@@ -1,28 +1,14 @@
 <template>
 	<v-container fluid>
-		<Modal
-			v-model="userModal.isOpened"
-			:header="modalHeader"
-		>
-			<UserForm
-				:form-model="userModel"
-				:submit-button-label="userModal.isEditing ? 'Update' : 'Create'"
-				:is-editing="userModal.isEditing"
-				:form-disabled="userModal.isDetail"
-				close-button
-				@formSubmitted="onSubmitUserForm"
-				@formClosed="onCloseUserModal"
-			/>
-		</Modal>
-
 		<Tabs :pre-selected-tab-value="ADMINISTRATIVE_SETTINGS.TABS_VALUE.USERS" />
 
 		<div class="d-flex justify-end">
 			<v-btn
+				:disabled="!isUserPermissionGranted(PERMISSIONS.INSTITUTION_CREATE)"
+				:to="{ name: ROUTER.ROUTE_NAME.USERS.ADD }"
 				class="text-none ml-0 mb-3"
 				color="primary"
 				prepend-icon="plus"
-				@click="onAddNewUser"
 			>
 				{{ $t('Add') }}
 			</v-btn>
@@ -31,8 +17,8 @@
 		<UsersList
 			ref="usersList"
 			@delete="onRemoveUser"
-			@showEdit="onEditUser"
-			@showDetail="onShowDetail"
+			@showEdit="({ id }) => $router.push(this.getUserEditPage(id))"
+			@showDetail="({ id }) => $router.push(this.getUserDetailPage(id))"
 		/>
 	</v-container>
 </template>
@@ -40,253 +26,31 @@
 <script>
 import UsersService from "@/services/UsersService";
 import Tabs from "@/components/AdministrativeSettings/Tabs";
-import UserForm from "@/components/AdministrativeSettings/Users/Form";
 import UsersList from "@/components/AdministrativeSettings/Users/List";
-import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
-import { getArrayOfIdsByParam } from "@/utils/codeList";
+import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { ADMINISTRATIVE_SETTINGS } from "@/consts";
+import { ADMINISTRATIVE_SETTINGS, ROUTER } from "@/consts";
 
 export default {
 	name: "UsersPage",
 
 	components: {
 		UsersList,
-		Modal,
-		UserForm,
 		Tabs,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, routerHelper],
 
 	data() {
 		return {
 			ADMINISTRATIVE_SETTINGS,
-			userModal: {
-				isOpened: false,
-				isEditing: false,
-				isDetail: false,
-				isWaiting: false,
-			},
-			userModel: {
-				id: null,
-				username: "",
-				email: "",
-				firstName: "",
-				lastName: "",
-				position: "",
-				rights: [],
-				projectIds: [],
-				projectIdsCopy: [],
-				countries: [],
-				language: null,
-				phonePrefix: [],
-				phoneNumber: null,
-				roles: [],
-				disabledCountry: true,
-				disabledProject: true,
-				newUser: false,
-			},
+			ROUTER,
 		};
 	},
 
-	computed: {
-		modalHeader() {
-			if (this.userModal.isDetail) {
-				return "Detail of User";
-			}
-
-			if (this.userModal.isEditing) {
-				return "Edit User";
-			}
-
-			return "Create New User";
-		},
-	},
-
 	methods: {
-		onEditUser(user) {
-			this.mapToFormModel(user);
-			this.userModal = {
-				isEditing: true,
-				isOpened: true,
-				isDetail: false,
-				isWaiting: false,
-			};
-		},
-
-		onAddNewUser() {
-			this.userModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: false,
-				isWaiting: false,
-			};
-
-			this.userModel = {
-				...this.userModel,
-				id: null,
-				username: "",
-				email: "",
-				firstName: "",
-				lastName: "",
-				position: "",
-				rights: [],
-				projectIds: [],
-				notUsedProjectIds: [],
-				roles: [],
-				countries: [],
-				language: null,
-				phonePrefix: null,
-				phoneNumber: null,
-				disabledCountry: true,
-				disabledProject: true,
-				newUser: true,
-			};
-		},
-
-		onShowDetail(user) {
-			this.mapToFormModel(user);
-			this.userModal = {
-				isEditing: false,
-				isOpened: true,
-				isDetail: true,
-				isWaiting: false,
-			};
-		},
-
-		onCloseUserModal() {
-			this.userModal.isOpened = false;
-		},
-
-		onSubmitUserForm(userForm) {
-			const {
-				id,
-				email,
-				firstName,
-				lastName,
-				position,
-				rights,
-				projectIds,
-				notUsedProjectIds,
-				countries,
-				phonePrefix,
-				phoneNumber,
-				language,
-				disabledCountry,
-				disabledProject,
-			} = userForm;
-
-			const preparedProjectIds = !disabledProject
-				? [...notUsedProjectIds, ...getArrayOfIdsByParam(projectIds, "id")]
-				: [];
-			const userBody = {
-				username: email,
-				email,
-				firstName,
-				lastName,
-				position,
-				roles: [rights.code],
-				projectIds: preparedProjectIds,
-				countries: !disabledCountry ? getArrayOfIdsByParam(countries, "iso3") : [],
-				phonePrefix: phonePrefix?.code,
-				phoneNumber: phoneNumber || null,
-				language: language?.key || null,
-			};
-
-			if (this.userModal.isEditing && id) {
-				this.updateUser(id, userBody);
-			} else {
-				this.createUser(userBody);
-			}
-		},
-
-		mapToFormModel(
-			{
-				id,
-				username,
-				email,
-				firstName,
-				lastName,
-				position,
-				rights,
-				projectIds,
-				countries,
-				phonePrefix,
-				phoneNumber,
-				roles,
-				language,
-			},
-		) {
-			this.userModel = {
-				...this.userModel,
-				id,
-				username,
-				email,
-				firstName,
-				lastName,
-				position,
-				rights,
-				projectIds,
-				countries,
-				roles,
-				phonePrefix,
-				phoneNumber,
-				language,
-			};
-		},
-
-		sendHistory(id) {
-			UsersService.sendHistory(id);
-		},
-
-		async createUser(userBody) {
-			try {
-				this.userModal.isWaiting = true;
-
-				const {
-					status,
-					message,
-				} = await UsersService.createUser(userBody);
-
-				checkResponseStatus(status, message);
-
-				Notification(this.$t("User Successfully Created"), "success");
-				await this.$refs.usersList.fetchData();
-				this.onCloseUserModal();
-			} catch (e) {
-				Notification(`${this.$t("User")}: ${e.message || e}`, "error");
-			} finally {
-				this.userModal.isWaiting = false;
-			}
-		},
-
-		async updateUser(id, userBody) {
-			try {
-				this.userModal.isWaiting = true;
-
-				const {
-					status,
-					message,
-				} = await UsersService.updateUser({
-					body: userBody,
-					id,
-				});
-
-				checkResponseStatus(status, message);
-
-				Notification(this.$t("User Successfully Updated"), "success");
-				await this.$refs.usersList.fetchData();
-				this.onCloseUserModal();
-			} catch (e) {
-				Notification(`${this.$t("User")}: ${e.message || e}`, "error");
-			} finally {
-				this.userModal.isWaiting = false;
-			}
-		},
-
 		async onRemoveUser(id) {
 			try {
 				const {

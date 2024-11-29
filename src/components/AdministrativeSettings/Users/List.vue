@@ -29,6 +29,7 @@
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_DELETE"
 				:disabled="isLoggedUser(row.id)"
 				icon="trash"
 				tooltip-text="Delete"
@@ -44,6 +45,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -90,13 +92,14 @@ export default {
 				types: [EXPORT.USERS],
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
-			roles: [],
 			table: {
 				data: [],
 				columns: generateColumns([
 					{ key: "id", title: "ID" },
 					{ key: "email" },
-					{ key: "role", title: "Rights", sortKey: "rights" },
+					{ key: "role", sortable: false },
+					{ key: "dataAccess", sortable: false },
+					{ key: "projects", sortable: false },
 					{ key: "phonePrefix", title: "Prefix", sortKey: "prefix" },
 					{ key: "phoneNumber", sortKey: "phone" },
 					{ key: "actions", value: "actions", sortable: false },
@@ -140,8 +143,12 @@ export default {
 
 				checkResponseStatus(status, message);
 
+				this.table.data = [];
 				this.table.total = totalCount;
-				this.table.data = this.prepareDataForTable(data);
+
+				if (data.length > 0) {
+					this.prepareDataForTable(data);
+				}
 			} catch (e) {
 				Notification(`${this.$t("Users")}: ${e.message || e}`, "error");
 			} finally {
@@ -150,17 +157,14 @@ export default {
 		},
 
 		prepareDataForTable(data) {
-			const filledData = [];
 			data.forEach((item, key) => {
-				filledData[key] = item;
-				filledData[key].role = this.prepareRights(item.roles);
+				this.table.data[key] = {
+					...item,
+					role: item.role.name,
+					dataAccess: item.countries.map((country) => country.iso3).join(", "),
+					projects: item.projectIds.length,
+				};
 			});
-			return filledData;
-		},
-
-		prepareRights(rights) {
-			const role = this.roles.find((item) => item.code === rights[0]);
-			return role?.name;
 		},
 
 		isLoggedUser(id) {
