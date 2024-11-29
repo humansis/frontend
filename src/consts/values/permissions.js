@@ -50,8 +50,6 @@ export default {
 	ADMINISTRATIVE_SETTING: "administrativeSetting",
 	ADMINISTRATIVE_SETTING_USER: "administrativeSettingUser",
 	ADMINISTRATIVE_SETTING_USER_CREATE: "administrativeSettingUserCreate",
-	ADMINISTRATIVE_SETTING_USER_ASSIGN_ADMIN: "administrativeSettingUserAssignAdmin",
-	ADMINISTRATIVE_SETTING_USER_EDIT_ADMIN: "administrativeSettingUserEditAdmin",
 	ADMINISTRATIVE_SETTING_USER_DELETE: "administrativeSettingUserDelete",
 	ADMINISTRATIVE_SETTING_DONOR: "administrativeSettingDonor",
 	ADMINISTRATIVE_SETTING_ORGANIZATION: "administrativeSettingOrganization",

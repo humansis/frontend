@@ -614,12 +614,7 @@ export default {
 				this.isUserRoleEditable = roles.find((role) => role.name === this.formModel.role.name);
 			}
 
-			this.options.roles = roles.map((role) => ({
-				...role,
-				isOptionDisabled: role.name === ROLE.ADMIN
-					? !this.isUserPermissionGranted(this.PERMISSIONS.ADMINISTRATIVE_SETTING_USER_ASSIGN_ADMIN)
-					: false,
-			}));
+			this.options.roles = roles;
 		},
 
 		async prepareDataForDataAccess(projects) {
