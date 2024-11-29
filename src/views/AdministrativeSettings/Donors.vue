@@ -44,6 +44,7 @@ import DonorForm from "@/components/AdministrativeSettings/Donors/Form";
 import DonorsList from "@/components/AdministrativeSettings/Donors/List";
 import Tabs from "@/components/AdministrativeSettings/Tabs";
 import Modal from "@/components/Inputs/Modal";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
