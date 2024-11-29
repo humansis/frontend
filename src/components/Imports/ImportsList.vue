@@ -21,12 +21,14 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.IMPORT_DETAIL"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.IMPORT_MANAGE"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
@@ -109,6 +111,8 @@ import DataGrid from "@/components/DataGrid";
 import ImportsFilter from "@/components/Imports/ImportsFilter";
 import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import { generateColumns } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -142,7 +146,12 @@ export default {
 		ButtonAction,
 	},
 
-	mixins: [grid, baseHelper],
+	mixins: [
+		grid,
+		baseHelper,
+		permissions,
+		routerHelper,
+	],
 
 	data() {
 		return {
@@ -346,6 +355,8 @@ export default {
 		},
 
 		onGoToDetail(importItem) {
+			if (!this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_MANAGE)) return;
+
 			let slug = "";
 
 			switch (importItem.status) {
@@ -374,11 +385,7 @@ export default {
 					slug = "start-import";
 			}
 
-			this.$router.push({
-				name: "Import",
-				params: { importId: importItem.id },
-				query: { step: slug },
-			});
+			this.$router.push(this.getImportPage(importItem.id, { step: slug }));
 		},
 	},
 };

@@ -2,7 +2,7 @@
 	<v-card class="pa-5">
 		<FileUpload
 			v-if="isUploadBoxVisible"
-			v-model="dropFiles"
+			v-model="dropFile"
 			:accept="allowedFileExtensions"
 			name="file"
 			prepend-icon=""
@@ -13,21 +13,12 @@
 			@update:modelValue="onFileUploadChange"
 		/>
 
-		<v-alert
-			v-if="dropFiles.length > 1"
-			variant="outlined"
-			type="warning"
-			border="top"
-			class="mt-4"
-		>
-			{{ $t('You can upload only one file.') }}
-		</v-alert>
-
 		<v-divider />
 
 		<div class="d-flex justify-space-between mt-4">
 			<v-btn
-				v-if="canCancelImport"
+				v-if="isCancelImportButtonVisible"
+				:disabled="!isAllProjectsAccessibleForThisImport"
 				color="warning"
 				class="text-none"
 				variant="elevated"
@@ -39,7 +30,7 @@
 
 			<v-btn
 				v-if="canStartImport"
-				:disabled="!disabledStartImport"
+				:disabled="isStartImportButtonDisabled"
 				:loading="loadingChangeStateButton || startLoading"
 				color="primary"
 				class="text-none"
@@ -56,6 +47,7 @@
 <script>
 import ImportService from "@/services/ImportService";
 import FileUpload from "@/components/Inputs/FileUpload";
+import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
@@ -74,6 +66,8 @@ export default {
 		FileUpload,
 	},
 
+	mixins: [permissions],
+
 	props: {
 		importStatus: {
 			type: String,
@@ -89,11 +83,16 @@ export default {
 			type: Boolean,
 			required: true,
 		},
+
+		isAllProjectsAccessibleForThisImport: {
+			type: Boolean,
+			default: true,
+		},
 	},
 
 	data() {
 		return {
-			dropFiles: [],
+			dropFile: null,
 			isFileValid: false,
 			changeStateButtonLoading: false,
 			startLoading: false,
@@ -102,29 +101,22 @@ export default {
 	},
 
 	computed: {
-		disabledStartImport() {
-			return this.importStatus === IMPORT.STATUS.NEW
-				&& (this.dropFiles.length === 1 || this.importFiles.length)
-				&& this.isFileValid;
-		},
-
-		isStatusNew() {
-			return this.importStatus === IMPORT.STATUS.NEW;
+		isStartImportButtonDisabled() {
+			return this.importStatus !== IMPORT.STATUS.NEW
+				|| (!this.dropFile.name && !this.importFiles.length)
+				|| !this.isFileValid
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_MANAGE)
+				|| !this.isAllProjectsAccessibleForThisImport;
 		},
 
 		canStartImport() {
 			return this.importStatus === IMPORT.STATUS.NEW || this.importFiles.length;
 		},
 
-		canCancelImport() {
+		isCancelImportButtonVisible() {
 			return this.importStatus !== IMPORT.STATUS.FINISH
 				&& this.importStatus !== IMPORT.STATUS.CANCEL
 				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
-		},
-
-		isUploadStarted() {
-			return this.startLoading
-				|| this.importStatus === IMPORT.STATUS.UPLOADING;
 		},
 
 		isUploadBoxVisible() {
@@ -147,28 +139,24 @@ export default {
 	},
 
 	methods: {
-		deleteDropFile(index) {
-			this.dropFiles.splice(index, 1);
-		},
-
 		async onStartImport() {
 			const { importId } = this.$route.params;
 			this.startLoading = true;
 
-			if (this.dropFiles.length) {
+			if (this.dropFile.name) {
 				try {
 					const {
 						status,
 						message,
-					} = await ImportService.uploadFilesIntoImport({
-						files: this.dropFiles,
+					} = await ImportService.uploadFileIntoImport({
+						file: this.dropFile,
 						importId,
 					});
 
 					checkResponseStatus(status, message);
 
 					Notification(this.$t("Uploaded Successfully"), "success");
-					this.dropFiles = [];
+					this.dropFile = [];
 					this.startLoading = false;
 					this.$emit("fetchStatistics");
 				} catch (e) {
@@ -192,7 +180,7 @@ export default {
 		},
 
 		onFileUploadChange() {
-			const file = this.dropFiles[0];
+			const file = this.dropFile;
 
 			this.isFileValid = file instanceof File
 				&& this.allowedFileExtensions.includes(file.type);

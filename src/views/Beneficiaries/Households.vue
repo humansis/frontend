@@ -19,8 +19,8 @@
 			<v-menu>
 				<template v-slot:activator="{ props }">
 					<v-btn
-						v-if="userCan.addBeneficiary"
 						v-bind="props"
+						:disabled="!isUserPermissionGranted(PERMISSIONS.HOUSEHOLD_CREATE)"
 						:data-cy="identifierBuilder('add-beneficiary-button')"
 						color="primary"
 						prepend-icon="plus"
@@ -31,8 +31,8 @@
 				</template>
 
 				<v-list>
-					<router-link :to="{ name: 'Imports', query: { openModal: '1' } }">
-						<v-list-item v-if="userCan.importBeneficiaries">
+					<router-link :to="{ name: ROUTER.ROUTE_NAME.IMPORTS.ROOT, query: { openModal: '1' } }">
+						<v-list-item>
 							<v-card
 								:title="$t('Import')"
 								:subtitle="$t('Import from File')"
@@ -46,7 +46,7 @@
 						</v-list-item>
 					</router-link>
 
-					<router-link :to="{ name: 'AddHousehold' }">
+					<router-link :to="{ name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ADD }">
 						<v-list-item>
 							<v-card
 								:title="$t('Add Beneficiary')"
@@ -117,7 +117,7 @@
 		>
 			<template v-slot:actions="{ row: { householdId }, index }">
 				<ButtonAction
-					v-if="userCan.viewBeneficiary"
+					:required-permissions="PERMISSIONS.HOUSEHOLD_DETAIL"
 					:disabled="!householdsSelects"
 					:data-cy="`table-row-${index + 1}-show-detail-button`"
 					icon="search"
@@ -127,17 +127,17 @@
 				/>
 
 				<ButtonAction
-					v-if="userCan.viewBeneficiary"
+					:required-permissions="PERMISSIONS.HOUSEHOLD_EDIT"
 					:disabled="!householdsSelects"
 					:data-cy="`table-row-${index + 1}-edit-button`"
 					icon="edit"
 					label="Edit"
 					tooltip-text="Edit"
-					@actionConfirmed="$router.push({ name: 'EditHousehold', params: { householdId } })"
+					@actionConfirmed="$router.push(getHouseholdEditPage(householdId))"
 				/>
 
 				<ButtonAction
-					v-if="userCan.deleteBeneficiary"
+					:required-permissions="PERMISSIONS.HOUSEHOLD_DELETE"
 					:disabled="!householdsSelects"
 					:data-cy="`table-row-${index + 1}-delete-button`"
 					icon="trash"
@@ -155,6 +155,7 @@
 
 			<template v-slot:tableControls>
 				<ExportControl
+					:required-permissions="PERMISSIONS.HOUSEHOLD_EXPORT"
 					:disabled="!table.data.length || !table.dataUpdated"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="exportControl.types"
@@ -203,10 +204,7 @@
 							{{ $t('Add to Project') }}
 						</v-list-item>
 
-						<v-list-item
-							v-if="userCan.deleteBeneficiary"
-							@click="removeHouseholdModal.isOpened = true"
-						>
+						<v-list-item @click="removeHouseholdModal.isOpened = true">
 							<v-icon class="mr-1" icon="trash" />
 							{{ $t('Delete') }}
 						</v-list-item>
@@ -256,13 +254,14 @@ import addressHelper from "@/mixins/addressHelper";
 import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import validation from "@/mixins/validation";
 import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, TABLE } from "@/consts";
+import { EXPORT, ROUTER, TABLE } from "@/consts";
 
 export default {
 	name: "HouseholdPage",
@@ -286,10 +285,12 @@ export default {
 		urlFiltersHelper,
 		validation,
 		identifierBuilder,
+		routerHelper,
 	],
 
 	data() {
 		return {
+			ROUTER,
 			TABLE,
 			visiblePanels: [],
 			householdsSelects: true,
@@ -648,7 +649,7 @@ export default {
 					members: item.beneficiaryIds.length,
 					id: {
 						routeParams: { householdId: id },
-						routeName: "HouseholdInformationSummary",
+						routeName: ROUTER.ROUTE_NAME.HOUSEHOLD_INFORMATION_SUMMARY,
 						name: id,
 					},
 				};

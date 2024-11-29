@@ -48,7 +48,7 @@ import usersHelper from "@/mixins/usersHelper";
 import { setCookie } from "@/utils/cookie";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { GENERAL, ROLE } from "@/consts";
+import { GENERAL, ROLE, ROUTER } from "@/consts";
 import gitInfo from "@/gitInfo";
 import { jwtDecode } from "jwt-decode";
 
@@ -95,12 +95,12 @@ export default {
 	methods: {
 		...mapActions([
 			"storeUser",
-			"storePermissions",
+			"storeUserPermissions",
 			"storeLanguage",
 			"storeTranslations",
 			"storeCountries",
 			"storeCountry",
-			"storeAvailableProjects",
+			"storeAccessibleProjectIds",
 		]),
 
 		async login(accessToken) {
@@ -115,7 +115,7 @@ export default {
 
 				const { token, userId } = data;
 
-				const user = await jwtDecode(token);
+				const user = jwtDecode(token);
 				user.userId = userId;
 
 				await setCookie("token", token, user.exp - user.iat);
@@ -123,13 +123,13 @@ export default {
 				await this.storeUser(user);
 
 				if (user.roles[0] === ROLE.GUEST) {
-					await this.$router.push({ name: "AccountCreated" });
+					await this.$router.push({ name: ROUTER.ROUTE_NAME.ACCOUNT_CREATED });
 					return;
 				}
 
 				const userDetail = await this.getDetailOfUser(userId);
 
-				await this.storeAvailableProjects(userDetail.projectIds);
+				await this.storeAccessibleProjectIds(userDetail.projectIds);
 
 				const language = this.languages.find(({ key }) => key === userDetail?.language)
 					|| GENERAL.DEFAULT_LANGUAGE;
@@ -158,32 +158,14 @@ export default {
 					}
 				}
 
-				let rolePrivileges = [];
-
-				if (user.roles[0]) {
-					try {
-						const {
-							data: { privileges },
-							status: responseStatus,
-							message: responseMessage,
-						} = await LoginService.getRolePermissions(user.roles[0]);
-
-						checkResponseStatus(responseStatus, responseMessage);
-
-						rolePrivileges = privileges;
-					} catch (e) {
-						Notification(`${this.$t("Permissions")}: ${e.message || e}`, "error");
-					}
-				}
-
-				await this.storePermissions(rolePrivileges);
+				this.storeUserPermissions(userDetail.role.permissions);
 
 				if (countries.length) {
 					if (this.$route.query.redirect) {
 						this.$router.push(this.$route.query.redirect.toString());
 					} else {
 						this.$router.push({
-							name: "Projects",
+							name: ROUTER.ROUTE_NAME.PROJECTS.ROOT,
 							params: {
 								countryCode: this.country?.iso3 || countries[0].iso3,
 							},

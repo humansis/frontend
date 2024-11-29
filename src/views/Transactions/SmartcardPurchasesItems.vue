@@ -46,6 +46,7 @@
 		>
 			<template v-slot:tableControls>
 				<ExportControl
+					:required-permissions="PERMISSIONS.TRANSACTIONS_PURCHASE_ITEM_EXPORT"
 					:disabled="!table.data.length || !table.dataUpdated"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="exportControl.types"
@@ -89,13 +90,14 @@ import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import SmartcardPurchasesItemsFilter from "@/components/Transactions/SmartcardPurchasesItemsFilter";
 import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
 import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, TABLE } from "@/consts";
+import { EXPORT, ROUTER, TABLE } from "@/consts";
 
 export default {
 	name: "SmartcardPurchasesItems",
@@ -110,6 +112,7 @@ export default {
 		grid,
 		urlFiltersHelper,
 		transactionHelper,
+		permissions,
 	],
 
 	data() {
@@ -212,7 +215,7 @@ export default {
 
 		onRedirectToTab(tab) {
 			if (tab === "assistances") {
-				this.$router.push({ name: "TransactionsAssistances" });
+				this.$router.push({ name: ROUTER.ROUTE_NAME.TRANSACTIONS.ASSISTANCES });
 			}
 		},
 

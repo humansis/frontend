@@ -16,7 +16,7 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
-			v-if="userCan.addEditProducts"
+			:disabled="!isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE)"
 			:data-cy="identifierBuilder('categories-new-button')"
 			class="text-none ml-0 mb-3"
 			color="primary"

@@ -23,14 +23,12 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditUsers"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditUsers"
 				:disabled="isLoggedUser(row.id)"
 				icon="trash"
 				tooltip-text="Delete"
@@ -59,7 +57,6 @@
 
 <script>
 import { mapState } from "vuex";
-import SystemService from "@/services/SystemService";
 import UsersService from "@/services/UsersService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
@@ -118,7 +115,6 @@ export default {
 	},
 
 	async created() {
-		await this.fetchRoles();
 		await this.fetchData();
 	},
 
@@ -169,22 +165,6 @@ export default {
 
 		isLoggedUser(id) {
 			return id === this.user?.userId;
-		},
-
-		async fetchRoles() {
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await SystemService.getRoles();
-
-				checkResponseStatus(status, message);
-
-				this.roles = data;
-			} catch (e) {
-				Notification(`${this.$t("Roles")}: ${e.message || e}`, "error");
-			}
 		},
 
 		async onExportUsers(exportType, format) {

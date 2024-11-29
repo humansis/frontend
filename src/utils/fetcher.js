@@ -1,5 +1,5 @@
 import { getCookie } from "@/utils/cookie";
-import { CONFIG } from "@/consts";
+import { CONFIG, ROUTER } from "@/consts";
 import router from "@/router";
 import getters from "@/store/getters";
 import store from "@/store/index";
@@ -41,8 +41,8 @@ export const getResponseJSON = async (response, download = false) => {
 	}
 
 	if (forbidden) {
-		if (router.currentRoute.name !== "NoPermission") {
-			router.push({ name: "NoPermission" }).catch((error) => {
+		if (router.currentRoute.name !== ROUTER.ROUTE_NAME.NO_PERMISSION) {
+			router.push({ name: ROUTER.ROUTE_NAME.NO_PERMISSION }).catch((error) => {
 				console.error(error);
 			});
 		}
@@ -55,7 +55,7 @@ export const getResponseJSON = async (response, download = false) => {
 			|| router?.currentRoute?.fullPath;
 
 		router.push({
-			name: "Logout",
+			name: ROUTER.ROUTE_NAME.LOGOUT,
 			query: { redirect, notification: "login" },
 		}).catch((error) => {
 			console.error(error);
@@ -65,7 +65,7 @@ export const getResponseJSON = async (response, download = false) => {
 	}
 
 	if (notFound) {
-		router.push({ name: "NotFound" }).catch((error) => {
+		router.push({ name: ROUTER.ROUTE_NAME.NOT_FOUND }).catch((error) => {
 			console.error(error);
 		});
 
@@ -105,34 +105,22 @@ export const fetcher = async ({
 		? `${CONFIG.API_HOST}/${uri}`
 		: `${CONFIG.API}/v${version}/${uri}`;
 
-	let headers = {};
+	const token = getCookie("token");
+	const countryIso3 = store.state.country?.iso3;
+	const config = {
+		...(method && { method }),
+		...(body && { body: JSON.stringify(body) }),
+		credentials: "include",
+		mode: "cors",
+	};
 
-	headers = {
+	config.headers = {
 		"Content-Type": contentType || "application/json;charset=utf-8",
 		"Accept-Language": getters.getLanguageFromVuexStorage()?.key,
 		"Access-Control-Allow-Credentials": true,
+		...(auth && token.length && { Authorization: `Bearer ${token}` }),
+		...(countryIso3 && { Country: countryIso3 }),
 	};
-
-	const token = getCookie("token");
-
-	if (auth && token) {
-		headers.Authorization = `Bearer ${token}`;
-	}
-
-	headers.Country = store.state.country?.iso3 || "";
-
-	const config = { headers };
-
-	if (method) {
-		config.method = method;
-	}
-
-	if (body) {
-		config.body = JSON.stringify(body);
-	}
-
-	config.credentials = "include";
-	config.mode = "cors";
 
 	const response = await fetch(url, config);
 
@@ -146,24 +134,20 @@ export const fetcher = async ({
 export const upload = async ({ uri, version = 1, auth = true, method, body }) => {
 	const url = `${CONFIG.API}/v${version}/${uri}`;
 
-	const headers = {
-		"Access-Control-Allow-Credentials": true,
+	const token = getCookie("token");
+	const countryIso3 = store.state.country?.iso3;
+	const config = {
+		method,
+		body,
+		credentials: "include",
+		mode: "cors",
 	};
 
-	const token = getCookie("token");
-
-	if (auth && token) {
-		headers.Authorization = `Bearer ${token}`;
-	}
-
-	headers.Country = store.state.country?.iso3 || "";
-
-	const config = { headers };
-
-	config.method = method;
-	config.body = body;
-	config.credentials = "include";
-	config.mode = "cors";
+	config.headers = {
+		"Access-Control-Allow-Credentials": true,
+		...(auth && token.length && { Authorization: `Bearer ${token}` }),
+		...(countryIso3 && { Country: countryIso3 }),
+	};
 
 	const response = await fetch(url, config);
 
@@ -173,26 +157,21 @@ export const upload = async ({ uri, version = 1, auth = true, method, body }) =>
 export const download = async ({ uri, method = "GET", body = null, version = 1 }) => {
 	const url = `${CONFIG.API}/v${version}/${uri}`;
 
-	const headers = {
-		"Content-Type": "application/json;charset=utf-8",
-		"Accept-Language": getters.getLanguageFromVuexStorage()?.key,
-		"Access-Control-Allow-Credentials": true,
-	};
-
 	const token = getCookie("token");
-
-	if (token) {
-		headers.Authorization = `Bearer ${token}`;
-	}
-
-	headers.Country = store.state.country?.iso3 || "";
-
+	const countryIso3 = store.state.country?.iso3;
 	const config = {
-		headers,
 		method,
 		...(body && { body: JSON.stringify(body) }),
 		credentials: "include",
 		mode: "cors",
+	};
+
+	config.headers = {
+		"Content-Type": "application/json;charset=utf-8",
+		"Accept-Language": getters.getLanguageFromVuexStorage()?.key,
+		"Access-Control-Allow-Credentials": true,
+		...(token && { Authorization: `Bearer ${token}` }),
+		...(countryIso3 && { Country: countryIso3 }),
 	};
 
 	const response = await fetch(url, config);

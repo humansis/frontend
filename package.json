@@ -35,7 +35,7 @@
     "vue-qrcode-reader": "^5.5.1",
     "vue-router": "^4.2.5",
     "vue-swatches": "^2.1.1",
-    "vuetify": "^3.4.11",
+    "vuetify": "^3.7.1",
     "vuetify-sonner": "^0.3.12",
     "vuex": "^4.1.0",
     "vuex-persistedstate": "^4.1.0"
@@ -47,8 +47,8 @@
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
-    "eslint-plugin-vue": "9.2.0",
-    "eslint-plugin-vuejs-accessibility": "^2.2.0",
+    "eslint-plugin-vue": "9.27.0",
+    "eslint-plugin-vuejs-accessibility": "^2.4.1",
     "sass": "^1.69.6",
     "vite": "^5.0.10"
   }

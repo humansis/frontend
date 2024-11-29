@@ -46,6 +46,7 @@
 		>
 			<template v-slot:tableControls>
 				<ExportControl
+					:required-permissions="PERMISSIONS.TRANSACTIONS_ASSISTANCE_EXPORT"
 					:disabled="!table.data.length || !table.dataUpdated"
 					:available-export-formats="exportControl.formats"
 					:available-export-types="exportControl.types"
@@ -89,13 +90,14 @@ import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import DistributionsFilter from "@/components/Transactions/DistributionsFilter";
 import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
 import transactionHelper from "@/mixins/transactionHelper";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, ROUTER, TABLE } from "@/consts";
 
 const statusTags = [
 	{ code: ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED, class: "status distributed" },
@@ -115,6 +117,7 @@ export default {
 		grid,
 		urlFiltersHelper,
 		transactionHelper,
+		permissions,
 	],
 
 	data() {
@@ -215,7 +218,7 @@ export default {
 
 		onRedirectToTab(tab) {
 			if (tab === "smartCardPurchasedItems") {
-				this.$router.push({ name: "TransactionsPurchases" });
+				this.$router.push({ name: ROUTER.ROUTE_NAME.TRANSACTIONS.PURCHASES });
 			}
 		},
 

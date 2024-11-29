@@ -132,10 +132,7 @@
 
 		<router-link
 			v-else
-			:to="{
-				name: getRouteName(),
-				params: getParams(),
-			}"
+			:to="prepareRoute()"
 			:target="getTargetForLink"
 			:data-cy="identifierBuilder()"
 			class="table-link"
@@ -247,6 +244,7 @@ import ColorPicker from "@/components/Inputs/ColorPicker";
 import SvgIcon from "@/components/SvgIcon";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import { normalizeText } from "@/utils/datagrid";
+import { ROUTER } from "@/consts";
 
 export default {
 	name: "ColumnField",
@@ -329,12 +327,11 @@ export default {
 	methods: {
 		normalizeText,
 
-		getParams() {
-			return this.cellData.routeParams || {};
-		},
-
-		getRouteName() {
-			return this.cellData.routeName || "Home";
+		prepareRoute() {
+			return {
+				name: this.cellData.routeName || ROUTER.ROUTE_NAME.HOME,
+				params: this.cellData.routeParams || {},
+			};
 		},
 
 		getLinkName() {

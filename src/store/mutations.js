@@ -37,16 +37,16 @@ export default {
 		state.isAsideVisible = isVisible;
 	},
 
-	[CONST.STORE_PERMISSIONS]: (state, permissions) => {
-		const permissionsCopy = { ...state.permissions };
+	[CONST.STORE_USER_PERMISSIONS]: (state, permissions) => {
+		permissions.forEach((permission) => {
+			const camelCasePermission = permission.replace(/_./g, (x) => x[1].toUpperCase());
 
-		Object.keys(permissionsCopy).forEach((permission) => {
-			state.permissions[permission] = permissions.includes(permission);
+			state.userPermissions[camelCasePermission] = true;
 		});
 	},
 
-	[CONST.STORE_AVAILABLE_PROJECTS]: (state, projects) => {
-		state.availableProjects = projects;
+	[CONST.STORE_ACCESSIBLE_PROJECT_IDS]: (state, projectIds) => {
+		state.accessibleProjectIds = projectIds;
 	},
 
 	[CONST.STORE_GRID_FILTERS]: (state, gridFilters) => {

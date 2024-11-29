@@ -25,21 +25,24 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
-				:disabled="!bookletsSelects"
+				:required-permissions="PERMISSIONS.VOUCHERS"
+				:disabled="!isBookletsSelected"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
-				:disabled="!bookletsSelects"
+				:required-permissions="PERMISSIONS.VOUCHERS"
+				:disabled="!isBookletsSelected"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
-				:disabled="!row.deletable || !bookletsSelects"
+				:required-permissions="PERMISSIONS.VOUCHERS"
+				:disabled="!row.deletable || !isBookletsSelected"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"
@@ -52,8 +55,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.exportPrintVouchers"
-				:disabled="!bookletsSelects"
+				:disabled="!isBookletsSelected"
 				icon="print"
 				tooltip-text="Print"
 				@actionConfirmed="onPrintBooklets(row)"
@@ -62,6 +64,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.VOUCHERS"
 				:disabled="isExportDisabled"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -81,7 +84,8 @@
 			</v-btn>
 
 			<v-btn
-				v-show="!bookletsSelects"
+				v-show="!isBookletsSelected"
+				:disabled="!isUserPermissionGranted(PERMISSIONS.VOUCHERS)"
 				:loading="printSelectionLoading"
 				color="primary"
 				variant="elevated"
@@ -137,7 +141,12 @@ export default {
 		DataGrid,
 	},
 
-	mixins: [permissions, grid, voucherHelper, urlFiltersHelper],
+	mixins: [
+		permissions,
+		grid,
+		voucherHelper,
+		urlFiltersHelper
+	],
 
 	data() {
 		return {
@@ -148,7 +157,7 @@ export default {
 			printLoading: false,
 			isLoadingList: false,
 			printSelectionLoading: false,
-			bookletsSelects: true,
+			isBookletsSelected: true,
 			exportControl: {
 				loading: false,
 				location: "vouchers",
@@ -182,8 +191,7 @@ export default {
 
 	computed: {
 		isExportDisabled() {
-			return !this.userCan.exportPrintVouchers || !this.table.data.length
-				|| !this.table.dataUpdated;
+			return !this.table.data.length || !this.table.dataUpdated;
 		},
 	},
 
@@ -247,7 +255,7 @@ export default {
 
 					let ids = null;
 
-					if (!this.bookletsSelects) {
+					if (!this.isBookletsSelected) {
 						ids = this.table.checkedRows.map((item) => item.id);
 					}
 
@@ -272,7 +280,7 @@ export default {
 
 		onRowsChecked(rows) {
 			this.table.checkedRows = rows;
-			this.bookletsSelects = !rows?.length;
+			this.isBookletsSelected = rows?.length > 0;
 		},
 
 		async onPrintSelection() {

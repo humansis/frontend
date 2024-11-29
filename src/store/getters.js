@@ -12,7 +12,8 @@ export default {
 	getCountryFromVuexStorage: () => parseVuexStorageValue("country"),
 	getLanguageFromVuexStorage: () => parseVuexStorageValue("language"),
 	getTranslationsFromVuexStorage: () => parseVuexStorageValue("translations"),
-	getPermissionsFromVuexStorage: () => parseVuexStorageValue("permissions"),
+	getUserPermissionsFromVuexStorage: () => parseVuexStorageValue("userPermissions"),
+	getUserAccessibleProjectIdsFromVuexStorage: () => parseVuexStorageValue("accessibleProjectIds"),
 	getAdmNamesFromVuexStorage: () => parseVuexStorageValue("admNames"),
 	getInstitutionIdNamesVuexStorage: () => parseVuexStorageValue("institutionIdNames"),
 };

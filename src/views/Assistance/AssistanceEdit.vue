@@ -97,6 +97,7 @@
 
 			<v-btn
 				v-if="isNextButtonVisible"
+				:disabled="isNextButtonDisabled"
 				color="primary"
 				append-icon="arrow-right"
 				class="text-none"
@@ -107,6 +108,7 @@
 
 			<v-btn
 				v-if="isValidateAndLockButtonVisible"
+				:disabled="isValidateAndLockButtonDisabled"
 				:loading="validateAssistanceButtonLoading"
 				color="primary"
 				append-icon="lock"
@@ -126,6 +128,8 @@ import AssistanceSummary from "@/components/Assistance/AssistanceSummary";
 import BeneficiariesList from "@/components/Assistance/BeneficiariesList";
 import ImportAndCompare from "@/components/Assistance/ImportAndCompare";
 import EditNote from "@/components/Inputs/EditNote";
+import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
@@ -139,6 +143,8 @@ export default {
 		BeneficiariesList,
 		EditNote,
 	},
+
+	mixins: [permissions, routerHelper],
 
 	data() {
 		return {
@@ -174,6 +180,18 @@ export default {
 		isValidateAndLockButtonVisible() {
 			return this.activeStep === this.steps.length || !this.isTargetHouseholdOrIndividual;
 		},
+
+		isValidateAndLockButtonDisabled() {
+			return !this.isUserPermissionGranted(
+				this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_VALIDATE_AND_LOCK,
+			);
+		},
+
+		isNextButtonDisabled() {
+			return !this.isUserPermissionGranted(
+				this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE,
+			);
+		},
 	},
 
 	async mounted() {
@@ -207,11 +225,7 @@ export default {
 				}
 
 				if (this.assistance.state.code !== ASSISTANCE.STATUS.NEW) {
-					await this.$router.push({
-						name: "AssistanceDetail",
-						params: { assistanceId: this.assistance.id },
-
-					});
+					await this.$router.push(this.getAssistanceDetailPage(this.assistance.id));
 				}
 			} catch (e) {
 				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
@@ -282,12 +296,7 @@ export default {
 
 				Notification(this.$t("Assistance Successfully Validated and Locked"), "success");
 
-				this.$router.push({
-					name: "AssistanceDetail",
-					params: {
-						assistanceId: this.$route.params.assistanceId,
-					},
-				});
+				this.$router.push(this.getAssistanceDetailPage(this.$route.params.assistanceId));
 			} catch (e) {
 				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
 			} finally {

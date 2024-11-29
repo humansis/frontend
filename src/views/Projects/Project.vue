@@ -7,10 +7,11 @@
 
 			<v-btn
 				v-if="beneficiariesCount"
+				:disabled="!isUserPermissionGranted(PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION)"
 				color="primary"
 				prepend-icon="plus"
 				class="text-none ml-0"
-				@click="onGoToAddAssistance"
+				@click="$router.push({ name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD })"
 			>
 				{{ $t('New') }}
 			</v-btn>
@@ -32,6 +33,7 @@
 			:header="assistanceModal.title"
 		>
 			<AssistanceForm
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_CORRECTIONS"
 				:project="project"
 				:form-model="assistanceModel"
 				:assistance="assistance"
@@ -64,6 +66,7 @@ import ProjectSummary from "@/components/Projects/ProjectSummary";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { ROUTER } from "@/consts";
 
 export default {
 	name: "Project",
@@ -80,6 +83,7 @@ export default {
 
 	data() {
 		return {
+			ROUTER,
 			project: null,
 			projects: [],
 			assistance: {},
@@ -121,13 +125,6 @@ export default {
 			this.projectLoaded = true;
 			this.project = project;
 			this.getListOfProjects();
-		},
-
-		onGoToAddAssistance() {
-			this.$router.push({
-				name: "AddAssistance",
-				params: { projectId: this.$route.params.projectId },
-			});
 		},
 
 		async getListOfProjects() {

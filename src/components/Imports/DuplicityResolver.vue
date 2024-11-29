@@ -52,7 +52,7 @@
 
 			<template v-slot:actions="{ index }">
 				<v-btn
-					:disabled="isResolveFromFileDisabled(index)"
+					:disabled="isResolveFromFileButtonDisabled(index)"
 					:loading="table.data[index].toUpdateLoading"
 					:variant="isFromFileSelected(index) ? 'elevated' : 'outlined'"
 					color="info"
@@ -67,7 +67,7 @@
 				</v-btn>
 
 				<v-btn
-					:disabled="isDataForTableLoading(index)"
+					:disabled="isResolveFromHumansisButtonDisabled(index)"
 					:loading="table.data[index].toLinkLoading"
 					:variant="isFromHumansisSelected(index) ? 'elevated' : 'outlined'"
 					color="info"
@@ -88,10 +88,12 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ImportService from "@/services/ImportService";
 import DataGrid from "@/components/DataGrid";
 import Loading from "@/components/Loading";
 import grid from "@/mixins/grid";
+import permissions from "@/mixins/permissions";
 import { generateColumns } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
@@ -105,7 +107,7 @@ export default {
 		Loading,
 	},
 
-	mixins: [grid],
+	mixins: [grid, permissions],
 
 	props: {
 		header: {
@@ -191,6 +193,10 @@ export default {
 		};
 	},
 
+	computed: {
+		...mapState(["accessibleProjectIds"]),
+	},
+
 	created() {
 		this.getTotalCountOfDuplicities();
 		this.fetchData();
@@ -257,13 +263,20 @@ export default {
 
 		prepareDataForTable(data) {
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
-				this.table.data[key].state = item.state;
-				this.table.data[key].familyName = [];
-				this.table.data[key].firstName = [];
-				this.table.data[key].idType = [];
-				this.table.data[key].idNumber = [];
-				this.table.data[key].recordFrom = [];
+				const isAllProjectsAccessibleForThisDuplicity = item.projectIds?.every(
+					(projectId) => this.accessibleProjectIds.includes(projectId),
+				);
+
+				this.table.data[key] = {
+					...item,
+					state: item.state,
+					familyName: [],
+					firstName: [],
+					idType: [],
+					idNumber: [],
+					recordFrom: [],
+					isAllProjectsAccessibleForThisDuplicity,
+				};
 
 				this.extractDataForTable(item, key);
 			});
@@ -488,23 +501,31 @@ export default {
 			this.$emit("updated");
 		},
 
-		isFromFileSelected(item) {
-			return this.table.data[item].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
+		isFromFileSelected(index) {
+			return this.table.data[index].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_OURS;
 		},
 
-		isFromHumansisSelected(item) {
-			return this.table.data[item].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
+		isFromHumansisSelected(index) {
+			return this.table.data[index].state === IMPORT.ITEM_STATE.DUPLICITY_KEEP_THEIRS;
 		},
 
-		isDataForTableLoading(item) {
-			return this.table.data[item].toUpdateLoading
-				|| this.table.data[item].toLinkLoading
+		isDataForTableLoading(index) {
+			return this.table.data[index].toUpdateLoading
+				|| this.table.data[index].toLinkLoading
 				|| this.isFormChangesLoading;
 		},
 
-		isResolveFromFileDisabled(item) {
-			return this.isDataForTableLoading(item)
-				|| this.table.data[item].recordFrom?.includes("hasBeneficiaryIdDuplicity");
+		isResolveFromHumansisButtonDisabled(index) {
+			return this.isDataForTableLoading(index)
+				|| !this.table.data[index].isAllProjectsAccessibleForThisDuplicity
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_RESOLVE_DUPLICITIES);
+		},
+
+		isResolveFromFileButtonDisabled(index) {
+			return this.isDataForTableLoading(index)
+				|| this.table.data[index].recordFrom?.includes("hasBeneficiaryIdDuplicity")
+				|| !this.table.data[index].isAllProjectsAccessibleForThisDuplicity
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_RESOLVE_DUPLICITIES);
 		},
 	},
 

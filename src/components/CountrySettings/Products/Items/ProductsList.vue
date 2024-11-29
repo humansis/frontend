@@ -18,6 +18,7 @@
 	>
 		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
@@ -25,7 +26,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditProducts"
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
@@ -33,7 +34,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditProducts"
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
@@ -49,6 +50,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"

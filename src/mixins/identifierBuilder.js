@@ -1,34 +1,35 @@
 import { normalizeDataCy } from "@/utils/datagrid";
+import { ROUTER } from "@/consts";
 
 export default {
 	methods: {
 		pageIdentifier() {
 			switch (this.$route.name) {
-				case "Products":
+				case ROUTER.ROUTE_NAME.PRODUCTS:
 					return "products";
-				case "Project":
+				case ROUTER.ROUTE_NAME.ASSISTANCES.ROOT:
 					return "project-assistance";
-				case "CountrySpecific":
+				case ROUTER.ROUTE_NAME.COUNTRY_SPECIFICS:
 					return "country-specifics";
 				case "HouseholdInformationSummary":
 					return "household-information-summary";
-				case "Projects":
-				case "AddProject":
-				case "ProjectDetail":
-				case "ProjectEdit":
+				case ROUTER.ROUTE_NAME.PROJECTS.ROOT:
+				case ROUTER.ROUTE_NAME.PROJECTS.ADD:
+				case ROUTER.ROUTE_NAME.PROJECTS.DETAIL:
+				case ROUTER.ROUTE_NAME.PROJECTS.EDIT:
 					return "projects";
-				case "Households":
-				case "EditHousehold":
-				case "AddHousehold":
+				case ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT:
+				case ROUTER.ROUTE_NAME.HOUSEHOLDS.EDIT:
+				case ROUTER.ROUTE_NAME.HOUSEHOLDS.ADD:
 					return "household";
-				case "Vendors":
+				case ROUTER.ROUTE_NAME.VENDORS:
 					return "vendors";
 				default:
 					return "";
 			}
 		},
 
-		identifierBuilder(elementIdentifier, isPageIdentifierEnabled = true) {
+		identifierBuilder(elementIdentifier = "", isPageIdentifierEnabled = true) {
 			const pageIdentifierName = this.pageIdentifier();
 			const identifierParams = [];
 

@@ -72,7 +72,8 @@
 
 			<div class="d-flex flex-wrap ga-2 justify-space-between mt-4">
 				<v-btn
-					v-if="canCancelImport"
+					v-if="isCancelImportButtonVisible"
+					:disabled="!isAllProjectsAccessibleForThisImport"
 					color="error"
 					prepend-icon="ban"
 					class="text-none"
@@ -83,18 +84,20 @@
 
 				<div class="d-flex flex-wrap ga-2">
 					<v-btn
-						v-if="canUploadAndDownloadAffectedRecords"
+						v-if="isUploadAndDownloadAffectedRecordsButtonVisible"
+						:disabled="!isAllProjectsAccessibleForThisImport"
 						color="primary"
 						append-icon="file-upload"
 						class="text-none"
-						@click="filesUpload = !filesUpload"
+						@click="isFileUploaded = !isFileUploaded"
 					>
 						{{ $t("Upload Corrected Records") }}
 					</v-btn>
 
 					<v-btn
-						v-if="canStartIntegrityCheckAgain"
+						v-if="isStartIntegrityCheckAgainButtonVisible"
 						:loading="startIntegrityCheckAgainLoading"
+						:disabled="!isAllProjectsAccessibleForThisImport"
 						color="primary"
 						append-icon="play-circle"
 						class="text-none"
@@ -104,9 +107,9 @@
 					</v-btn>
 
 					<v-btn
-						v-if="canStartIdentityCheck"
+						v-if="isStartIdentityCheckButtonVisible"
+						:disabled="isStartIdentityCheckButtonDisabled"
 						:loading="changeStateButtonLoading"
-						:disabled="!isImportLoaded"
 						color="primary"
 						append-icon="play-circle"
 						class="text-none"
@@ -118,8 +121,8 @@
 			</div>
 
 			<FileUpload
-				v-if="filesUpload"
-				v-model="dropFiles"
+				v-if="isFileUploaded"
+				v-model="dropFile"
 				:accept="allowedFileExtensions"
 				name="file"
 				prepend-icon=""
@@ -128,22 +131,12 @@
 				density="compact"
 				class="mt-5"
 			/>
-
-			<v-alert
-				v-if="dropFiles.length > 1"
-				variant="outlined"
-				type="warning"
-				border="top"
-				class="mt-5"
-			>
-				{{ $t('You can upload only one file.') }}
-			</v-alert>
 		</div>
 	</v-card>
 
 	<v-card v-if="importFiles.length" class="pa-5 my-10">
 		<v-alert
-			v-if="canUploadAndDownloadAffectedRecords && isImportLoaded"
+			v-if="isUploadAndDownloadAffectedRecordsButtonVisible && isImportLoaded"
 			variant="outlined"
 			type="info"
 			border="start"
@@ -342,6 +335,7 @@
 import ImportService from "@/services/ImportService";
 import FileUpload from "@/components/Inputs/FileUpload";
 import Loading from "@/components/Loading";
+import permissions from "@/mixins/permissions";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
@@ -358,7 +352,7 @@ export default {
 		FileUpload,
 	},
 
-	mixins: [vuetifyHelper],
+	mixins: [vuetifyHelper, permissions],
 
 	props: {
 		statistics: {
@@ -390,6 +384,11 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		isAllProjectsAccessibleForThisImport: {
+			type: Boolean,
+			default: true,
+		},
 	},
 
 	data() {
@@ -397,12 +396,12 @@ export default {
 			amountIntegrityCorrectIncrement: 0,
 			amountIntegrityFailedIncrement: 0,
 			importStatistics: {},
-			dropFiles: [],
+			dropFile: null,
 			startIntegrityCheckAgainLoading: false,
 			downloadAffectedRecordsLoading: false,
 			changeStateButtonLoading: false,
 			invalidFiles: [],
-			filesUpload: false,
+			isFileUploaded: false,
 			allowedFileExtensions: IMPORT.SUPPORT_CSV_XLSX_XLS_FILES,
 		};
 	},
@@ -416,6 +415,12 @@ export default {
 
 		isCheckingIntegrity() {
 			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK;
+		},
+
+		isStartIdentityCheckButtonDisabled() {
+			return !this.isImportLoaded
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_MANAGE)
+				|| !this.isAllProjectsAccessibleForThisImport;
 		},
 
 		totalEntries() {
@@ -438,21 +443,21 @@ export default {
 			return this.importStatistics?.amountIntegrityFailed || 0;
 		},
 
-		canStartIntegrityCheckAgain() {
+		isStartIntegrityCheckAgainButtonVisible() {
 			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED
-				&& this.dropFiles.length === 1;
+				&& this.dropFile.name;
 		},
 
-		canStartIdentityCheck() {
+		isStartIdentityCheckButtonVisible() {
 			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_CORRECT
 				|| this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
-		canUploadAndDownloadAffectedRecords() {
+		isUploadAndDownloadAffectedRecordsButtonVisible() {
 			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED;
 		},
 
-		canCancelImport() {
+		isCancelImportButtonVisible() {
 			return this.importStatus !== IMPORT.STATUS.FINISH
 				&& this.importStatus !== IMPORT.STATUS.CANCEL
 				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
@@ -502,7 +507,7 @@ export default {
 		async getAffectedRecords() {
 			try {
 				this.downloadAffectedRecordsLoading = true;
-				this.dropFiles = [];
+				this.dropFile = [];
 
 				const { importId } = this.$route.params;
 
@@ -545,7 +550,7 @@ export default {
 		},
 
 		async onStartIntegrityCheckAgain() {
-			if (this.dropFiles.length !== 1) return;
+			if (!this.dropFile.name) return;
 
 			const { importId } = this.$route.params;
 
@@ -555,8 +560,8 @@ export default {
 				const {
 					status,
 					message,
-				} = await ImportService.uploadFilesIntoImport({
-					files: this.dropFiles,
+				} = await ImportService.uploadFileIntoImport({
+					file: this.dropFile,
 					importId,
 				});
 
@@ -564,7 +569,7 @@ export default {
 
 				Notification(this.$t("Uploaded Successfully"), "success");
 
-				this.filesUpload = false;
+				this.isFileUploaded = false;
 				this.invalidFiles = [];
 			} catch (e) {
 				Notification(`${this.$t("Upload")}: ${e.message}`, "error");
@@ -574,10 +579,6 @@ export default {
 					this.getAffectedRecords();
 				}, 1500);
 			}
-		},
-
-		deleteDropFile(index) {
-			this.dropFiles.splice(index, 1);
 		},
 
 		getDateAndTime(date) {

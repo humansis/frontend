@@ -9,10 +9,11 @@
 		@perPageChanged="onPerPageChange"
 		@pageChanged="onPageChange"
 		@search="onSearch"
-		@rowClicked="(row) => onShowDetail(row.item)"
+		@rowClicked="(row) => onShowSyncDetail(row.item)"
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_SYNC"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
@@ -209,6 +210,12 @@ export default {
 
 		resetFilters() {
 			this.$refs.syncFilter.resetFilters();
+		},
+
+		onShowSyncDetail(item) {
+			if (this.isUserPermissionGranted(this.PERMISSIONS.ADMINISTRATIVE_SETTING_SYNC)) {
+				this.onShowDetail(item);
+			}
 		},
 
 		async onFiltersChange({ filters }) {

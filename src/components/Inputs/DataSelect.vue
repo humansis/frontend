@@ -3,7 +3,7 @@
 		v-model="data"
 		:items="options"
 		:readonly="disabled"
-		:disabled="disabled"
+		:disabled="disabled || !isUserPermissionGranted(requiredPermissions)"
 		:clearable="!disabled && isClearable"
 		:item-title="itemTitle"
 		:item-value="itemValue"
@@ -33,7 +33,12 @@
 		</template>
 
 		<template v-if="!multiple" v-slot:item="{ props, item }">
-			<slot v-bind="props" name="custom-item" :props="props" :item="item">
+			<slot
+				v-bind="props"
+				:props="props"
+				:item="item"
+				name="custom-item"
+			>
 				<v-list-item v-bind="props" :title="$t(normalizeFirstLetter(item.title))" />
 			</slot>
 		</template>
@@ -80,6 +85,7 @@
 <script>
 import ExtendedLabel from "@/components/Inputs/Helpers/ExtendedLabel";
 import identifierBuilder from "@/mixins/identifierBuilder";
+import permissions from "@/mixins/permissions";
 import { normalizeFirstLetter } from "@/utils/datagrid";
 
 export default {
@@ -87,7 +93,8 @@ export default {
 	components: {
 		ExtendedLabel,
 	},
-	mixins: [identifierBuilder],
+
+	mixins: [identifierBuilder, permissions],
 
 	props: {
 		modelValue: {
@@ -198,6 +205,11 @@ export default {
 		labelAppendIconTooltip: {
 			type: String,
 			default: "",
+		},
+
+		requiredPermissions: {
+			type: [String, Array],
+			default: null,
 		},
 	},
 

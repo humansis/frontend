@@ -31,7 +31,7 @@
 			</p>
 
 			<v-btn
-				:to="{ name: 'Project' }"
+				:to="{ name: ROUTER.ROUTE_NAME.ASSISTANCES.ROOT }"
 				size="large"
 				color="light-blue-lighten-4"
 				prepend-icon="clipboard-list"
@@ -46,16 +46,21 @@
 <script>
 import AssistancesService from "@/services/AssistancesService";
 import Loading from "@/components/Loading";
+import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { ROUTER } from "@/consts";
 
 export default {
 	components: {
 		Loading,
 	},
 
+	mixins: [routerHelper],
+
 	data() {
 		return {
+			ROUTER,
 			assistanceName: "",
 			beneficiariesCreated: 0,
 			beneficiariesTotal: 0,
@@ -132,12 +137,7 @@ export default {
 			if (this.isAssistanceCreated) {
 				Notification(this.$t("Assistance Successfully Created"), "success");
 
-				this.$router.push({
-					name: "AssistanceEdit",
-					params: {
-						assistanceId: this.$route.params.assistanceId,
-					},
-				});
+				this.$router.push(this.getAssistanceEditPage(this.$route.params.assistanceId));
 			}
 		},
 	},
