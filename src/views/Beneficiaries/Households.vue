@@ -661,8 +661,8 @@ export default {
 					...item,
 					projects: item.projects.map((project) => project.name).join(", "),
 					vulnerabilities: preparedVulnerabilitiesCriteria,
-					supportDateReceived: householdHead.supportDateReceived
-						? new Date(householdHead.supportDateReceived)
+					supportDateReceived: item.supportDateReceived
+						? new Date(item.supportDateReceived)
 						: null,
 					householdId: id,
 					members: item.beneficiaries.length,
