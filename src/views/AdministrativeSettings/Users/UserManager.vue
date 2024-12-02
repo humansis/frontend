@@ -639,7 +639,7 @@ export default {
 						...projectsGroupedByCountry,
 					],
 					isAllFutureProjectsEnabled: false,
-					isHideAfterEndDateEnabled: true,
+					isHideAfterEndDateEnabled: !this.userAction.isDetail,
 				};
 			});
 
@@ -686,6 +686,10 @@ export default {
 					});
 				});
 			});
+
+			this.dataForDataAccessCopy = JSON.parse(
+				JSON.stringify(this.formModel.dataForDataAccess),
+			);
 		},
 
 		onFilterProjectsAfterEndDate(index) {
