@@ -33,8 +33,8 @@
 		:total-count="table.total"
 		:loading="isLoadingList"
 		:is-search-visible="!upcoming"
-		:custom-key-sort="customSort"
 		:no-data-text="$t('No data available')"
+		is-frontend-sort-disabled
 		is-row-click-disabled
 		reset-filters-button
 		reset-sort-button
@@ -218,7 +218,6 @@ import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE, EXPORT, PERMISSIONS, ROUTER, TABLE } from "@/consts";
 
-const customSort = { progress: () => {} };
 const statusTags = [
 	{ code: ASSISTANCE.STATUS.CREATING, class: "status creating" },
 	{ code: ASSISTANCE.STATUS.NEW, class: "status new" },
@@ -272,7 +271,6 @@ export default {
 	data() {
 		return {
 			TABLE,
-			customSort,
 			exportControl: {
 				loading: false,
 				location: "projectAssistances",
