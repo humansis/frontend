@@ -686,21 +686,13 @@ export default {
 		},
 
 		prepareIdNumbers(nationalIds) {
-			let idsText = "";
+			const idsText = [];
 
-			if (nationalIds) {
-				nationalIds.forEach((nationalId, index) => {
-					if (index !== 0) {
-						idsText += "<br />";
-					}
+			nationalIds.forEach((nationalId) => {
+				idsText.push(`${nationalId.type}: <b>${nationalId.number}</b>`);
+			});
 
-					if (nationalId) {
-						idsText += `${nationalId.type}: <b>${nationalId.number}</b>`;
-					}
-				});
-			}
-
-			return idsText || this.$t("None");
+			return idsText.length ? idsText.join("<br />") : this.$t("None");
 		},
 
 		async getVulnerabilities() {

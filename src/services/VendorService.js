@@ -18,17 +18,16 @@ export default {
 	async createVendorUser(body) {
 		// eslint-disable-next-line no-useless-catch
 		try {
+			const userBody = body;
 			const {
 				data: { salt, userId },
 				status,
 				message,
-			} = await this.initializeVendor(body.username);
+			} = await this.initializeVendor(userBody.username);
 
-			const userBody = body;
-
-			if (userBody.password) {
-				userBody.password = saltPassword(salt, userBody.password);
-			}
+			userBody.password = userBody.password
+				? saltPassword(salt, userBody.password)
+				: null;
 
 			checkResponseStatus(status, message);
 
@@ -50,7 +49,7 @@ export default {
 				data: { salt },
 				status,
 				message,
-			} = await UsersService.requestSalt(body.username);
+			} = await UsersService.requestSalt(userBody.username);
 
 			userBody.password = userBody.password
 				? saltPassword(salt, userBody.password)

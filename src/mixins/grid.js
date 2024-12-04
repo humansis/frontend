@@ -22,9 +22,9 @@ export default {
 	},
 
 	mounted() {
-		if (this.table?.sortColumn && this.table?.sortDirection) {
+		if (this.table?.sortColumn && this.table.sortDirection) {
 			this.sortValue = [{
-				key: this.table.sortColumn?.key || this.table.sortColumn,
+				key: this.table.sortColumn.key || this.table.sortColumn,
 				order: this.table.sortDirection,
 			}];
 		}

@@ -17,17 +17,16 @@ export default {
 	async createUser(body) {
 		// eslint-disable-next-line no-useless-catch
 		try {
+			const userBody = body;
 			const {
 				data: { salt, userId },
 				status,
 				message,
-			} = await this.initializeUser(body.username);
+			} = await this.initializeUser(userBody.username);
 
-			const userBody = body;
-
-			if (userBody.password) {
-				userBody.password = saltPassword(salt, userBody.password);
-			}
+			userBody.password = userBody.password
+				? saltPassword(salt, userBody.password)
+				: null;
 
 			checkResponseStatus(status, message);
 
@@ -70,7 +69,7 @@ export default {
 				data: { salt },
 				status,
 				message,
-			} = await this.requestSalt(body.username);
+			} = await this.requestSalt(userBody.username);
 
 			userBody.password = userBody.password
 				? saltPassword(salt, userBody.password)

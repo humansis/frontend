@@ -210,7 +210,7 @@ export default {
 			if (this.padding > this.distance) {
 				this.$refs.notePanel.style.paddingTop = `${(this.padding - this.distance) + 45}px`;
 			} else {
-				this.$refs.notePanel.style.paddingTop = `0px`;
+				this.$refs.notePanel.style.paddingTop = "0px";
 			}
 		},
 
