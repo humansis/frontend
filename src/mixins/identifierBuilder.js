@@ -11,7 +11,7 @@ export default {
 					return "project-assistance";
 				case ROUTER.ROUTE_NAME.COUNTRY_SPECIFICS:
 					return "country-specifics";
-				case "HouseholdInformationSummary":
+				case ROUTER.ROUTE_NAME.HOUSEHOLD_INFORMATION_SUMMARY:
 					return "household-information-summary";
 				case ROUTER.ROUTE_NAME.PROJECTS.ROOT:
 				case ROUTER.ROUTE_NAME.PROJECTS.ADD:

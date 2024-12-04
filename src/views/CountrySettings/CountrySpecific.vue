@@ -48,6 +48,7 @@ import CustomField from "@/components/CountrySettings/CountrySpecific/CustomFiel
 import Scoring from "@/components/CountrySettings/CountrySpecific/Scoring";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
+import { PERMISSIONS } from "@/consts";
 
 export default {
 	name: "CountrySpecificPage",
@@ -63,6 +64,13 @@ export default {
 		return {
 			selectedTab: "customFields",
 		};
+	},
+
+	created() {
+		if (!this.isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD)
+			&& this.isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_SCORING)) {
+			this.selectedTab = "scoring";
+		}
 	},
 };
 </script>

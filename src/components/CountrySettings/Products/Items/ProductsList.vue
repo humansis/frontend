@@ -50,7 +50,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
-				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE"
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"

@@ -5,6 +5,7 @@ export default {
 		LOGOUT: "logout",
 		ACCOUNT_CREATED: "accountCreated",
 		NO_PERMISSION: "noPermission",
+		NO_COUNTRY_ASSIGNED: "noCountryAssigned",
 		NOT_FOUND: "notFound",
 		HOME: "home",
 		HOUSEHOLD_INFORMATION_SUMMARY: "householdInformationSummary",
@@ -52,6 +53,12 @@ export default {
 			ADD: "addUser",
 			DETAIL: "userDetail",
 			EDIT: "userEdit",
+		},
+		ROLES: {
+			ROOT: "roles",
+			ADD: "addRole",
+			DETAIL: "roleDetail",
+			EDIT: "roleEdit",
 		},
 		TRANSACTIONS: {
 			ROOT: "transactions",

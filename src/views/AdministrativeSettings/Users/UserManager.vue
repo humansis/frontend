@@ -7,8 +7,8 @@
 			close-button-color="blue-grey-lighten-4"
 			confirm-button-name="Yes"
 			confirm-button-color="primary"
-			@modalClosed="closeAutoProjectManagerModal"
-			@actionConfirmed="unselectOrSelectProjectForGroup"
+			@modalClosed="onCloseAutoProjectManagerModal"
+			@actionConfirmed="onUnselectOrSelectProjectForGroup"
 		>
 			<template v-slot:customContent>
 				<p class="text-body-2">{{ $t(autoProjectManagerModal.message) }}</p>
@@ -86,7 +86,7 @@
 							:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE"
 							:items="options.roles"
 							:loading="loading.isRoles"
-							:disabled="userAction.isDetail"
+							:disabled="userAction.isDetail || !isUserRoleEditable"
 							:error-messages="validationMsg('role')"
 							label="Role"
 							name="role"
@@ -128,77 +128,78 @@
 					</v-col>
 				</v-row>
 
-				<template v-if="!isUserRoleAdmin">
-					<h2 class="text-h6 font-weight-bold mb-1 mt-3">{{ $t('Data Access') }}</h2>
+				<h2 class="text-h6 font-weight-bold mb-1 mt-3">{{ $t('Data Access') }}</h2>
 
-					<DataAccessManager
-						v-model:groups="formModel.dataForDataAccess"
-						ref="accessManager"
-						:is-loading="loading.isDataAccess"
-						:is-form-disabled="isDataAccessFormDisabled"
-						property-name-for-access-group="projects"
-						property-name-for-access-label="name"
-						@data-in-group-updated="checkboxStatusUpdatedInGroup"
-					>
-						<template v-slot:default="{ index }">
-							<div class="d-flex align-center mr-4">
-								<v-checkbox
-									v-model="formModel.dataForDataAccess[index].isAllFutureProjectsEnabled"
-									:label="$t('All projects, even future one')"
-									:disabled="userAction.isDetail"
-									name="enabled"
-									class="checkbox my-checkbox head"
-									hide-details
-									@update:modelValue="handleAllFutureProjects(index)"
-								/>
+				<DataAccessManager
+					v-if="!isUserRoleAdmin"
+					v-model:groups="formModel.dataForDataAccess"
+					ref="accessManager"
+					:is-loading="loading.isDataAccess"
+					:is-form-disabled="isDataAccessFormDisabled"
+					property-name-for-access-group="projects"
+					property-name-for-access-label="name"
+					@data-in-group-updated="onCheckboxStatusUpdatedInGroup"
+				>
+					<template v-slot:default="{ index }">
+						<div class="d-flex align-center mr-4">
+							<v-checkbox
+								v-model="formModel.dataForDataAccess[index].isAllFutureProjectsEnabled"
+								:label="$t('All projects, even future ones')"
+								:disabled="isAllFutureProjectsCheckboxDisabled(index)"
+								name="enabled"
+								class="checkbox my-checkbox head"
+								hide-details
+								@update:modelValue="onHandleAllFutureProjects(index)"
+							/>
 
-								<v-tooltip
-									text="User will get access to all existing projects within this country, and to all other projects that will be created in the future."
-									location="top"
-									color="red"
-									content-class="tooltip-top"
-								>
-									<template v-slot:activator="{ props }">
-										<v-icon v-bind="props" icon="circle-info" class="ml-2" />
-									</template>
-								</v-tooltip>
-							</div>
+							<v-tooltip
+								text="User will get access to all existing projects within this country, and to all other projects that will be created in the future."
+								location="top"
+								color="red"
+								content-class="tooltip-top"
+							>
+								<template v-slot:activator="{ props }">
+									<v-icon v-bind="props" icon="circle-info" class="ml-2" />
+								</template>
+							</v-tooltip>
+						</div>
 
-							<div class="d-flex align-center mr-4">
-								<v-checkbox
-									v-model="formModel.dataForDataAccess[index].isHideAfterEndDateEnabled"
-									:label="$t('Hide projects after end date')"
-									:disabled="userAction.isDetail"
-									name="enabled"
-									class="checkbox my-checkbox head"
-									hide-details
-									@update:modelValue="filterProjectsAfterEndDate(index)"
-								/>
+						<div class="d-flex align-center mr-4">
+							<v-checkbox
+								v-model="formModel.dataForDataAccess[index].isHideAfterEndDateEnabled"
+								:label="$t('Hide projects after end date')"
+								:disabled="userAction.isDetail"
+								name="enabled"
+								class="checkbox my-checkbox head"
+								hide-details
+								@update:modelValue="onFilterProjectsAfterEndDate(index)"
+							/>
 
-								<v-tooltip
-									text="Hide projects with older end date than today."
-									location="top"
-									color="red"
-									content-class="tooltip-top"
-								>
-									<template v-slot:activator="{ props }">
-										<v-icon v-bind="props" icon="circle-info" class="ml-2" />
-									</template>
-								</v-tooltip>
-							</div>
-						</template>
-					</DataAccessManager>
-				</template>
+							<v-tooltip
+								text="Hide projects with older end date than today."
+								location="top"
+								color="red"
+								content-class="tooltip-top"
+							>
+								<template v-slot:activator="{ props }">
+									<v-icon v-bind="props" icon="circle-info" class="ml-2" />
+								</template>
+							</v-tooltip>
+						</div>
+					</template>
+				</DataAccessManager>
+
+				<p v-else class="text-body-1">{{ $t("Admin has access to all projects") }}</p>
 			</v-card-text>
 		</v-card>
 
 		<v-row class="mt-5">
 			<v-col class="d-flex justify-end">
 				<v-btn
+					:to="{ name: ROUTER.ROUTE_NAME.USERS.ROOT }"
 					color="blue-grey-lighten-4"
 					variant="elevated"
 					class="text-none"
-					@click="goBack"
 				>
 					{{ goBackButtonName }}
 				</v-btn>
@@ -207,7 +208,7 @@
 					v-if="!userAction.isDetail"
 					color="primary"
 					class="text-none ml-3"
-					@click="validateNewUser"
+					@click="onValidateNewUser"
 				>
 					{{ validateButtonName }}
 				</v-btn>
@@ -219,6 +220,7 @@
 <script>
 import { mapState } from "vuex";
 import { email, required } from "@vuelidate/validators";
+import CountriesService from "@/services/CountriesService";
 import ProjectService from "@/services/ProjectService";
 import RolesService from "@/services/RolesService";
 import UsersService from "@/services/UsersService";
@@ -262,9 +264,11 @@ export default {
 
 	data() {
 		return {
+			ROUTER,
 			pageTitle: "",
 			userAction: {},
 			dataForDataAccessCopy: [],
+			isUserRoleEditable: true,
 			formModel: {
 				id: null,
 				username: "",
@@ -305,7 +309,7 @@ export default {
 	},
 
 	computed: {
-		...mapState(["languages", "countries"]),
+		...mapState(["languages", "countries", "user"]),
 
 		validateButtonName() {
 			return this.$t(this.userAction.isCreate ? "Create" : "Update");
@@ -329,7 +333,7 @@ export default {
 		},
 	},
 
-	async mounted() {
+	async created() {
 		this.getUserAction();
 		this.loadLanguages();
 		this.mapSelects();
@@ -383,6 +387,24 @@ export default {
 			}
 		},
 
+		async getAllCountriesForUserDetail() {
+			try {
+				const {
+					data: { data },
+					status,
+					message,
+				} = await CountriesService.getListOfCountries();
+
+				checkResponseStatus(status, message);
+
+				return data;
+			} catch (e) {
+				Notification(`${this.$t("All Countries")}: ${e.message || e}`, "error");
+			}
+
+			return [];
+		},
+
 		async getProjectsForDataAccess() {
 			try {
 				this.loading.isDataAccess = true;
@@ -391,13 +413,16 @@ export default {
 					data,
 					status,
 					message,
-				} = await ProjectService.getListOfProjectsForDataAccess();
+				} = this.userAction.isDetail
+					? await ProjectService.getShortListOfAllProjects()
+					: await UsersService.getListOfUsersProjects(this.user.userId);
 
 				checkResponseStatus(status, message);
 
-				this.prepareDataForDataAccess(data);
+				const projects = this.userAction.isDetail ? data.data : data;
+				await this.prepareDataForDataAccess(projects);
 
-				if (!this.userAction.isCreate) {
+				if (!this.userAction.isCreate && !this.isUserRoleAdmin) {
 					await this.updateDataForDataAccess(this.formModel.countries, this.formModel.projectIds);
 					this.setupForAllFutureProjectsSettings();
 				}
@@ -418,7 +443,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await RolesService.getListOfRoles();
+				} = await RolesService.getShortListOfRoles({});
 
 				checkResponseStatus(status, message);
 
@@ -431,17 +456,13 @@ export default {
 			}
 		},
 
-		validateNewUser() {
+		onValidateNewUser() {
 			this.v$.$touch();
 
 			if (this.v$.$invalid) return;
 
 			this.submitUserForm(this.formModel);
 			this.v$.$reset();
-		},
-
-		goBack() {
-			this.$router.push({ name: ROUTER.ROUTE_NAME.USERS.ROOT });
 		},
 
 		getUserAction() {
@@ -589,16 +610,19 @@ export default {
 		},
 
 		prepareRolesOptions(roles) {
-			this.options.roles = roles.map((role) => ({
-				...role,
-				isOptionDisabled: role.name === ROLE.ADMIN
-					? !this.isUserPermissionGranted(this.PERMISSIONS.ADMINISTRATIVE_SETTING_USER_ASSIGN_ADMIN)
-					: false,
-			}));
+			if (!this.userAction.isCreate) {
+				this.isUserRoleEditable = roles.find((role) => role.name === this.formModel.role.name);
+			}
+
+			this.options.roles = roles;
 		},
 
-		prepareDataForDataAccess(projects) {
-			this.formModel.dataForDataAccess = this.countries.map((country) => {
+		async prepareDataForDataAccess(projects) {
+			const countries = this.userAction.isDetail
+				? await this.getAllCountriesForUserDetail()
+				: this.countries;
+
+			this.formModel.dataForDataAccess = countries.map((country) => {
 				const projectsGroupedByCountry = projects.filter(
 					(project) => project.iso3 === country.iso3,
 				);
@@ -615,7 +639,7 @@ export default {
 						...projectsGroupedByCountry,
 					],
 					isAllFutureProjectsEnabled: false,
-					isHideAfterEndDateEnabled: true,
+					isHideAfterEndDateEnabled: !this.userAction.isDetail,
 				};
 			});
 
@@ -624,7 +648,7 @@ export default {
 			);
 		},
 
-		updateDataForDataAccess(countriesAccessData, projectIdsWithAccess) {
+		async updateDataForDataAccess(countriesAccessData, projectIdsWithAccess) {
 			countriesAccessData.forEach((countryAccess) => {
 				const countryData = this.formModel.dataForDataAccess.find(
 					(data) => data.iso3 === countryAccess.iso3,
@@ -655,16 +679,20 @@ export default {
 						project.isSelected = true;
 					}
 
-					this.checkboxStatusUpdatedInGroup({
+					this.onCheckboxStatusUpdatedInGroup({
 						group,
 						groupIndex,
 						dataAccess: null,
 					});
 				});
 			});
+
+			this.dataForDataAccessCopy = JSON.parse(
+				JSON.stringify(this.formModel.dataForDataAccess),
+			);
 		},
 
-		filterProjectsAfterEndDate(index) {
+		onFilterProjectsAfterEndDate(index) {
 			if (this.formModel.dataForDataAccess[index].isHideAfterEndDateEnabled) {
 				this.formModel.dataForDataAccess[index].projects = this.formModel
 					.dataForDataAccess[index].projects.filter(
@@ -681,7 +709,7 @@ export default {
 			}
 		},
 
-		handleAllFutureProjects(index) {
+		onHandleAllFutureProjects(index, isFetchedData = false) {
 			if (this.formModel.dataForDataAccess[index].isAllFutureProjectsEnabled) {
 				this.$refs.accessManager.selectOrUnselectAllDataInGroup(
 					this.formModel.dataForDataAccess[index],
@@ -690,6 +718,8 @@ export default {
 				);
 				this.setValuesForDisabledProperties(index, true);
 			} else {
+				if (isFetchedData) return;
+
 				this.$refs.accessManager.selectOrUnselectAllDataInGroup(
 					this.formModel.dataForDataAccess[index],
 					index,
@@ -710,17 +740,17 @@ export default {
 
 		filterProjectByEndDateFilter() {
 			this.countries.forEach((_, index) => {
-				this.filterProjectsAfterEndDate(index);
+				this.onFilterProjectsAfterEndDate(index);
 			});
 		},
 
 		setupForAllFutureProjectsSettings() {
 			this.countries.forEach((_, index) => {
-				this.handleAllFutureProjects(index);
+				this.onHandleAllFutureProjects(index, true);
 			});
 		},
 
-		checkboxStatusUpdatedInGroup({ group, groupIndex, dataAccess }) {
+		onCheckboxStatusUpdatedInGroup({ group, groupIndex, dataAccess }) {
 			const isCountryChecked = group.projects[0]?.isSelected;
 			const checkedProjectsInGroup = group.projects.filter(
 				(project, index) => project.isSelected && index > 0,
@@ -745,7 +775,7 @@ export default {
 					...this.autoProjectManagerModal,
 					isOpened: true,
 					isUnselect: true,
-					title: "Unselect projects?",
+					title: "Unselect projects automatically?",
 					message: `If you want to remove the data access to the country (${this.autoProjectManagerModal.countryNameForLastEditedGroup}),
 					 it is necessary to remove data access to the following projects at the same time. Do you want to remove the data access automatically?`,
 				};
@@ -754,14 +784,14 @@ export default {
 					...this.autoProjectManagerModal,
 					isOpened: true,
 					isUnselect: false,
-					title: "Select country?",
+					title: "Select country automatically?",
 					message: `If you want to add the data access to the project (${this.autoProjectManagerModal.projectNameForLastEdit}),
 					 it is necessary to add data access to the following country at the same time. Do you want to add the data access automatically?`,
 				};
 			}
 		},
 
-		unselectOrSelectProjectForGroup() {
+		onUnselectOrSelectProjectForGroup() {
 			const { group, groupIndex, isUnselect } = this.autoProjectManagerModal;
 
 			if (isUnselect) {
@@ -783,7 +813,7 @@ export default {
 			this.autoProjectManagerModal.isOpened = false;
 		},
 
-		closeAutoProjectManagerModal() {
+		onCloseAutoProjectManagerModal() {
 			const { groupIndex, isUnselect, dataAccess } = this.autoProjectManagerModal;
 
 			if (isUnselect) {
@@ -814,6 +844,13 @@ export default {
 			}
 
 			this.autoProjectManagerModal.isOpened = false;
+		},
+
+		isAllFutureProjectsCheckboxDisabled(index) {
+			return this.userAction.isDetail
+				|| !this.user.countries.find(
+					(country) => country.iso3 === this.formModel.dataForDataAccess[index].iso3,
+				)?.hasAccessToAllProjects;
 		},
 	},
 };

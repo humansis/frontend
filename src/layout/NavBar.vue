@@ -124,6 +124,7 @@ import { mapActions, mapState } from "vuex";
 import LocationsService from "@/services/LocationsService";
 import TranslationService from "@/services/TranslationService";
 import identifierBuilder from "@/mixins/identifierBuilder";
+import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { ROUTER } from "@/consts";
@@ -131,12 +132,13 @@ import { ROUTER } from "@/consts";
 export default {
 	name: "NavBar",
 
-	mixins: [identifierBuilder],
+	mixins: [identifierBuilder, permissions],
 
 	data() {
 		return {
 			ROUTER,
 			dataCy: "nav-bar",
+			redirect: {},
 			tooltip: {
 				label: "",
 				active: false,
@@ -185,7 +187,11 @@ export default {
 	},
 
 	async created() {
-		if (!this.admNames?.adm1) await this.fetchAdmNames();
+		if (!this.admNames?.adm1) {
+			await this.fetchAdmNames();
+		}
+
+		this.redirect = this.getAllowedPageForRedirect();
 		this.setTooltip();
 	},
 
@@ -207,7 +213,7 @@ export default {
 			await this.fetchAdmNames();
 
 			this.$router.push({
-				name: ROUTER.ROUTE_NAME.PROJECTS.ROOT,
+				name: this.redirect.pageName,
 				params: { countryCode: country.iso3 },
 			});
 		},

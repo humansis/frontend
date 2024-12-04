@@ -14,9 +14,9 @@ export default {
 		});
 	},
 
-	getListOfProjectsForDataAccess() {
+	getShortListOfAllProjects() {
 		return fetcher({
-			uri: "projects/data-accesses",
+			uri: "catalogs/projects/all",
 		});
 	},
 

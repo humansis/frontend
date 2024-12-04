@@ -8,6 +8,12 @@ export default {
 		});
 	},
 
+	getShortListOfProjectInstitutions(id) {
+		return fetcher({
+			uri: `catalogs/projects/${id}/institutions`,
+		});
+	},
+
 	createInstitution(body) {
 		return fetcher({
 			uri: "institutions",

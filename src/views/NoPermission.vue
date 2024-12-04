@@ -9,27 +9,40 @@
 		</h2>
 
 		<v-btn
-			:to="{ name: ROUTER.ROUTE_NAME.ROOT }"
+			:to="{ name: redirect.pageName, params: { countryCode: country.iso3 } }"
 			size="x-large"
 			color="light-blue-lighten-4"
 			prepend-icon="home"
 			class="text-none"
 		>
-			{{ $t('Go to Projects') }}
+			{{ $t(redirect.buttonName) }}
 		</v-btn>
 	</div>
 </template>
 
 <script>
+import { mapState } from "vuex";
+import permissions from "@/mixins/permissions";
 import { ROUTER } from "@/consts";
 
 export default {
 	name: "NotPermission",
 
+	mixins: [permissions],
+
 	data() {
 		return {
 			ROUTER,
+			redirect: {},
 		};
+	},
+
+	computed: {
+		...mapState(["country"]),
+	},
+
+	created() {
+		this.redirect = this.getAllowedPageForRedirect();
 	},
 };
 </script>

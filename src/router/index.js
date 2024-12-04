@@ -48,6 +48,11 @@ const routes = [
 		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoPermission"),
 	},
 	{
+		path: "/no-country-assigned",
+		name: ROUTER.ROUTE_NAME.NO_COUNTRY_ASSIGNED,
+		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoCountryAssigned"),
+	},
+	{
 		path: "/not-found",
 		name: ROUTER.ROUTE_NAME.NOT_FOUND,
 		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
@@ -183,6 +188,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.ASSISTANCES.EDIT,
 								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/Assistance/AssistanceEdit"),
 								meta: {
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Edit Assistance",
 									description: "",
 								},
@@ -192,7 +198,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD,
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/Assistance/AddAssistance"),
 								meta: {
-									permissions: ["addDistribution"],
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Add Assistance",
 									description: "This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",
@@ -203,6 +209,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.ASSISTANCES.DETAIL,
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/Assistance/AssistanceDetail"),
 								meta: {
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Assistance Detail",
 									description: "",
 								},
@@ -212,6 +219,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.ASSISTANCES.CREATION_PROGRESS,
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/Assistance/AssistanceCreationProgress"),
 								meta: {
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Assistance Creation Progress",
 									description: "This page shows the progress of creating the specific assistance.",
 								},
@@ -387,7 +395,6 @@ const routes = [
 						name: ROUTER.ROUTE_NAME.PRODUCTS,
 						component: () => import(/* webpackChunkName: "Products" */ "@/views/CountrySettings/Products"),
 						meta: {
-							permissions: ["viewProducts"],
 							breadcrumb: "Products",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights.",
 						},
@@ -408,7 +415,6 @@ const routes = [
 				name: ROUTER.ROUTE_NAME.ADMINISTRATIVE_SETTINGS,
 				component: RouterView,
 				meta: {
-					permissions: ["adminSettings"],
 					breadcrumb: "Administrative Settings",
 				},
 				redirect: () => {
@@ -426,6 +432,10 @@ const routes = [
 
 					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION_SERVICES)) {
 						return { name: ROUTER.ROUTE_NAME.ORGANIZATION_SERVICES };
+					}
+
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT)) {
+						return { name: ROUTER.ROUTE_NAME.ROLES.ROOT };
 					}
 
 					return { name: ROUTER.ROUTE_NAME.SYNC };
@@ -460,7 +470,7 @@ const routes = [
 								name: ROUTER.ROUTE_NAME.USERS.DETAIL,
 								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
 								meta: {
-									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE],
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER],
 									breadcrumb: "User detail",
 									description: "This page is a form to show detail of a user in humansis.",
 								},
@@ -516,6 +526,52 @@ const routes = [
 							breadcrumb: "Sync",
 							description: "This page is where you can manage sync.",
 						},
+					},
+					{
+						path: "roles",
+						component: RouterView,
+						children: [
+							{
+								path: "",
+								name: ROUTER.ROUTE_NAME.ROLES.ROOT,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/Roles"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Roles",
+									description: "This page is where you can manage roles.",
+								},
+							},
+							{
+								path: "add-role",
+								name: ROUTER.ROUTE_NAME.ROLES.ADD,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/RolesManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Add role",
+									description: "This page is a form to add a new role to a humansis.",
+								},
+							},
+							{
+								path: "role-detail/:roleId",
+								name: ROUTER.ROUTE_NAME.ROLES.DETAIL,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/RolesManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Role detail",
+									description: "This page is a form to show detail of a role in humansis.",
+								},
+							},
+							{
+								path: "role-edit/:roleId",
+								name: ROUTER.ROUTE_NAME.ROLES.EDIT,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/RolesManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Role edit",
+									description: "This page is a form to edit a role in humansis.",
+								},
+							},
+						],
 					},
 				],
 			},

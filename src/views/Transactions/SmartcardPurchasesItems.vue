@@ -97,7 +97,7 @@ import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, ROUTER, TABLE } from "@/consts";
+import { EXPORT, PERMISSIONS, ROUTER, TABLE, TRANSACTIONS } from "@/consts";
 
 export default {
 	name: "SmartcardPurchasesItems",
@@ -130,12 +130,31 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "beneficiaryId", title: "Beneficiary", type: "link", sortable: false },
+					{
+						key: "beneficiaryId",
+						title: "Beneficiary",
+						type: "link",
+						permissionsForLinkVisibility: [
+							PERMISSIONS.HOUSEHOLD_VIEW,
+							PERMISSIONS.TRANSACTIONS,
+						],
+						sortable: false,
+					},
 					{ key: "localGivenName", sortable: false },
 					{ key: "localFamilyName", sortable: false },
 					{ key: "idNumber", sortable: false },
-					{ key: "project", type: "link", sortable: false },
-					{ key: "assistance", type: "link", sortable: false },
+					{
+						key: "project",
+						type: "link",
+						permissionsForLinkVisibility: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT],
+						sortable: false,
+					},
+					{
+						key: "assistance",
+						type: "link",
+						permissionsForLinkVisibility: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
+						sortable: false,
+					},
 					{ key: "fullLocationNames", title: "Location", sortable: false },
 					{ key: "datePurchase", title: "Purchased Date", type: "datetime" },
 					{ key: "smartcardCode", title: "Card No.", sortable: false },
@@ -220,29 +239,29 @@ export default {
 		},
 
 		prepareDataForTable(data) {
-			const locationIds = [];
-			const assistanceIds = [];
-			const beneficiaryIds = [];
-			const projectIds = [];
-			const vendorIds = [];
-			const productIds = [];
-
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
-				projectIds.push(item.projectId);
-				beneficiaryIds.push(item.beneficiaryId);
-				assistanceIds.push(item.assistanceId);
-				vendorIds.push(item.vendorId);
-				productIds.push(item.productId);
-				locationIds.push(item.locationId);
-			});
+				const { beneficiary } = item;
+				const isTypeInstitution = beneficiary.type === TRANSACTIONS.BENEFICIARY_TYPE.INSTITUTION;
+				const localGivenName = isTypeInstitution
+					? beneficiary.name
+					: beneficiary.localGivenName;
+				const localFamilyName = isTypeInstitution
+					? ""
+					: beneficiary.localFamilyName;
 
-			this.prepareProjectForTable([...new Set(projectIds)], true);
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)], true);
-			this.prepareAssistanceForTable([...new Set(assistanceIds)], true);
-			this.prepareVendorForTable([...new Set(vendorIds)]);
-			this.prepareProductForTable([...new Set(productIds)]);
-			this.table.progress = 100;
+				this.table.data[key] = {
+					...item,
+					beneficiaryId: this.prepareBeneficiaryIdForTable(item.beneficiary, true),
+					project: this.prepareProjectForTable(item.project, true),
+					assistance: this.prepareAssistanceForTable(item.assistance, item.project, true),
+					idNumber: item.beneficiary.idNumber,
+					vendor: item.vendor.name,
+					vendorNo: item.vendor.vendorNo,
+					product: item.product.name,
+					localGivenName,
+					localFamilyName,
+				};
+			});
 		},
 
 		onAdvancedSearchToggle() {

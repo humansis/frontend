@@ -17,18 +17,33 @@ export default {
 	data() {
 		return {
 			show: true,
+			sortValue: [],
 		};
+	},
+
+	mounted() {
+		if (this.table?.sortColumn && this.table.sortDirection) {
+			this.sortValue = [{
+				key: this.table.sortColumn.key || this.table.sortColumn,
+				order: this.table.sortDirection,
+			}];
+		}
+	},
+
+	watch: {
+		table: {
+			deep: true,
+			handler(value) {
+				this.sortValue = [{
+					key: value.sortColumn?.key || value.sortColumn,
+					order: value.sortDirection,
+				}];
+			},
+		},
 	},
 
 	computed: {
 		...mapState(["perPage"]),
-
-		sortValue() {
-			return [{
-				key: this.table.sortColumn?.key || this.table.sortColumn,
-				order: this.table.sortDirection,
-			}];
-		},
 	},
 
 	methods: {

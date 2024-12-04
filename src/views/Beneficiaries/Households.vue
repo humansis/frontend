@@ -107,6 +107,7 @@
 			reset-filters-button
 			reset-sort-button
 			is-search-visible
+			is-row-click-disabled
 			show-select
 			@update:sortBy="onSort"
 			@search="onSearch"
@@ -117,7 +118,7 @@
 		>
 			<template v-slot:actions="{ row: { householdId }, index }">
 				<ButtonAction
-					:required-permissions="PERMISSIONS.HOUSEHOLD_DETAIL"
+					:required-permissions="PERMISSIONS.HOUSEHOLD_VIEW"
 					:disabled="!householdsSelects"
 					:data-cy="`table-row-${index + 1}-show-detail-button`"
 					icon="search"
@@ -199,12 +200,18 @@
 					</template>
 
 					<v-list>
-						<v-list-item @click="onShowAddToProjectModal">
+						<v-list-item
+							:disabled="!isUserPermissionGranted(PERMISSIONS.HOUSEHOLD_EDIT)"
+							@click="onShowAddToProjectModal"
+						>
 							<v-icon class="mr-1" icon="plus" />
 							{{ $t('Add to Project') }}
 						</v-list-item>
 
-						<v-list-item @click="removeHouseholdModal.isOpened = true">
+						<v-list-item
+							:disabled="!isUserPermissionGranted(PERMISSIONS.HOUSEHOLD_DELETE)"
+							@click="removeHouseholdModal.isOpened = true"
+						>
 							<v-icon class="mr-1" icon="trash" />
 							{{ $t('Delete') }}
 						</v-list-item>
@@ -261,7 +268,7 @@ import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/dat
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, ROUTER, TABLE } from "@/consts";
+import { EXPORT, PERMISSIONS, ROUTER, TABLE } from "@/consts";
 
 export default {
 	name: "HouseholdPage",
@@ -303,7 +310,16 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "id", title: "Household ID", type: "link", sortable: false },
+					{
+						key: "id",
+						title: "Household ID",
+						type: "link",
+						permissionsForLinkVisibility: [
+							PERMISSIONS.HOUSEHOLD_VIEW,
+							PERMISSIONS.TRANSACTIONS,
+						],
+						sortable: false,
+					},
 					{ key: "familyName", title: "Local family name", sortKey: "localFamilyName" },
 					{ key: "givenName", title: "Local given name", sortKey: "localFirstName" },
 					{ key: "members", sortKey: "dependents" },
@@ -418,6 +434,7 @@ export default {
 					filters: this.filters,
 					sort,
 				});
+
 				this.table.data = [];
 				this.table.progress = 0;
 
@@ -626,117 +643,56 @@ export default {
 			}
 		},
 
-		prepareDataForTable(data) {
-			this.table.progress = 5;
-			const projectIds = [];
-			const beneficiaryIds = [];
-			const addresses = [];
+		async prepareDataForTable(data) {
+			const vulnerabilitiesCriteriaList = await this.getVulnerabilities();
 
 			data.forEach((item, key) => {
 				const { id } = item;
-				const address = this.getAddressTypeAndId(item);
-
-				projectIds.push(...item.projectIds);
-				beneficiaryIds.push(item.householdHeadId);
+				const householdHead = item.beneficiaries.find(
+					(beneficiary) => beneficiary.id === item.householdHeadId,
+				);
+				const preparedVulnerabilitiesCriteria = householdHead.vulnerabilityCriteria
+					? vulnerabilitiesCriteriaList?.filter(
+						({ code }) => householdHead.vulnerabilityCriteria.includes(code),
+					)
+					: null;
 
 				this.table.data[key] = {
 					...item,
-					vulnerabilities: item.householdHeadId
-						? item.vulnerabilities
+					projects: item.projects.map((project) => project.name).join(", "),
+					vulnerabilities: preparedVulnerabilitiesCriteria,
+					supportDateReceived: item.supportDateReceived
+						? new Date(item.supportDateReceived)
 						: null,
 					householdId: id,
-					address,
-					members: item.beneficiaryIds.length,
+					members: item.beneficiaries.length,
+					currentLocation: item.locationName,
+					idNumbers: this.prepareIdNumbers(householdHead.nationalIds),
+					familyName: this.prepareName(
+						householdHead.localFamilyName,
+						householdHead.enFamilyName,
+					),
+					givenName: this.prepareName(
+						householdHead.localGivenName,
+						householdHead.enGivenName,
+					),
 					id: {
 						routeParams: { householdId: id },
 						routeName: ROUTER.ROUTE_NAME.HOUSEHOLD_INFORMATION_SUMMARY,
 						name: id,
 					},
 				};
-
-				if (address) {
-					addresses.push(address);
-				}
-			});
-
-			this.prepareProjectForTable([...new Set(projectIds)]);
-
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)]);
-
-			this.prepareAddressForTable(addresses);
-
-			this.table.progress = 100;
-		},
-
-		async prepareBeneficiaryForTable(beneficiaryIds) {
-			const beneficiaries = await this.getBeneficiaries(beneficiaryIds);
-			const vulnerabilitiesList = await this.getVulnerabilities();
-
-			this.table.progress += 10;
-
-			const modifiedTable = await Promise.all(this.table.data.map(async (item, key) => {
-				const {
-					nationalIds,
-				} = await this.prepareBeneficiaries(
-					item.householdId,
-					item.householdHeadId,
-					beneficiaries,
-					key,
-				);
-
-				const preparedVulnerabilities = item.vulnerabilities
-					? vulnerabilitiesList?.filter(
-						({ code }) => item.vulnerabilities.includes(code),
-					)
-					: null;
-
-				return {
-					...item,
-					vulnerabilities: preparedVulnerabilities,
-					nationalIds,
-					supportDateReceived: item.supportDateReceived
-						? new Date(item.supportDateReceived)
-						: null,
-				};
-			}));
-
-			this.table.data = [...modifiedTable];
-
-			this.table.progress += 5;
-			this.table.data.forEach((item, key) => {
-				let idsText = "";
-
-				if (item.nationalIds) {
-					item.nationalIds.forEach((nationalId, index) => {
-						if (index !== 0) {
-							idsText += "<br />";
-						}
-
-						if (nationalId) {
-							idsText += `${nationalId.type}: <b>${nationalId.number}</b>`;
-						}
-					});
-				}
-				this.table.data[key].idNumbers = idsText || this.$t("None");
 			});
 		},
 
-		async prepareAddressForTable(address) {
-			await this.getPreparedLocations(address);
+		prepareIdNumbers(nationalIds) {
+			const idsText = [];
 
-			this.table.data.map(async (item, key) => {
-				this.table.data[key]
-					.currentLocation = item.address.locationName;
+			nationalIds.forEach((nationalId) => {
+				idsText.push(`${nationalId.type}: <b>${nationalId.number}</b>`);
 			});
-			this.table.progress += 5;
-		},
 
-		async prepareProjectForTable(projectIds) {
-			const projects = await this.getProjects(projectIds);
-			this.table.progress += 10;
-			this.table.data.forEach((item, key) => {
-				this.table.data[key].projects = this.prepareProjects(item, projects);
-			});
+			return idsText.length ? idsText.join("<br />") : this.$t("None");
 		},
 
 		async getVulnerabilities() {
@@ -755,86 +711,6 @@ export default {
 			}
 
 			return [];
-		},
-
-		async getProjects(ids) {
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await ProjectService.getShortListOfProjects(ids);
-
-				checkResponseStatus(status, message);
-
-				return data;
-			} catch (e) {
-				Notification(`${this.$t("Projects")} ${e.message || e}`, "error");
-			}
-
-			return [];
-		},
-
-		async getBeneficiaries(ids) {
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await BeneficiariesService.getBeneficiaries({ ids });
-
-				checkResponseStatus(status, message);
-
-				return data;
-			} catch (e) {
-				Notification(`${this.$t("Beneficiaries")}: ${e.message || e}`, "error");
-			}
-
-			return [];
-		},
-
-		async prepareBeneficiaries(id, householdHeadId, beneficiaries, tableIndex) {
-			if (!beneficiaries?.length) return "";
-
-			this.table.data[tableIndex].loading = true;
-			const result = {
-				nationalIds: [],
-			};
-			const beneficiary = beneficiaries.find((item) => item.id === householdHeadId);
-
-			if (beneficiary) {
-				const { nationalIds } = beneficiary;
-
-				this.table.data[tableIndex].givenName = this.prepareName(
-					beneficiary.localGivenName,
-					beneficiary.enGivenName,
-				);
-				this.table.data[tableIndex].familyName = this.prepareName(
-					beneficiary.localFamilyName,
-					beneficiary.enFamilyName,
-				);
-				result.nationalIds = nationalIds;
-			}
-
-			this.table.data[tableIndex].loading = false;
-			return result;
-		},
-
-		prepareProjects(item, projects) {
-			let result = "";
-
-			item.projectIds.forEach((id) => {
-				const foundProject = projects.find((project) => project.id === id);
-				if (foundProject) {
-					if (result === "") {
-						result = foundProject.name;
-					} else {
-						result += `, ${foundProject.name}`;
-					}
-				}
-			});
-
-			return result;
 		},
 
 		normalizeText(text) {

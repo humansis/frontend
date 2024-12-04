@@ -29,15 +29,14 @@
 				@export="onDownloadTemplate"
 			/>
 
-			<v-btn
-				:disabled="!isUserPermissionGranted(PERMISSIONS.IMPORT_MANAGE)"
+			<ButtonAction
+				:required-permissions="PERMISSIONS.IMPORT_MANAGE"
+				:is-only-icon="false"
 				color="primary"
-				prepend-icon="plus"
-				class="text-none ml-0"
-				@click="onAddNewImport"
-			>
-				{{ $t('New Import') }}
-			</v-btn>
+				icon="plus"
+				label="New Import"
+				@actionConfirmed="onAddNewImport"
+			/>
 
 			<v-btn
 				color="primary"
@@ -62,6 +61,7 @@
 <script>
 import ImportService from "@/services/ImportService";
 import ProjectService from "@/services/ProjectService";
+import ButtonAction from "@/components/ButtonAction";
 import ImportForm from "@/components/Imports/ImportForm";
 import ImportsList from "@/components/Imports/ImportsList";
 import ExportControl from "@/components/Inputs/ExportControl";
@@ -78,6 +78,7 @@ export default {
 	name: "Imports",
 
 	components: {
+		ButtonAction,
 		ImportsList,
 		Modal,
 		ImportForm,
@@ -225,7 +226,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await ProjectService.getListOfProjects({});
+				} = await ProjectService.getShortListOfProjects();
 
 				checkResponseStatus(status, message);
 

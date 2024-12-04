@@ -79,6 +79,19 @@ export default {
 			};
 		},
 
+		getRoleEditPage(roleId) {
+			return {
+				name: ROUTER.ROUTE_NAME.ROLES.EDIT,
+				params: { roleId },
+			};
+		},
+
+		getRoleDetailPage(roleId) {
+			return {
+				name: ROUTER.ROUTE_NAME.ROLES.DETAIL,
+				params: { roleId },
+			};
+		},
 
 		getImportPage(importId, query) {
 			return {

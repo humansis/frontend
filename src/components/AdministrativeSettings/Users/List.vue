@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:is-row-click-disabled="!isUserGrantedToOpenUserDetail"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -17,18 +18,21 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
+				v-if="row.role !== ROLE.ADMIN"
 				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_DELETE"
 				:disabled="isLoggedUser(row.id)"
 				icon="trash"
@@ -69,7 +73,7 @@ import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, TABLE } from "@/consts";
+import { EXPORT, ROLE, TABLE } from "@/consts";
 
 export default {
 	name: "UsersList",
@@ -84,6 +88,7 @@ export default {
 
 	data() {
 		return {
+			ROLE,
 			TABLE,
 			isLoadingList: false,
 			exportControl: {
@@ -115,6 +120,10 @@ export default {
 
 	computed: {
 		...mapState(["user"]),
+
+		isUserGrantedToOpenUserDetail() {
+			return this.isUserPermissionGranted(this.PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE);
+		},
 	},
 
 	async created() {

@@ -31,6 +31,7 @@
 			icon-color="primary"
 			tooltip-text="Download export"
 			class="export-button"
+			:data-cy="prepareComponentIdentifier('button')"
 			@actionConfirmed="onStartExport"
 		/>
 	</div>

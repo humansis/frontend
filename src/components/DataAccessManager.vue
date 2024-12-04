@@ -13,8 +13,8 @@
 						<v-expansion-panel-title>
 							<h4 class="ml-3">
 								<v-icon
-									v-if="group.icon"
-									:icon="group.icon"
+									v-if="group.groupIcon"
+									:icon="group.groupIcon"
 									class="mr-2"
 								/>
 
@@ -74,8 +74,10 @@
 										name="enabled"
 										class="checkbox my-checkbox"
 										hide-details
-										@mouseenter="getInfo(dataAccess.info)"
-										@focus="getInfo(dataAccess.info)"
+										@mouseenter="getDescription(dataAccess.description)"
+										@mouseleave="resetDescription()"
+										@focus="getDescription(dataAccess.description)"
+										@focusout="resetDescription()"
 										@update:modelValue="checkboxValueUpdated($event, group, index, dataAccess)"
 									/>
 								</v-col>
@@ -92,15 +94,7 @@
 				class="note-panel"
 			>
 				<div ref="notePanel" class="help-block">
-					<div v-for="(values, key) in info" :key="key" class="permissions-info">
-						<h2 class="pb-3">{{ formatTitle(key) }}:</h2>
-
-						<ul class="pl-10">
-							<li v-for="(value, index) in values" :key="index">
-								{{ value }}
-							</li>
-						</ul>
-					</div>
+					<span v-html-secure="description" />
 				</div>
 			</v-col>
 		</v-row>
@@ -123,7 +117,7 @@ export default {
 		},
 
 		groups: {
-			type: Array,
+			type: [Array, Object],
 			required: true,
 		},
 
@@ -153,7 +147,7 @@ export default {
 		return {
 			allFutureProjects: false,
 			hideAfterEndDate: true,
-			info: {},
+			description: {},
 			distance: 0,
 			padding: 0,
 			dataAccessGroups: [],
@@ -167,20 +161,24 @@ export default {
 				this.dataAccessGroups = value;
 			},
 		},
+
+		isLoading(value) {
+			if (!value && this.isNotePanelVisible) {
+				window.addEventListener("scroll", this.handleScroll);
+
+				this.$nextTick(() => {
+					const element = document.getElementById("note-panel");
+					const { top } = element.getBoundingClientRect();
+					this.distance = top;
+				});
+
+				this.updatePadding();
+			}
+		},
 	},
 
 	mounted() {
 		this.dataAccessGroups = this.groups;
-
-		if (this.isNotePanelVisible) {
-			window.addEventListener("scroll", this.handleScroll);
-
-			this.updatePadding();
-
-			const element = document.getElementById("note-panel");
-			const { top } = element.getBoundingClientRect();
-			this.distance = top;
-		}
 	},
 
 	beforeUnmount() {
@@ -196,15 +194,23 @@ export default {
 			return key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 		},
 
-		getInfo(info) {
-			this.info = { ...info };
+		getDescription(description) {
+			this.description = description;
+		},
+
+		resetDescription() {
+			this.description = "";
 		},
 
 		updatePadding() {
 			this.padding = window.pageYOffset || document.documentElement.scrollTop;
 
-			if (this.$refs.notePanel && this.padding > this.distance) {
-				this.$refs.notePanel.style.paddingTop = `${this.padding - this.distance}px`;
+			if (!this.$refs.notePanel) return;
+
+			if (this.padding > this.distance) {
+				this.$refs.notePanel.style.paddingTop = `${(this.padding - this.distance) + 45}px`;
+			} else {
+				this.$refs.notePanel.style.paddingTop = "0px";
 			}
 		},
 
@@ -223,6 +229,8 @@ export default {
 				groupIndex: index,
 				dataAccess: null,
 			});
+
+			this.$emit(isSelectAll ? "selected-all" : "unselected-all", index);
 		},
 
 		isCheckboxDisabled(group) {
@@ -256,6 +264,11 @@ export default {
 		0px 2px 2px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
 		0px 1px 5px 0px var(--v-shadow-key-ambient-opacity, rgba(0, 0, 0, 0.12));
 	background-color: #e9e9e9;
+}
+
+.help-block ul {
+	padding-top: .5rem;
+	padding-left: 2rem;
 }
 
 .permissions-info {

@@ -1,9 +1,21 @@
 import { filtersToUri, idsToUri } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import i18n from "@/plugins/i18n";
+import CryptoJS from "crypto-js";
 import moment from "moment";
 
 const { global: { t } } = i18n;
+
+export const saltPassword = (salt, password) => {
+	const salted = `${password}{${salt}}`;
+	let digest = CryptoJS.SHA512(salted);
+
+	for (let i = 1; i < 5000; i += 1) {
+		digest = CryptoJS.SHA512(digest.concat(CryptoJS.enc.Utf8.parse(salted)));
+	}
+
+	return CryptoJS.enc.Base64.stringify(digest);
+};
 
 export const queryBuilder = (param) => {
 	const { page, size, sort, search, filters, upcoming, ids, idsParam, format } = param;
@@ -124,6 +136,7 @@ export const isRangeBetweenTwoDatesHigher = (firstDate, secondDate, maxDateDiff)
 
 export default {
 	BookletStatusArray,
+	saltPassword,
 	copyObject,
 	deepEqual,
 	filterEmptyValues,

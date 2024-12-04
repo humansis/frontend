@@ -100,6 +100,7 @@
 				<template v-slot:next>
 					<v-btn
 						v-if="activeStep === 4"
+						:disabled="false"
 						:loading="saveButtonLoading"
 						:data-cy="identifierBuilder('form-save-button')"
 						color="primary"

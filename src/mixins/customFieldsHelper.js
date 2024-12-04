@@ -10,7 +10,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await CustomFieldsService.getListOfCustomFields({
+				} = await CustomFieldsService.getShortListOfCustomFields({
 					sort: "label.asc",
 					filters: this.customFieldsTarget,
 				});

@@ -8,6 +8,7 @@
 		:total-count="table.total"
 		:loading="isLoadingList"
 		:custom-key-sort="customSort"
+		:is-row-click-disabled="!isUserPermissionGranted(this.PERMISSIONS.IMPORT_MANAGE)"
 		reset-sort-button
 		reset-filters-button
 		is-search-visible

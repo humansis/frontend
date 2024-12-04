@@ -368,10 +368,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await AssistancesService.getScoringTypes(
-					null,
-					null,
-				);
+				} = await AssistancesService.getShortListOfScoringTypes();
 
 				checkResponseStatus(status, message);
 
@@ -660,7 +657,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await CustomFieldsService.getListOfCustomFields({});
+				} = await CustomFieldsService.getShortListOfCustomFields({});
 
 				checkResponseStatus(status, message);
 
@@ -879,8 +876,7 @@ export default {
 			const { scoringBlueprint, threshold } = assistance;
 			const scoringType = scoringBlueprint === null
 				? AssistancesService.getDefaultScoringType()
-				: this.scoringTypes.filter(({ enabled }) => enabled)
-					.find(({ id }) => id === scoringBlueprint?.id);
+				: this.scoringTypes.find(({ id }) => id === scoringBlueprint?.id);
 
 			if (scoringBlueprint && !scoringType) {
 				Notification(

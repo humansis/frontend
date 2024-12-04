@@ -8,6 +8,12 @@ export default {
 		});
 	},
 
+	getShortListOfDonors() {
+		return fetcher({
+			uri: "catalogs/donors",
+		});
+	},
+
 	createDonor(body) {
 		return fetcher({
 			uri: "donors",

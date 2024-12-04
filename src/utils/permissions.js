@@ -1,6 +1,9 @@
 import getters from "@/store/getters";
 
-export const isUserPermissionGranted = (requiredPermissions) => {
+export const isUserPermissionGranted = (
+	requiredPermissions,
+	isAtLeastOnePermissionGranted = false,
+) => {
 	if (typeof requiredPermissions !== "string" && !Array.isArray(requiredPermissions)) return [];
 
 	const userPermissions = getters.getUserPermissionsFromVuexStorage();
@@ -8,7 +11,9 @@ export const isUserPermissionGranted = (requiredPermissions) => {
 		? requiredPermissions
 		: [requiredPermissions];
 
-	return arrayWithRequiredPermissions.every((permission) => userPermissions?.[permission]);
+	return isAtLeastOnePermissionGranted
+		? arrayWithRequiredPermissions.some((permission) => userPermissions?.[permission])
+		: arrayWithRequiredPermissions.every((permission) => userPermissions?.[permission]);
 };
 
 export default {

@@ -1,12 +1,11 @@
 <template>
 	<v-container fluid>
-		<Tabs :pre-selected-tab-value="ADMINISTRATIVE_SETTINGS.TABS_VALUE.USERS" />
+		<Tabs :pre-selected-tab-value="ADMINISTRATIVE_SETTINGS.TABS_VALUE.ROLES" />
 
 		<div class="d-flex justify-end">
-
 			<ButtonAction
-				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE"
-				:to="{ name: ROUTER.ROUTE_NAME.USERS.ADD }"
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT"
+				:to="{ name: ROUTER.ROUTE_NAME.ROLES.ADD }"
 				:is-only-icon="false"
 				label="Add"
 				color="primary"
@@ -15,19 +14,19 @@
 			/>
 		</div>
 
-		<UsersList
-			ref="usersList"
-			@delete="onRemoveUser"
-			@showEdit="({ id }) => $router.push(this.getUserEditPage(id))"
-			@showDetail="({ id }) => $router.push(this.getUserDetailPage(id))"
+		<RolesList
+			ref="rolesList"
+			@delete="onRemoveRole"
+			@showEdit="(id) => $router.push(this.getRoleEditPage(id))"
+			@showDetail="(id) => $router.push(this.getRoleDetailPage(id))"
 		/>
 	</v-container>
 </template>
 
 <script>
-import UsersService from "@/services/UsersService";
+import RolesService from "@/services/RolesService";
+import RolesList from "@/components/AdministrativeSettings/Roles/List";
 import Tabs from "@/components/AdministrativeSettings/Tabs";
-import UsersList from "@/components/AdministrativeSettings/Users/List";
 import ButtonAction from "@/components/ButtonAction";
 import permissions from "@/mixins/permissions";
 import routerHelper from "@/mixins/routerHelper";
@@ -36,35 +35,31 @@ import { Notification } from "@/utils/UI";
 import { ADMINISTRATIVE_SETTINGS, ROUTER } from "@/consts";
 
 export default {
-	name: "UsersPage",
+	name: "RolesPage",
 
-	components: {
-		UsersList,
-		ButtonAction,
-		Tabs,
-	},
+	components: { ButtonAction, RolesList, Tabs },
 
-	mixins: [permissions, routerHelper],
+	mixins: [routerHelper, permissions],
 
 	data() {
 		return {
-			ADMINISTRATIVE_SETTINGS,
 			ROUTER,
+			ADMINISTRATIVE_SETTINGS,
 		};
 	},
 
 	methods: {
-		async onRemoveUser(id) {
+		async onRemoveRole(id) {
 			try {
 				const {
 					status,
 					message,
-				} = await UsersService.deleteUser(id);
+				} = await RolesService.removeRole(id);
 
 				checkResponseStatus(status, message, 204);
 
-				Notification(this.$t("User Successfully Deleted"), "success");
-				this.$refs.usersList.removeFromList(id);
+				Notification(this.$t("Role Successfully Deleted"), "success");
+				this.$refs.rolesList.removeFromList(id);
 			} catch (e) {
 				Notification(`${this.$t("User")}: ${e.message || e}`, "error");
 			}

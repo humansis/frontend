@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:is-row-click-disabled="!isUserGrantedToGoToProject"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -13,7 +14,7 @@
 		@update:sortBy="onSort"
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PROJECTS)"
-		@rowClicked="onGoToDetail"
+		@rowClicked="(row) => onGoToProject(row.item.id)"
 	>
 		<template v-slot:actions="{ row, index }">
 			<ButtonAction
@@ -131,6 +132,10 @@ export default {
 
 	computed: {
 		...mapState(["availableProjects"]),
+
+		isUserGrantedToGoToProject() {
+			return this.isUserPermissionGranted(this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT);
+		},
 	},
 
 	created() {
@@ -187,8 +192,8 @@ export default {
 			return item.donors.map((donor) => donor.shortname).join(", ");
 		},
 
-		onGoToDetail({ item: { id } }) {
-			this.$router.push(this.getProjectPage(id));
+		onGoToProject(projectId) {
+			this.$router.push(this.getProjectPage(projectId));
 		},
 
 		async onExportProjects(exportType, format) {

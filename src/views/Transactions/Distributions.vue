@@ -97,7 +97,7 @@ import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, ROUTER, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, PERMISSIONS, ROUTER, TABLE, TRANSACTIONS } from "@/consts";
 
 const statusTags = [
 	{ code: ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED, class: "status distributed" },
@@ -135,11 +135,30 @@ export default {
 			table: {
 				data: [],
 				columns: generateColumns([
-					{ key: "beneficiaryId", title: "Beneficiary", type: "link", sortable: false },
+					{
+						key: "beneficiaryId",
+						title: "Beneficiary",
+						type: "link",
+						permissionsForLinkVisibility: [
+							PERMISSIONS.HOUSEHOLD_VIEW,
+							PERMISSIONS.TRANSACTIONS,
+						],
+						sortable: false,
+					},
 					{ key: "localGivenName", sortable: false },
 					{ key: "localFamilyName", sortable: false },
-					{ key: "project", type: "link", sortable: false },
-					{ key: "assistance", type: "link", sortable: false },
+					{
+						key: "project",
+						type: "link",
+						permissionsForLinkVisibility: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT],
+						sortable: false,
+					},
+					{
+						key: "assistance",
+						type: "link",
+						permissionsForLinkVisibility: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
+						sortable: false,
+					},
 					{ key: "fullLocationNames", title: "Location", sortable: false },
 					{ key: "dateDistribution", title: "Assistance Date", type: "datetime" },
 					{ key: "commodity", sortable: false },
@@ -154,7 +173,6 @@ export default {
 				sortDirection: TABLE.DEFAULT_SORT_OPTIONS.DISTRIBUTIONS.order,
 				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.DISTRIBUTIONS.key,
 				searchPhrase: "",
-				progress: null,
 				dataUpdated: false,
 			},
 			filters: {},
@@ -178,7 +196,6 @@ export default {
 		async fetchData() {
 			try {
 				this.isLoadingList = true;
-				this.table.progress = null;
 
 				this.renameAdms();
 				this.setGridFiltersToUrl("distributions");
@@ -202,7 +219,6 @@ export default {
 
 				checkResponseStatus(status, message);
 
-				this.table.progress = 20;
 				this.table.total = totalCount;
 				this.table.dataUpdated = true;
 
@@ -223,34 +239,28 @@ export default {
 		},
 
 		prepareDataForTable(data) {
-			const locationIds = [];
-			const assistanceIds = [];
-			const beneficiaryIds = [];
-			const beneficiaryInstitutionIds = [];
-			const commodityIds = [];
-			const projectIds = [];
-
 			data.forEach((item, key) => {
-				if (item.type === "Institution") {
-					beneficiaryInstitutionIds.push(item.beneficiaryId);
-				} else {
-					beneficiaryIds.push(item.beneficiaryId);
-				}
+				const { beneficiary } = item;
+				const isTypeInstitution = beneficiary.type === TRANSACTIONS.BENEFICIARY_TYPE.INSTITUTION;
+				const localGivenName = isTypeInstitution
+					? beneficiary.name
+					: beneficiary.localGivenName;
+				const localFamilyName = isTypeInstitution
+					? ""
+					: beneficiary.localFamilyName;
 
-				this.table.data[key] = item;
-				projectIds.push(item.projectId);
-				assistanceIds.push(item.assistanceId);
-				commodityIds.push(item.commodityId);
-				locationIds.push(item.locationId);
-				this.table.data[key].spent = item.spent ?? 0;
+				this.table.data[key] = {
+					...item,
+					beneficiaryId: this.prepareBeneficiaryIdForTable(item.beneficiary, true),
+					project: this.prepareProjectForTable(item.project, true),
+					assistance: this.prepareAssistanceForTable(item.assistance, item.project, true),
+					commodity: item.commodity.modalityType,
+					unit: item.commodity.unit,
+					spent: item.spent ?? 0,
+					localGivenName,
+					localFamilyName,
+				};
 			});
-
-			this.prepareProjectForTable([...new Set(projectIds)], true);
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryIds)], true);
-			this.prepareBeneficiaryForTable([...new Set(beneficiaryInstitutionIds)], true, true);
-			this.prepareAssistanceForTable([...new Set(assistanceIds)], true);
-			this.prepareCommodityForTable([...new Set(commodityIds)]);
-			this.table.progress = 100;
 		},
 
 		onAdvancedSearchToggle() {
@@ -299,5 +309,4 @@ export default {
 		},
 	},
 };
-
 </script>

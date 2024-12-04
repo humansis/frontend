@@ -48,6 +48,7 @@
 		<template v-if="!upcoming" v-slot:actions="{ row }">
 			<ButtonAction
 				v-if="!row.validated"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE"
 				icon="edit"
 				tooltip-text="Update"
 				@actionConfirmed="onGoToUpdate(row.id, row.state.code)"
@@ -68,9 +69,7 @@
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
-			<v-menu
-				transition="scale-transition"
-			>
+			<v-menu transition="scale-transition">
 				<template v-slot:activator="{ props }">
 					<v-btn
 						v-bind="props"
@@ -84,7 +83,7 @@
 				<v-list>
 					<v-list-item class="dropdown-actions">
 						<ButtonAction
-							:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_MANIPULATION"
+							:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE"
 							:is-only-icon="false"
 							icon="copy"
 							label="Duplicate"
@@ -125,6 +124,7 @@
 		<template v-slot:tableControls>
 			<ExportControl
 				v-if="!upcoming"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_EXPORTS"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -216,7 +216,7 @@ import { generateColumns, normalizeExportDate, normalizeText } from "@/utils/dat
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, EXPORT, ROUTER, TABLE } from "@/consts";
+import { ASSISTANCE, EXPORT, PERMISSIONS, ROUTER, TABLE } from "@/consts";
 
 const customSort = { progress: () => {} };
 const statusTags = [
@@ -293,12 +293,14 @@ export default {
 						title: "Assistance ID",
 						type: "link",
 						isOpenedInNewTab: true,
+						permissionsForLinkVisibility: PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE,
 						sortKey: "id",
 					},
 					{
 						key: "assistanceName",
 						title: "Name",
 						type: "link",
+						permissionsForLinkVisibility: PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE,
 						isOpenedInNewTab: true,
 						sortKey: "name",
 					},
@@ -382,7 +384,7 @@ export default {
 		},
 	},
 
-	created() {
+	mounted() {
 		this.fetchData();
 	},
 

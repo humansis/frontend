@@ -81,6 +81,13 @@ export default {
 				pageName: ROUTER.ROUTE_NAME.SYNC,
 				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_SYNC,
 			},
+			{
+				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.ROLES,
+				title: "Roles",
+				icon: "user-shield",
+				pageName: ROUTER.ROUTE_NAME.ROLES.ROOT,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT,
+			},
 		];
 	},
 
