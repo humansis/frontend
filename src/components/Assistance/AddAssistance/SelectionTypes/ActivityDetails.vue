@@ -113,7 +113,7 @@ export default {
 	},
 
 	mounted() {
-		if (this.isAssistanceDuplicated) {
+		if (this.isAssistanceDuplicated && this.duplicatedData) {
 			this.prepareDuplicatedData(this.duplicatedData);
 		}
 	},
