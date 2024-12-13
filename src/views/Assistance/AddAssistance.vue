@@ -626,16 +626,13 @@ export default {
 		onTargetSelected(targetType) {
 			this.targetType = targetType?.code;
 
-			if (this.$refs.selectionCriteria) {
-				this.$refs.selectionCriteria.clearComponent();
-			}
+			this.componentsData.selectionCriteria = null;
+			this.componentsData.scoring = null;
+			this.componentsData.distributedCommodity = null;
 
-			if (this.$refs.distributedCommodity) {
-				this.$refs.distributedCommodity.clearComponent();
-			}
-
-			this.calculatedBeneficiaries = {};
-			this.calculatedCommodityValue = {};
+			this.calculatedCommodityValue = [];
+			this.assistanceBody.commodities = [];
+			this.assistanceBody.institutions = [];
 		},
 
 		onShowComponent(components) {
@@ -726,7 +723,7 @@ export default {
 			};
 		},
 
-		async onFetchDistributedCommodity(commodities) {
+		async onFetchDistributedCommodity({ commodities, isFetchEnabled }) {
 			const dateExpiration = new Date(commodities?.[0]?.dateExpiration);
 			const date = this.isDateValid(dateExpiration)
 				? dateExpiration
@@ -745,12 +742,14 @@ export default {
 					: 0,
 			};
 
+			this.isCommoditySmartCard = commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
+
+			if (!isFetchEnabled) return;
+
 			if ((this.isCalculatedDataFetched && this.isAssistanceDuplicated)
 				|| !this.isAssistanceDuplicated) {
 				await this.fetchCommoditiesValue();
 			}
-
-			this.isCommoditySmartCard = commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
 		remoteAllowed(commodity) {

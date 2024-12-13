@@ -429,7 +429,7 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
 			} finally {
-				if (this.isAssistanceDuplicated) {
+				if (this.isAssistanceDuplicated && this.scoring) {
 					this.scoringType = this.scoring.type;
 					this.minimumSelectionScore = this.scoring.minimumSelectionScore;
 				} else {
@@ -606,7 +606,12 @@ export default {
 		},
 
 		prepareDuplicatedData(data) {
-			if (data && this.isAssistanceDuplicated) {
+			if (!data) {
+				this.clearComponent();
+				return;
+			}
+
+			if (this.isAssistanceDuplicated) {
 				this.groups = data;
 				this.updateComponentsData();
 			}
@@ -656,6 +661,7 @@ export default {
 			this.countOf = 0;
 			this.totalCount = 0;
 			this.minimumSelectionScore = 0;
+			this.updateComponentsData();
 		},
 	},
 };
