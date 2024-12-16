@@ -53,7 +53,7 @@ export default {
 			selectionType: null,
 			isPropagatedToSelectionCriteria: false,
 			listOfValues: [
-				{ value: "" },
+				{ value: "", isValueFromBackend: false },
 			],
 		},
 	},
