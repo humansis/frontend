@@ -8,52 +8,56 @@
 			md="4"
 			lg="2"
 		>
-			<DataSelect
-				v-if="!options.type || options.type === 'multiselect'"
-				v-model="selectedFiltersOptions[filter]"
-				:label="options.name"
-				:loading="options.loading"
-				:multiple="options.multiple"
-				:items="options.data"
-				:item-title="options.label || 'value'"
-				:item-value="options.trackBy || 'code'"
-				:placeholder="options.placeholder"
-				:chips="options.multiple"
-				:closable-chips="options.multiple"
-				name="filter-select"
-				clearable
-				persistent-placeholder
-				@update:modelValue="onFilterChanged(filter)"
-			>
-				<template v-slot:custom-item="{ props, item }">
-					<v-list-item v-bind="props" :subtitle="item.raw.parentLocationName" />
-				</template>
-			</DataSelect>
+			<template v-if="!options.type || options.type === 'multiselect'">
+				<DataSelect
+					v-model="selectedFiltersOptions[filter]"
+					:key="getInputKey(filter, options.name)"
+					:label="options.name"
+					:loading="options.loading"
+					:multiple="options.multiple"
+					:items="options.data"
+					:item-title="options.label || 'value'"
+					:item-value="options.trackBy || 'code'"
+					:placeholder="options.placeholder"
+					:chips="options.multiple"
+					:closable-chips="options.multiple"
+					name="filter-select"
+					clearable
+					persistent-placeholder
+					@update:modelValue="onFilterChanged(filter)"
+				>
+					<template v-slot:custom-item="{ props, item }">
+						<v-list-item v-bind="props" :subtitle="item.raw.parentLocationName" />
+					</template>
+				</DataSelect>
+			</template>
 
-			<DataInput
-				v-else-if="options.type === 'text'"
-				v-model="selectedFiltersOptions[filter]"
-				:label="options.name"
-				:placeholder="options.placeholder"
-				name="filter-input"
-				clearable
-				persistent-placeholder
-				@update:modelValue="onFilterChanged(filter)"
-			/>
+			<template v-else-if="options.type === 'text'">
+				<DataInput
+					v-model="selectedFiltersOptions[filter]"
+					:key="getInputKey(filter, options.name)"
+					:label="options.name"
+					:placeholder="options.placeholder"
+					name="filter-input"
+					clearable
+					persistent-placeholder
+					@update:modelValue="onFilterChanged(filter)"
+				/>
+			</template>
 
-			<DatePicker
-				v-else-if="options.type === 'date'"
-				v-model="selectedFiltersOptions[filter]"
-				:label="options.name"
-				:error-messages="validationMsg(filter, 'selectedFiltersOptions')"
-				:placeholder="options.placeholder"
-				name="filter-datepicker"
-				clearable
-				persistent-placeholder
-				@update:modelValue="onFilterChanged(filter)"
-			/>
-
-			<!-- TODO dateTimePicker -->
+			<template v-else-if="options.type === 'date'">
+				<DatePicker
+					v-model="selectedFiltersOptions[filter]"
+					:key="getInputKey(filter, options.name)"
+					:label="options.name"
+					:error-messages="validationMsg(filter, 'selectedFiltersOptions')"
+					:placeholder="options.placeholder"
+					name="filter-datepicker"
+					clearable
+					persistent-placeholder
+					@update:modelValue="onFilterChanged(filter)"
+				/>
+			</template>
 		</v-col>
 
 		<v-col cols="12" class="text-right">
@@ -76,6 +80,7 @@ import DataSelect from "@/components/Inputs/DataSelect";
 import DatePicker from "@/components/Inputs/DatePicker";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import validation from "@/mixins/validation";
+import { kebabize } from "@/utils/datagrid";
 
 export default {
 	name: "AdvancedFilter",
@@ -153,6 +158,10 @@ export default {
 			});
 
 			this.$emit("filtersChanged", filters, filterName);
+		},
+
+		getInputKey(filter, inputName) {
+			return kebabize(`${inputName}-${this.selectedFiltersOptions[filter] ? "filled" : "empty"}`);
 		},
 
 		onSearch() {
