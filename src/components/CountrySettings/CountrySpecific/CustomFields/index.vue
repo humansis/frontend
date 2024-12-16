@@ -165,7 +165,7 @@ export default {
 
 			this.customFieldModel = {
 				...COUNTRY_SETTINGS.CUSTOM_FIELDS.CUSTOM_FIELD_MODEL,
-				listOfValues: [{ value: "" }],
+				listOfValues: [{ value: "", isValueFromBackend: false }],
 			};
 		},
 
