@@ -101,7 +101,6 @@
 
 <script>
 import LocationsService from "@/services/LocationsService";
-import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
 import VendorsFilter from "@/components/Beneficiaries/VendorsFilter";
 import ButtonAction from "@/components/ButtonAction";
@@ -285,29 +284,6 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Locations")}: ${e.message || e}`, "error");
-			}
-
-			return [];
-		},
-
-		async getUsers(userIds) {
-			if (!userIds?.length) return [];
-
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await UsersService.getListOfUsers({
-					ids: userIds,
-					filters: { showVendors: true },
-				});
-
-				checkResponseStatus(status, message);
-
-				return data;
-			} catch (e) {
-				Notification(`${this.$t("Users")}: ${e.message || e}`, "error");
 			}
 
 			return [];

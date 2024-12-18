@@ -146,7 +146,6 @@ export default {
 					page: this.table.currentPage,
 					size: this.perPage,
 					search: this.table.searchPhrase,
-					filters: { showVendors: false },
 					sort,
 				});
 
