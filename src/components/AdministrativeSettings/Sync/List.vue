@@ -24,7 +24,6 @@
 
 <script>
 import SyncService from "@/services/SyncService";
-import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
@@ -136,56 +135,18 @@ export default {
 			if (!vendorIds?.length) return;
 
 			const vendors = await this.getVendors(vendorIds);
-			const userIds = [];
 
 			this.table.data.forEach((item, key) => {
-				const { vendorNo, userId } = vendors?.find(({ id }) => item.vendorId === id) ?? {};
-
-				if (userId) userIds.push(userId);
+				const { vendorNo, name } = vendors?.find(({ id }) => item.vendorId === id) ?? {};
 
 				this.table.data[key] = {
 					...this.table.data[key],
+					username: name,
 					vendorNo,
-					userId,
 				};
 			});
 
 			this.table.data = [...this.table.data];
-			await this.prepareUsersForTable([...new Set(userIds)]);
-		},
-
-		async prepareUsersForTable(userIds) {
-			if (!userIds?.length) return;
-
-			const users = await this.getUsers(userIds);
-
-			this.table.data.forEach((item, key) => {
-				const { email } = users.find(({ id }) => item.userId === id) ?? {};
-
-				this.table.data[key].username = email;
-			});
-
-			this.table.data = [...this.table.data];
-		},
-
-		async getUsers(ids) {
-			if (!ids?.length) return [];
-
-			try {
-				const { data: { data }, status, message } = await UsersService.getListOfUsers({
-					ids,
-					idsParam: "userId",
-					filters: { showVendors: true },
-				});
-
-				checkResponseStatus(status, message);
-
-				return data;
-			} catch (e) {
-				Notification(`${this.$t("Users list")}: ${e.message || e}`, "error");
-			}
-
-			return [];
 		},
 
 		async getVendors(ids) {
