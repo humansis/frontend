@@ -330,7 +330,17 @@ export default {
 
 	watch: {
 		importStatus(value) {
+			if (!value) return;
+
+			const { importId } = this.$route.params;
+
 			this.isImportAutomaticallyCanceled(value);
+
+			if (importId) {
+				this.setCheckingInterval();
+			} else {
+				clearInterval(this.statisticsInterval);
+			}
 		},
 	},
 
@@ -364,29 +374,31 @@ export default {
 			this.activeStep = code;
 		},
 
-		fetchData() {
+		async fetchData() {
 			const { importId } = this.$route.params;
 
 			if (importId) {
-				this.fetchImport(importId);
-				this.fetchImportFiles(importId);
-				this.onFetchImportStatistics();
-				this.setCheckingInterval();
-			} else {
-				clearInterval(this.statisticsInterval);
+				await Promise.all([
+					this.fetchImport(importId),
+					this.fetchImportFiles(importId),
+					this.onFetchImportStatistics(),
+				]);
 			}
 		},
 
 		setCheckingInterval() {
 			if (
-				this.importDetail?.status !== IMPORT.STATUS.NEW
-				&& this.importDetail?.status !== IMPORT.STATUS.CANCEL
-				&& this.importDetail?.status !== IMPORT.STATUS.FINISH
+				this.importStatus !== IMPORT.STATUS.NEW
+				&& this.importStatus !== IMPORT.STATUS.CANCEL
+				&& this.importStatus !== IMPORT.STATUS.FINISH
+				&& !this.statisticsInterval
 			) {
 				this.statisticsInterval = setInterval(() => {
 					this.onFetchImportStatistics();
 					this.fetchImportFiles();
 				}, 5000);
+			} else {
+				clearInterval(this.statisticsInterval);
 			}
 		},
 

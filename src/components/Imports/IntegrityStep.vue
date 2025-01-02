@@ -445,7 +445,7 @@ export default {
 
 		isStartIntegrityCheckAgainButtonVisible() {
 			return this.importStatus === IMPORT.STATUS.INTEGRITY_CHECK_FAILED
-				&& this.dropFile.name;
+				&& this.dropFile?.name;
 		},
 
 		isStartIdentityCheckButtonVisible() {

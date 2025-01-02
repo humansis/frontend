@@ -103,7 +103,7 @@ export default {
 	computed: {
 		isStartImportButtonDisabled() {
 			return this.importStatus !== IMPORT.STATUS.NEW
-				|| (!this.dropFile.name && !this.importFiles.length)
+				|| (!this.dropFile?.name && !this.importFiles.length)
 				|| !this.isFileValid
 				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_MANAGE)
 				|| !this.isAllProjectsAccessibleForThisImport;
