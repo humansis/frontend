@@ -267,7 +267,6 @@ export default {
 			ROUTER,
 			pageTitle: "",
 			userAction: {},
-			dataForDataAccessCopy: [],
 			isUserRoleEditable: true,
 			formModel: {
 				id: null,
@@ -642,10 +641,6 @@ export default {
 					isHideAfterEndDateEnabled: !this.userAction.isDetail,
 				};
 			});
-
-			this.dataForDataAccessCopy = JSON.parse(
-				JSON.stringify(this.formModel.dataForDataAccess),
-			);
 		},
 
 		async updateDataForDataAccess(countriesAccessData, projectIdsWithAccess) {
@@ -686,26 +681,23 @@ export default {
 					});
 				});
 			});
-
-			this.dataForDataAccessCopy = JSON.parse(
-				JSON.stringify(this.formModel.dataForDataAccess),
-			);
 		},
 
 		onFilterProjectsAfterEndDate(index) {
 			if (this.formModel.dataForDataAccess[index].isHideAfterEndDateEnabled) {
 				this.formModel.dataForDataAccess[index].projects = this.formModel
-					.dataForDataAccess[index].projects.filter(
-						(project) => (
-							project.endDate
-								? this.$moment(project.endDate) > this.$moment(new Date())
-								: true
-						),
-					);
+					.dataForDataAccess[index].projects.map((project) => ({
+						...project,
+						isHidden: project.endDate
+							? this.$moment(project.endDate) < this.$moment(new Date())
+							: false,
+					}));
 			} else {
-				this.formModel.dataForDataAccess[index].projects = JSON.parse(
-					JSON.stringify(this.dataForDataAccessCopy[index].projects),
-				);
+				this.formModel.dataForDataAccess[index].projects = this.formModel
+					.dataForDataAccess[index].projects.map((project) => ({
+						...project,
+						isHidden: false,
+					}));
 			}
 		},
 

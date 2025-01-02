@@ -58,29 +58,33 @@
 							</v-row>
 
 							<v-row>
-								<v-col
+								<template
 									v-for="dataAccess in group[propertyNameForAccessGroup]"
 									:key="dataAccess[propertyNameForAccessLabel]"
-									class="pt-0 pl-0 pr-5 pb-0"
-									cols="12"
-									sm="6"
-									md="4"
-									lg="2"
 								>
-									<v-checkbox
-										v-model="dataAccess.isSelected"
-										:label="$t(dataAccess[propertyNameForAccessLabel])"
-										:disabled="isCheckboxDisabled(group)"
-										name="enabled"
-										class="checkbox my-checkbox"
-										hide-details
-										@mouseenter="getDescription(dataAccess.description)"
-										@mouseleave="resetDescription()"
-										@focus="getDescription(dataAccess.description)"
-										@focusout="resetDescription()"
-										@update:modelValue="checkboxValueUpdated($event, group, index, dataAccess)"
-									/>
-								</v-col>
+									<v-col
+										v-if="!dataAccess.isHidden"
+										class="pt-0 pl-0 pr-5 pb-0"
+										cols="12"
+										sm="6"
+										md="4"
+										lg="2"
+									>
+										<v-checkbox
+											v-model="dataAccess.isSelected"
+											:label="$t(dataAccess[propertyNameForAccessLabel])"
+											:disabled="isCheckboxDisabled(group)"
+											name="enabled"
+											class="checkbox my-checkbox"
+											hide-details
+											@mouseenter="getDescription(dataAccess.description)"
+											@mouseleave="resetDescription()"
+											@focus="getDescription(dataAccess.description)"
+											@focusout="resetDescription()"
+											@update:modelValue="checkboxValueUpdated($event, group, index, dataAccess)"
+										/>
+									</v-col>
+								</template>
 							</v-row>
 						</v-expansion-panel-text>
 					</v-expansion-panel>
