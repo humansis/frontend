@@ -161,7 +161,13 @@ export default {
 		},
 
 		getInputKey(filter, inputName) {
-			return kebabize(`${inputName}-${this.selectedFiltersOptions[filter] ? "filled" : "empty"}`);
+			const inputData = this.selectedFiltersOptions[filter];
+			const isInputFilled = !!inputData
+				&& ((Array.isArray(inputData) && inputData.length)
+					|| (typeof inputData === "object" && Object.keys(inputData).length)
+					|| (typeof inputData !== "object"));
+
+			return kebabize(`${inputName}-${isInputFilled ? "filled" : "empty"}`);
 		},
 
 		onSearch() {
