@@ -391,8 +391,9 @@ export default {
 				this.importStatus !== IMPORT.STATUS.NEW
 				&& this.importStatus !== IMPORT.STATUS.CANCEL
 				&& this.importStatus !== IMPORT.STATUS.FINISH
-				&& !this.statisticsInterval
 			) {
+				if (this.statisticsInterval) return;
+
 				this.statisticsInterval = setInterval(() => {
 					this.onFetchImportStatistics();
 					this.fetchImportFiles();
