@@ -228,7 +228,7 @@ export default {
 					this.isHistory = false;
 					this.header = "Vendor Transaction Summary";
 				}
-			} else if (this.isRedeemButtonPressed && this.isRedemptionSummary && this.history) {
+			} else if (this.isRedeemButtonPressed && this.isRedemptionSummary && this.isHistory) {
 				this.isRedemptionSummary = false;
 				this.isHistory = false;
 				this.isRedeemButtonPressed = false;
