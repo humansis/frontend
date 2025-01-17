@@ -18,21 +18,21 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
-				v-if="userCan.viewBeneficiary"
+				:required-permissions="PERMISSIONS.INSTITUTION"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row.id)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.editBeneficiary"
+				:required-permissions="PERMISSIONS.INSTITUTION_EDIT"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row.id)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.deleteBeneficiary"
+				:required-permissions="PERMISSIONS.INSTITUTION_DELETE"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"
@@ -49,6 +49,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.INSTITUTION_EXPORT"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -70,7 +71,7 @@
 
 		<template v-slot:advancedControls>
 			<v-expansion-panels v-model="isAdvancedSearchVisible">
-				<v-expansion-panel :value="true">
+				<v-expansion-panel :value="true" eager>
 					<v-expansion-panel-text>
 						<InstitutionsFilter
 							@filtersChanged="onFiltersChange"

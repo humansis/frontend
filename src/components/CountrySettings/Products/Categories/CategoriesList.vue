@@ -18,6 +18,7 @@
 	>
 		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
@@ -25,15 +26,15 @@
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE_CATEGORIES"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
-				v-if="userCan.addEditProducts"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditProducts"
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS_CREATE_CATEGORIES"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
@@ -69,7 +70,11 @@ export default {
 		ButtonAction,
 	},
 
-	mixins: [grid, permissions, identifierBuilder],
+	mixins: [
+		grid,
+		permissions,
+		identifierBuilder,
+	],
 
 	data() {
 		return {

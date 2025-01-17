@@ -11,6 +11,7 @@ import institutionHelper from "@/mixins/institutionHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { isDateBeforeOrEqual, isRangeBetweenTwoDatesHigher } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
+import { ROUTER, TRANSACTIONS } from "@/consts";
 
 export default {
 	mixins: [baseHelper, institutionHelper],
@@ -61,121 +62,55 @@ export default {
 			});
 		},
 
-		async prepareProjectForTable(projectIds, hasLink = false) {
-			const projects = await this.getProjects(projectIds);
-
-			this.table.data.forEach((item, key) => {
-				if (hasLink) {
-					const project = projects.find(({ id }) => id === item.projectId);
-
-					this.table.data[key].project = {
-						routeName: "Project",
-						name: project?.name,
-						routeParams: { projectId: project?.id || 1 },
-					};
-				} else {
-					this.table.data[key].project = this.prepareEntityForTable(item.projectId, projects, "name", "None");
-				}
-			});
-
-			this.table.progress += 10;
-			this.reload();
-		},
-
-		async prepareCommodityForTable(assistanceIds) {
-			const commodities = await this.getCommodities(assistanceIds);
-
-			this.table.data.forEach((item, key) => {
-				const commodity = this.prepareEntityForTable(item.commodityId, commodities);
-				this.table.data[key].commodity = commodity.modalityType;
-				this.table.data[key].unit = commodity.unit;
-			});
-
-			this.table.progress += 10;
-			this.reload();
-		},
-
-		async prepareBeneficiaryForTable(beneficiaryIds, hasLink = false, isInstitution = false) {
-			let beneficiaries = {};
-
-			if (beneficiaryIds.length) {
-				beneficiaries = isInstitution
-					? await this.fetchInstitutions(beneficiaryIds, { isArchived: true })
-					: await this.getBeneficiaries(beneficiaryIds, { isArchived: true });
+		prepareProjectForTable(project, hasLink = false) {
+			if (hasLink) {
+				return {
+					routeName: ROUTER.ROUTE_NAME.ASSISTANCES.ROOT,
+					name: project?.name,
+					routeParams: { projectId: project?.id || 1 },
+				};
 			}
 
-			this.table.data.forEach((item, key) => {
-				const { beneficiaryId } = item;
-				const beneficiary = this.prepareEntityForTable(beneficiaryId, beneficiaries);
-
-				if (beneficiary) {
-					if (hasLink) {
-						const routeName = isInstitution
-							? "InstitutionDetail"
-							: "HouseholdInformationSummary";
-						const routeParams = isInstitution
-							? { institutionId: beneficiaryId }
-							: { householdId: beneficiary.householdId };
-						const tooltip = isInstitution
-							? "Deleted institution"
-							: "Deleted member";
-
-						this.table.data[key].beneficiaryId = {
-							routeName,
-							name: beneficiaryId,
-							routeParams,
-							isArchived: beneficiary.isArchived,
-							tooltip,
-						};
-					} else {
-						this.table.data[key].beneficiaryId = beneficiaryId;
-					}
-
-					this.table.data[key].localGivenName = isInstitution
-						? beneficiary.name
-						: beneficiary.localGivenName;
-					this.table.data[key].localFamilyName = isInstitution
-						? ""
-						: beneficiary.localFamilyName;
-				}
-			});
-
-			this.table.progress += 10;
-			this.reload();
+			return project.name;
 		},
 
-		async prepareAssistanceForTable(assistanceIds, hasLink = false) {
-			const assistances = await this.getAssistances(assistanceIds);
+		prepareBeneficiaryIdForTable(beneficiary, hasLink = false) {
+			if (!beneficiary) return "";
 
-			this.table.data.forEach((item, key) => {
-				const assistance = this.prepareEntityForTable(item.assistanceId, assistances);
+			if (hasLink) {
+				const isTypeInstitution = beneficiary.type === TRANSACTIONS.BENEFICIARY_TYPE.INSTITUTION;
+				const routeName = isTypeInstitution
+					? ROUTER.ROUTE_NAME.INSTITUTIONS.DETAIL
+					: ROUTER.ROUTE_NAME.HOUSEHOLD_INFORMATION_SUMMARY;
+				const routeParams = isTypeInstitution
+					? { institutionId: beneficiary.id }
+					: { householdId: beneficiary.householdId };
+				const tooltip = isTypeInstitution
+					? "Deleted institution"
+					: "Deleted member";
 
-				if (hasLink) {
-					this.table.data[key].assistance = {
-						routeName: "AssistanceDetail",
-						name: assistance.name,
-						routeParams: { projectId: assistance.projectId, assistanceId: assistance.id },
-					};
-				} else {
-					this.table.data[key].assistance = assistance.name;
-				}
-			});
+				return {
+					routeName,
+					name: beneficiary.id,
+					routeParams,
+					isArchived: beneficiary.isArchived,
+					tooltip,
+				};
+			}
 
-			this.table.progress += 10;
-			this.reload();
+			return beneficiary.id;
 		},
 
-		async prepareVendorForTable(vendorIds) {
-			const vendors = await this.getVendors(vendorIds);
+		prepareAssistanceForTable(assistance, project, hasLink = false) {
+			if (hasLink) {
+				return {
+					routeName: ROUTER.ROUTE_NAME.ASSISTANCES.DETAIL,
+					name: assistance.name,
+					routeParams: { projectId: project.id, assistanceId: assistance.id },
+				};
+			}
 
-			this.table.data.forEach((item, key) => {
-				const vendor = this.prepareEntityForTable(item.vendorId, vendors);
-				this.table.data[key].vendor = vendor.name;
-				this.table.data[key].vendorNo = vendor.vendorNo;
-			});
-
-			this.table.progress += 10;
-			this.reload();
+			return assistance.name;
 		},
 
 		async prepareProductForTable(productIds) {
@@ -385,7 +320,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await ProjectService.getListOfProjects({});
+				} = await ProjectService.getShortListOfProjects();
 
 				checkResponseStatus(status, message);
 
@@ -421,7 +356,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await VendorService.getListOfVendors({});
+				} = await VendorService.getShortListOfVendors();
 
 				checkResponseStatus(status, message);
 

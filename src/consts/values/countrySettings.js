@@ -53,7 +53,7 @@ export default {
 			selectionType: null,
 			isPropagatedToSelectionCriteria: false,
 			listOfValues: [
-				{ value: "" },
+				{ value: "", isValueFromBackend: false },
 			],
 		},
 	},
@@ -61,7 +61,7 @@ export default {
 		SCORING_MODEL: {
 			name: "",
 			note: "",
-			dropFiles: [],
+			dropFile: null,
 			content: "",
 		},
 	},

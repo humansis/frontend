@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "@/App";
+import htmlSecureDirective from "@/directives/htmlSecure";
 import i18n from "@/plugins/i18n";
-import htmlSecureDirective from "@/plugins/vuehtmlsecure";
 import vuetify from "@/plugins/vuetify";
 import router from "@/router";
 import store from "@/store";

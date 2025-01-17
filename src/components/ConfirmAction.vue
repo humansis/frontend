@@ -11,7 +11,11 @@
 			<v-divider />
 
 			<v-card-text>
-				<v-row>
+				<template v-if="$slots.customContent">
+					<slot name="customContent" />
+				</template>
+
+				<v-row v-else>
 					<v-col
 						v-if="prependIcon"
 						cols="2"

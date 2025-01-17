@@ -13,7 +13,7 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
-			v-if="userCan.createScoring"
+			:disabled="!isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_SCORING)"
 			class="text-none ml-0 mb-3"
 			color="primary"
 			prepend-icon="plus"
@@ -75,13 +75,13 @@ export default {
 			const {
 				name,
 				note,
-				dropFiles,
+				dropFile,
 			} = scoringForm;
 
 			this.createScoring({
 				name,
 				note,
-				dropFiles,
+				dropFile,
 			});
 		},
 

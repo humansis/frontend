@@ -11,20 +11,22 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
-				:disabled="!userCan.editScoring"
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_SCORING"
 				:icon="scoringStatusChangeButtonIcon(row)"
 				:tooltip-text="scoringStatusChangeButtonTooltip(row)"
 				@actionConfirmed="onStatusChange(row.id, !row.enabled)"
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_SCORING"
 				icon="download"
 				tooltip-text="Download"
 				@actionConfirmed="onDownloadScoring(row)"
 			/>
 
 			<ButtonAction
-				:disabled="!userCan.deleteScoring || !row.deletable"
+				:required-permissions="PERMISSIONS.COUNTRY_SETTINGS_SCORING"
+				:disabled="!row.deletable"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"

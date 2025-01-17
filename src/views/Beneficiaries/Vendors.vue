@@ -3,16 +3,15 @@
 		<div class="d-flex mb-4">
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Vendors') }}</h2>
 
-			<v-btn
-				v-if="userCan.addEditVendors"
+			<ButtonAction
+				:required-permissions="PERMISSIONS.VENDOR_CREATE"
 				:data-cy="identifierBuilder('new-button')"
+				:is-only-icon="false"
 				color="primary"
-				prepend-icon="plus"
-				class="text-none ml-0"
-				@click="onAddNewVendor"
-			>
-				{{ $t('Add') }}
-			</v-btn>
+				icon="plus"
+				label="Add"
+				@actionConfirmed="onAddNewVendor"
+			/>
 		</div>
 
 		<Modal
@@ -54,11 +53,11 @@
 </template>
 
 <script>
-import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
 import VendorSummary from "@/components/Beneficiaries/Smartcard/VendorSummary";
 import VendorForm from "@/components/Beneficiaries/VendorForm";
 import VendorsList from "@/components/Beneficiaries/VendorsList";
+import ButtonAction from "@/components/ButtonAction";
 import Modal from "@/components/Inputs/Modal";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
@@ -70,6 +69,7 @@ export default {
 	name: "Vendors",
 
 	components: {
+		ButtonAction,
 		VendorSummary,
 		VendorsList,
 		Modal,
@@ -223,7 +223,7 @@ export default {
 				adm2Id,
 				adm3Id,
 				adm4Id,
-				userId,
+				user,
 				vendorNo,
 				contractNo,
 				canSellFood,
@@ -232,8 +232,6 @@ export default {
 				canDoRemoteDistributions,
 			},
 		) {
-			const user = await this.getDetailOfUser(userId);
-
 			const categoryType = [];
 
 			if (canSellFood) {
@@ -252,7 +250,7 @@ export default {
 				...this.vendorModel,
 				id,
 				shop,
-				username: user.username,
+				username: user.name,
 				name,
 				categoryType,
 				addressStreet,
@@ -262,7 +260,7 @@ export default {
 				adm2Id,
 				adm3Id,
 				adm4Id,
-				userId,
+				userId: user.id,
 				user,
 				vendorNo,
 				contractNo,
@@ -288,6 +286,7 @@ export default {
 				contractNo,
 				canDoRemoteDistributions,
 			} = vendorForm;
+
 			const vendorBody = {
 				name,
 				addressStreet,
@@ -310,9 +309,6 @@ export default {
 				email: username,
 				password,
 				phoneNumber: null,
-				// TODO edit after BE will implement permissions
-				roles: ["ROLE_VENDOR"],
-				changePassword: false,
 			};
 			if (this.vendorModal.isEditing && id) {
 				await this.updateVendor(id, userBody, vendorBody);
@@ -328,7 +324,7 @@ export default {
 					data,
 					status,
 					message,
-				} = await UsersService.createUser(userBody);
+				} = await VendorService.createVendorUser(userBody);
 
 				checkResponseStatus(status, message);
 
@@ -359,7 +355,7 @@ export default {
 				const {
 					status,
 					message,
-				} = await UsersService.updateUser({
+				} = await VendorService.updateVendorUser({
 					id: userBody.id,
 					body: userBody,
 				});

@@ -1,6 +1,6 @@
 <template>
 	<template v-if="(!column.type || (column.type === 'text'))">
-		<div v-html-secure="cellData" :data-cy="identifierBuilder()" />
+		<div v-html-secure="cellData?.name || cellData" :data-cy="identifierBuilder()" />
 	</template>
 
 	<template v-if="column.type === 'object'">
@@ -132,10 +132,7 @@
 
 		<router-link
 			v-else
-			:to="{
-				name: getRouteName(),
-				params: getParams(),
-			}"
+			:to="prepareRoute()"
 			:target="getTargetForLink"
 			:data-cy="identifierBuilder()"
 			class="table-link"
@@ -247,6 +244,8 @@ import ColorPicker from "@/components/Inputs/ColorPicker";
 import SvgIcon from "@/components/SvgIcon";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import { normalizeText } from "@/utils/datagrid";
+import { isUserPermissionGranted } from "@/utils/permissions";
+import { ROUTER } from "@/consts";
 
 export default {
 	name: "ColumnField",
@@ -327,14 +326,14 @@ export default {
 	},
 
 	methods: {
+		isUserPermissionGranted,
 		normalizeText,
 
-		getParams() {
-			return this.cellData.routeParams || {};
-		},
-
-		getRouteName() {
-			return this.cellData.routeName || "Home";
+		prepareRoute() {
+			return {
+				name: this.cellData.routeName || ROUTER.ROUTE_NAME.HOME,
+				params: this.cellData.routeParams || {},
+			};
 		},
 
 		getLinkName() {

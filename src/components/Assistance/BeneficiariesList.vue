@@ -209,6 +209,7 @@
 		<template v-slot:actions="{ row }">
 			<ButtonAction
 				v-if="isUnDistributedButtonVisible(row)"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_CORRECTIONS"
 				icon="user-slash"
 				tooltip-text="Request for Un-distribution"
 				@actionConfirmed="onSetAsUnDistributed(row.id, row.reliefPackages[0])"
@@ -216,7 +217,7 @@
 
 			<ButtonAction
 				v-if="isUnDistributionApprovalButtonVisible(row.reliefPackages[0])"
-				:disabled="!userCan.revertDistributionApprove"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_APPROVALS"
 				icon="flag"
 				tooltip-text="Approve Un-distribution"
 				@actionConfirmed="onSetApproveUnDistribution(row.id, row.reliefPackages[0])"
@@ -224,6 +225,7 @@
 
 			<ButtonAction
 				v-if="isInvalidateButtonVisible(row)"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_CORRECTIONS"
 				icon="credit-card"
 				tooltip-text="Request for Invalidation"
 				@actionConfirmed="onSetSmartCardAsInvalid(row.id, row.reliefPackages[0])"
@@ -235,21 +237,20 @@
 
 			<ButtonAction
 				v-if="isInvalidationApprovalButtonVisible(row.reliefPackages[0])"
-				:disabled="!userCan.invalidateDistributionApprove"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_APPROVALS"
 				icon="flag"
 				tooltip-text="Approve Invalidation"
 				@actionConfirmed="onSetApproveInvalidation(row.id, row.reliefPackages[0])"
 			/>
 
 			<ButtonAction
-				v-if="userCan.editDistribution"
 				icon="search"
 				tooltip-text="View"
 				@actionConfirmed="onOpenViewModal(row)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.editDistribution && !isAssistanceValidated"
+				v-if="!isAssistanceValidated"
 				:disabled="row.removed || isAssistanceCompleted"
 				icon="trash"
 				icon-color="red"
@@ -259,8 +260,7 @@
 			/>
 
 			<ButtonAction
-				v-if="table.settings.assignVoucherAction
-					&& userCan.assignDistributionItems"
+				v-if="table.settings.assignVoucherAction"
 				:disabled="!row.canAssignVoucher"
 				icon="qrcode"
 				tooltip-text="Assign Voucher"
@@ -270,6 +270,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="exportRequiredPermissions"
 				:disabled="isExportButtonDisabled"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="availableExportTypes"
@@ -470,6 +471,7 @@ export default {
 
 	data() {
 		return {
+			exportRequiredPermissions: null,
 			isLoadingList: false,
 			isRecalculationLoading: false,
 			advancedSearchVisible: false,
@@ -598,7 +600,7 @@ export default {
 		availableExportTypes() {
 			const availableTypes = [];
 
-			if (this.exportButton && this.userCan.exportBeneficiaries && this.assistance?.target) {
+			if (this.exportButton && this.assistance?.target) {
 				if (!this.isAssistanceTargetInstitution) {
 					availableTypes.push(
 						EXPORT.LIST_OF_BENEFICIARIES,
@@ -725,13 +727,11 @@ export default {
 		},
 
 		isAddBeneficiaryAllowed() {
-			return (this.addButton || this.isAssistanceTargetInstitution) && this.userCan.editDistribution
-				&& !this.isAssistanceValidated;
+			return (this.addButton || this.isAssistanceTargetInstitution) && !this.isAssistanceValidated;
 		},
 
 		isBulkAddOrRemoveBeneficiaryAllowed() {
-			return this.addButton && this.userCan.editDistribution
-				&& !this.isAssistanceValidated;
+			return this.addButton && !this.isAssistanceValidated;
 		},
 
 		isDistributionExportVisible() {
@@ -745,9 +745,7 @@ export default {
 		},
 
 		isExportButtonDisabled() {
-			return !this.table.data.length
-				|| !this.userCan.exportBeneficiaries
-				|| this.changeButton;
+			return !this.table.data.length || this.changeButton;
 		},
 
 		isAssistanceTargetHouseholdOrIndividual() {
@@ -869,7 +867,26 @@ export default {
 			}
 		},
 
+		getRequiredPermissionForExportType(type) {
+			const EXPORT_TYPES_UNDER_PERMISSION = [
+				EXPORT.LIST_OF_BENEFICIARIES,
+				EXPORT.DISTRIBUTION_LIST,
+				EXPORT.HOUSEHOLDS,
+				EXPORT.BNF_FILE_3.OPTION_NAME,
+				EXPORT.INSTITUTIONS,
+				EXPORT.BANK_DISTRIBUTION_LIST,
+			];
+
+			if (EXPORT_TYPES_UNDER_PERMISSION.includes(type)) {
+				this.exportRequiredPermissions = this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_EXPORTS;
+			} else {
+				this.exportRequiredPermissions = null;
+			}
+		},
+
 		async onExportValuesUpdated(type) {
+			this.getRequiredPermissionForExportType(type);
+
 			this.exportControl.isBnfFileTypeSelected = (type === EXPORT.BNF_FILE_3.OPTION_NAME);
 
 			if (this.exportControl.isBnfFileTypeSelected) {
@@ -953,7 +970,6 @@ export default {
 		isUnDistributedButtonVisible({ status, reliefPackages }) {
 			return this.isNotDistributedAvailable
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
-				&& this.userCan.revertDistribution
 				&& !this.isApprovalAvailableForReliefPackage(
 					reliefPackages[0],
 					GENERAL.APPROVAL_SYSTEM.TARGET.UN_DISTRIBUTE_RELIEF_PACKAGE,
@@ -964,7 +980,6 @@ export default {
 			return this.assistance.type === ASSISTANCE.TYPE.DISTRIBUTION
 				&& this.assistance.commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD
 				&& status[0] === ASSISTANCE.RELIEF_PACKAGES.STATE.DISTRIBUTED
-				&& this.userCan.invalidateDistribution
 				&& !this.isApprovalAvailableForReliefPackage(
 					reliefPackages[0],
 					GENERAL.APPROVAL_SYSTEM.TARGET.INVALIDATE_RELIEF_PACKAGE,
@@ -1310,6 +1325,12 @@ export default {
 							const isCanceled = reliefPackages.length && reliefPackages.every(
 								(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.CANCELED,
 							);
+							const selectable = !isDistributed
+								&& !isCanceled
+								&& !this.isAssistanceClosed
+								&& this.isUserPermissionGranted(
+									this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_DISTRIBUTION,
+								);
 
 							this.table.data[key] = {
 								...this.table.data[key],
@@ -1317,7 +1338,7 @@ export default {
 								toDistribute,
 								distributed,
 								lastModified,
-								selectable: !isDistributed && !isCanceled && !this.isAssistanceClosed,
+								selectable,
 							};
 
 							if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);
@@ -1373,6 +1394,12 @@ export default {
 						const isCanceled = reliefPackages.length && reliefPackages.every(
 							(rp) => rp.state === ASSISTANCE.RELIEF_PACKAGES.STATE.CANCELED,
 						);
+						const selectable = !isDistributed
+							&& !isCanceled
+							&& !this.isAssistanceClosed
+							&& this.isUserPermissionGranted(
+								this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_DISTRIBUTION,
+							);
 
 						this.table.data[key] = {
 							...item,
@@ -1390,7 +1417,7 @@ export default {
 							spent,
 							lastModified,
 							phone,
-							selectable: !isDistributed && !isCanceled && !this.isAssistanceClosed,
+							selectable,
 						};
 
 						if (isDistributed) this.table.checkedRows.push(this.table.data[key].id);

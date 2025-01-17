@@ -2,6 +2,12 @@
   outline: none !important;
   box-shadow: none !important;
 
+  &--disabled {
+    opacity: 0.3 !important;
+    pointer-events: unset;
+    cursor: not-allowed;
+  }
+
   &.is-selected,
   &.is-selected:hover,
   &.is-selected:focus {

@@ -1,32 +1,38 @@
 <template>
-	<Modal
-		v-model="organizationServiceModal.isOpened"
-		:header="modalHeader"
-	>
-		<OrganizationServiceForm
-			:form-model="organizationServiceModel"
-			:form-disabled="organizationServiceModal.isDetail"
-			submit-button-label="Update"
-			close-button
-			@formSubmitted="onSubmitOrganizationServiceForm"
-			@formClosed="onCloseOrganizationServiceModal"
-		/>
-	</Modal>
+	<v-container fluid>
+		<Modal
+			v-model="organizationServiceModal.isOpened"
+			:header="modalHeader"
+		>
+			<OrganizationServiceForm
+				:form-model="organizationServiceModel"
+				:form-disabled="organizationServiceModal.isDetail"
+				submit-button-label="Update"
+				close-button
+				@formSubmitted="onSubmitOrganizationServiceForm"
+				@formClosed="onCloseOrganizationServiceModal"
+			/>
+		</Modal>
 
-	<OrganizationServicesList
-		ref="organizationServicesList"
-		@showEdit="onEditOrganizationService"
-		@showDetail="onShowDetail"
-	/>
+		<Tabs :pre-selected-tab-value="ADMINISTRATIVE_SETTINGS.TABS_VALUE.ORGANIZATION_SERVICES" />
+
+		<OrganizationServicesList
+			ref="organizationServicesList"
+			@showEdit="onEditOrganizationService"
+			@showDetail="onShowDetail"
+		/>
+	</v-container>
 </template>
 
 <script>
 import OrganizationServiceService from "@/services/OrganizationServiceService";
 import OrganizationServiceForm from "@/components/AdministrativeSettings/OrganizationServices/Form";
 import OrganizationServicesList from "@/components/AdministrativeSettings/OrganizationServices/List";
+import Tabs from "@/components/AdministrativeSettings/Tabs";
 import Modal from "@/components/Inputs/Modal";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { ADMINISTRATIVE_SETTINGS } from "@/consts";
 
 export default {
 	name: "OrganizationServicePage",
@@ -35,10 +41,12 @@ export default {
 		OrganizationServicesList,
 		OrganizationServiceForm,
 		Modal,
+		Tabs,
 	},
 
 	data() {
 		return {
+			ADMINISTRATIVE_SETTINGS,
 			organizationServiceModal: {
 				isOpened: false,
 				isEditing: false,

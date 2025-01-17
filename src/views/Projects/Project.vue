@@ -5,15 +5,15 @@
 		<div class="d-flex mb-4">
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Project Assistances') }}</h2>
 
-			<v-btn
+			<ButtonAction
 				v-if="beneficiariesCount"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE"
+				:to="{ name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD }"
+				:is-only-icon="false"
 				color="primary"
-				prepend-icon="plus"
-				class="text-none ml-0"
-				@click="onGoToAddAssistance"
-			>
-				{{ $t('New') }}
-			</v-btn>
+				icon="plus"
+				label="New"
+			/>
 		</div>
 
 		<Modal
@@ -32,6 +32,7 @@
 			:header="assistanceModal.title"
 		>
 			<AssistanceForm
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_CORRECTIONS"
 				:project="project"
 				:form-model="assistanceModel"
 				:assistance="assistance"
@@ -58,17 +59,20 @@ import AssistancesService from "@/services/AssistancesService";
 import ProjectService from "@/services/ProjectService";
 import AssistanceForm from "@/components/Assistance/AssistanceForm";
 import AssistanceMoveForm from "@/components/Assistance/AssistanceMoveForm";
+import ButtonAction from "@/components/ButtonAction";
 import Modal from "@/components/Inputs/Modal";
 import AssistancesList from "@/components/Projects/AssistancesList";
 import ProjectSummary from "@/components/Projects/ProjectSummary";
 import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
+import { ROUTER } from "@/consts";
 
 export default {
 	name: "Project",
 
 	components: {
+		ButtonAction,
 		AssistanceForm,
 		AssistanceMoveForm,
 		AssistancesList,
@@ -80,6 +84,7 @@ export default {
 
 	data() {
 		return {
+			ROUTER,
 			project: null,
 			projects: [],
 			assistance: {},
@@ -121,13 +126,6 @@ export default {
 			this.projectLoaded = true;
 			this.project = project;
 			this.getListOfProjects();
-		},
-
-		onGoToAddAssistance() {
-			this.$router.push({
-				name: "AddAssistance",
-				params: { projectId: this.$route.params.projectId },
-			});
 		},
 
 		async getListOfProjects() {

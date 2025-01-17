@@ -25,21 +25,24 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
-				:disabled="!bookletsSelects"
+				:required-permissions="PERMISSIONS.VOUCHERS"
+				:disabled="!isBookletsSelected"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
-				:disabled="!bookletsSelects"
+				:required-permissions="PERMISSIONS.VOUCHERS"
+				:disabled="!isBookletsSelected"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
-				:disabled="!row.deletable || !bookletsSelects"
+				:required-permissions="PERMISSIONS.VOUCHERS"
+				:disabled="!row.deletable || !isBookletsSelected"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"
@@ -52,8 +55,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.exportPrintVouchers"
-				:disabled="!bookletsSelects"
+				:disabled="!isBookletsSelected"
 				icon="print"
 				tooltip-text="Print"
 				@actionConfirmed="onPrintBooklets(row)"
@@ -62,6 +64,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.VOUCHERS"
 				:disabled="isExportDisabled"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -80,16 +83,16 @@
 				{{ $t('Advanced Search') }}
 			</v-btn>
 
-			<v-btn
-				v-show="!bookletsSelects"
-				:loading="printSelectionLoading"
+			<ButtonAction
+				v-if="!isBookletsSelected"
+				:required-permissions="PERMISSIONS.VOUCHERS"
+				:is-loading="printSelectionLoading"
+				:is-only-icon="false"
 				color="primary"
-				variant="elevated"
-				class="ml-4 text-none"
-				@click="onPrintSelection"
-			>
-				{{ $t('Print Selection') }}
-			</v-btn>
+				label="Print Selection"
+				class="ml-4"
+				@actionConfirmed="onPrintSelection"
+			/>
 		</template>
 
 		<template v-slot:advancedControls>
@@ -118,7 +121,6 @@ import VouchersFilter from "@/components/Vouchers/VouchersFilter";
 import grid from "@/mixins/grid";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
-import voucherHelper from "@/mixins/voucherHelper";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile, getBookletStatus } from "@/utils/helpers";
@@ -137,7 +139,11 @@ export default {
 		DataGrid,
 	},
 
-	mixins: [permissions, grid, voucherHelper, urlFiltersHelper],
+	mixins: [
+		permissions,
+		grid,
+		urlFiltersHelper,
+	],
 
 	data() {
 		return {
@@ -148,7 +154,7 @@ export default {
 			printLoading: false,
 			isLoadingList: false,
 			printSelectionLoading: false,
-			bookletsSelects: true,
+			isBookletsSelected: true,
 			exportControl: {
 				loading: false,
 				location: "vouchers",
@@ -182,8 +188,7 @@ export default {
 
 	computed: {
 		isExportDisabled() {
-			return !this.userCan.exportPrintVouchers || !this.table.data.length
-				|| !this.table.dataUpdated;
+			return !this.table.data.length || !this.table.dataUpdated;
 		},
 	},
 
@@ -222,7 +227,7 @@ export default {
 				this.table.dataUpdated = true;
 
 				if (totalCount > 0) {
-					await this.prepareDataForTable(data);
+					this.prepareDataForTable(data);
 				}
 			} catch (e) {
 				Notification(`${this.$t("Vouchers")} ${e.message || e}`, "error");
@@ -230,6 +235,19 @@ export default {
 				this.setGridFiltersToUrl("vouchers", false);
 				this.isLoadingList = false;
 			}
+		},
+
+		prepareDataForTable(data) {
+			data.forEach((item, key) => {
+				this.table.data[key] = {
+					...item,
+					status: this.getStatus(item.status),
+					project: item.project.name,
+					totalValue: item.individualValue,
+					beneficiary: item.beneficiary?.localGivenName || this.$t("None"),
+					assistance: item.assistance?.name || this.$t("None"),
+				};
+			});
 		},
 
 		onAdvancedSearchToggle() {
@@ -247,7 +265,7 @@ export default {
 
 					let ids = null;
 
-					if (!this.bookletsSelects) {
+					if (!this.isBookletsSelected) {
 						ids = this.table.checkedRows.map((item) => item.id);
 					}
 
@@ -272,7 +290,7 @@ export default {
 
 		onRowsChecked(rows) {
 			this.table.checkedRows = rows;
-			this.bookletsSelects = !rows?.length;
+			this.isBookletsSelected = rows?.length > 0;
 		},
 
 		async onPrintSelection() {

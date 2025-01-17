@@ -132,7 +132,8 @@
 
 		<div class="d-flex ga-2 flex-wrap mt-4">
 			<v-btn
-				v-if="canCancelImport"
+				v-if="isCancelImportVisible"
+				:disabled="!isAllProjectsAccessibleForThisImport"
 				color="warning"
 				prepend-icon="ban"
 				class="text-none"
@@ -142,8 +143,9 @@
 			</v-btn>
 
 			<v-btn
-				v-if="finalisationStepActive"
+				v-if="isFinalisationStepActive"
 				:loading="changeStateButtonLoading"
+				:disabled="isApproveAndSaveButtonDisabled"
 				color="primary"
 				prepend-icon="save"
 				class="text-none"
@@ -153,8 +155,8 @@
 			</v-btn>
 
 			<v-btn
-				v-if="finishedImport"
-				:to="{ name: 'Imports' }"
+				v-if="isImportFinished"
+				:to="{ name: ROUTER.ROUTE_NAME.IMPORTS.ROOT }"
 				:active="false"
 				color="primary"
 				class="text-none"
@@ -163,8 +165,8 @@
 			</v-btn>
 
 			<v-btn
-				v-if="finishedImport"
-				:to="{ name: 'Households' }"
+				v-if="isImportFinished"
+				:to="{ name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT }"
 				color="primary"
 				class="text-none"
 			>
@@ -172,7 +174,7 @@
 			</v-btn>
 
 			<v-btn
-				v-if="finishedImport && notImportedRows.length"
+				v-if="isImportFinished && notImportedRows.length"
 				color="info"
 				class="text-none"
 				@click="isNotImportedRowsVisible = true"
@@ -209,7 +211,7 @@
 					<td>
 						<router-link
 							v-if="item.householdId"
-							:to="{ name: 'EditHousehold', params: { householdId: item.householdId } }"
+							:to="getHouseholdEditPage(item.householdId)"
 							class="table-link"
 							target="_blank"
 						>
@@ -284,10 +286,12 @@
 
 <script>
 import ImportService from "@/services/ImportService";
+import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import { normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { IMPORT } from "@/consts";
+import { IMPORT, ROUTER } from "@/consts";
 
 export default {
 	name: "FinalisationStep",
@@ -296,6 +300,8 @@ export default {
 		"changeImportState",
 		"canceledImport",
 	],
+
+	mixins: [routerHelper, permissions],
 
 	props: {
 		statistics: {
@@ -312,10 +318,16 @@ export default {
 			type: Boolean,
 			required: true,
 		},
+
+		isAllProjectsAccessibleForThisImport: {
+			type: Boolean,
+			default: true,
+		},
 	},
 
 	data() {
 		return {
+			ROUTER,
 			importStatistics: {},
 			changeStateButtonLoading: false,
 			notImportedRows: [],
@@ -324,7 +336,7 @@ export default {
 	},
 
 	computed: {
-		finalisationStepActive() {
+		isFinalisationStepActive() {
 			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
@@ -360,7 +372,7 @@ export default {
 			return this.importStatistics?.amountEntriesToImport || 0;
 		},
 
-		finishedImport() {
+		isImportFinished() {
 			if (!this.importStatus) return false;
 
 			return this.importStatus === IMPORT.STATUS.FINISH
@@ -369,12 +381,17 @@ export default {
 				|| this.importStatus === IMPORT.STATUS.AUTOMATICALLY_CANCELED;
 		},
 
-		canCancelImport() {
+		isCancelImportVisible() {
 			return this.importStatus
 				&& this.importStatus !== IMPORT.STATUS.FINISH
 				&& this.importStatus !== IMPORT.STATUS.CANCEL
 				&& this.importStatus !== IMPORT.STATUS.AUTOMATICALLY_CANCELED
 				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
+		},
+
+		isApproveAndSaveButtonDisabled() {
+			return !this.isAllProjectsAccessibleForThisImport
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_APPROVE_AND_SAVE);
 		},
 	},
 

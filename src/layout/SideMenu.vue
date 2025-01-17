@@ -10,7 +10,7 @@
 			<div>
 				<v-list>
 					<v-list-item prepend-avatar="" class="side-menu-logo">
-						<router-link :to="{ name: 'Home' }" class="hms-logo">
+						<router-link :to="{ name: ROUTER.ROUTE_NAME.HOME }" class="hms-logo">
 							<img src="@/assets/images/bms_logo.png" alt="">
 						</router-link>
 					</v-list-item>
@@ -28,6 +28,7 @@
 							:title="$t(sideBarItem.title)"
 							:href="sideBarItem.href"
 							:active="isRouteActive(sideBarItem)"
+							:disabled="!isUserPermissionGranted(sideBarItem.requiredPermissions)"
 							:data-cy="identifierBuilder(`${sideBarItem.title}-button`, false)"
 							target="_blank"
 							rel="noopener noreferrer"
@@ -60,8 +61,9 @@
 						<v-list-item
 							v-if="isItemWithoutSubItems(sideBarItem)"
 							:title="$t(sideBarItem.title)"
-							:to="sideBarItem.to"
+							:to="getRouteAddress(sideBarItem)"
 							:active="isRouteActive(sideBarItem)"
+							:disabled="!isUserPermissionGranted(sideBarItem.requiredPermissions)"
 							:data-cy="identifierBuilder(`${sideBarItem.title}-button`, false)"
 							exact
 						>
@@ -92,7 +94,8 @@
 								<v-list-item
 									v-bind="props"
 									:title="$t(sideBarItem.title)"
-									:to="sideBarItem.to"
+									:to="getRouteAddress(sideBarItem)"
+									:disabled="isListGroupItemDisabled(sideBarItem)"
 								>
 									<template v-slot:prepend>
 										<v-tooltip
@@ -114,9 +117,9 @@
 
 							<template v-for="(subItem, index) in sideBarItem.subItems" :key="index">
 								<v-list-item
-									v-if="sideMenuItemsVisibility(subItem)"
 									:title="$t(subItem.title)"
-									:to="subItem.to"
+									:to="getRouteAddress(subItem)"
+									:disabled="isListItemDisabled(subItem)"
 									:data-cy="identifierBuilder(`${subItem.title}-button`, false)"
 								>
 									<template v-slot:prepend>
@@ -158,6 +161,7 @@
 import { mapState } from "vuex";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
+import { PERMISSIONS, ROUTER } from "@/consts";
 import gitInfo from "@/gitInfo";
 
 export default {
@@ -167,89 +171,115 @@ export default {
 
 	data() {
 		return {
+			ROUTER,
 			dataCy: "side-menu",
 			sideBarItems: [
 				{
 					title: "Home",
 					prependIcon: "home",
-					to: { name: "Home" },
+					to: { name: ROUTER.ROUTE_NAME.HOME },
+					requiredPermissions: PERMISSIONS.HOME_PAGE,
 				},
 				{
 					title: "Projects",
 					prependIcon: "clipboard-list",
-					to: { name: "Projects" },
+					to: { name: ROUTER.ROUTE_NAME.PROJECTS.ROOT },
+					requiredPermissions: PERMISSIONS.PROJECT_MANAGEMENT,
 					alias: [
-						"Project",
-						"AddProject",
-						"ProjectDetail",
-						"ProjectEdit",
-						"AddAssistance",
-						"AssistanceEdit",
-						"AssistanceDetail",
+						ROUTER.ROUTE_NAME.PROJECTS.ROOT,
+						ROUTER.ROUTE_NAME.PROJECTS.ADD,
+						ROUTER.ROUTE_NAME.PROJECTS.EDIT,
+						ROUTER.ROUTE_NAME.PROJECTS.DETAIL,
+						ROUTER.ROUTE_NAME.ASSISTANCES.ROOT,
+						ROUTER.ROUTE_NAME.ASSISTANCES.ADD,
+						ROUTER.ROUTE_NAME.ASSISTANCES.EDIT,
+						ROUTER.ROUTE_NAME.ASSISTANCES.DETAIL,
+						ROUTER.ROUTE_NAME.ASSISTANCES.CREATION_PROGRESS,
 					],
 				},
 				{
 					title: "Beneficiaries",
 					prependIcon: "user-friends",
+					requiredPermissions: [
+						PERMISSIONS.HOUSEHOLD,
+						PERMISSIONS.INSTITUTION,
+						PERMISSIONS.VENDOR,
+					],
+					isAtLeastOnePermissionGranted: true,
 					subItems: [
 						{
 							title: "Households",
 							prependIcon: "home",
-							to: { name: "Households" },
+							to: { name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT },
+							requiredPermissions: PERMISSIONS.HOUSEHOLD,
 						},
 						{
 							title: "Institutions",
 							prependIcon: "building",
-							to: { name: "Institutions" },
+							to: { name: ROUTER.ROUTE_NAME.INSTITUTIONS.ROOT },
+							requiredPermissions: PERMISSIONS.INSTITUTION,
 						},
 						{
 							title: "Vendors",
 							prependIcon: "store",
-							to: { name: "Vendors" },
+							to: { name: ROUTER.ROUTE_NAME.VENDORS },
+							requiredPermissions: PERMISSIONS.VENDOR,
 						},
 					],
 				},
 				{
 					title: "Imports",
 					prependIcon: "file-import",
-					to: { name: "Imports" },
+					to: { name: ROUTER.ROUTE_NAME.IMPORTS.ROOT },
+					requiredPermissions: PERMISSIONS.IMPORT,
 				},
 				{
 					title: "Reports",
 					prependIcon: "chart-line",
 					href: "https://app.powerbi.com/reportEmbed?reportId=d5a81245-560f-4114-bd05-525ddf55ceea&appId=92536ae3-49e4-4156-92a1-ba70dee78455&autoAuth=true&ctid=c8342453-69ce-4b7b-a3e2-cda219f2985e&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLWV1cm9wZS1ub3J0aC1iLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0LyJ9",
 					tooltipIcon: "external-link-alt",
+					requiredPermissions: PERMISSIONS.REPORTS,
 				},
 				{
 					title: "Vouchers",
 					prependIcon: "ticket-alt",
-					to: { name: "Vouchers" },
+					to: { name: ROUTER.ROUTE_NAME.VOUCHERS },
+					requiredPermissions: PERMISSIONS.VOUCHERS,
 				},
 				{
 					title: "Country Settings",
 					prependIcon: "globe-africa",
+					requiredPermissions: PERMISSIONS.COUNTRY_SETTINGS,
 					subItems: [
 						{
 							title: "Products",
 							prependIcon: "shopping-cart",
-							to: { name: "Products" },
+							to: { name: ROUTER.ROUTE_NAME.PRODUCTS },
+							requiredPermissions: PERMISSIONS.COUNTRY_SETTINGS_PRODUCT_ITEMS,
 						},
 						{
 							title: "Country specifics",
+							requiredPermissions: [
+								PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD,
+								PERMISSIONS.COUNTRY_SETTINGS_SCORING,
+							],
+							isAtLeastOnePermissionGranted: true,
 							prependIcon: "map-marker-alt",
-							to: { name: "CountrySpecific" },
+							to: { name: ROUTER.ROUTE_NAME.COUNTRY_SPECIFICS },
 						},
 					],
 				},
 				{
 					title: "Administrative Settings",
 					prependIcon: "wrench",
-					to: { name: "Administrative Settings" },
+					to: { name: ROUTER.ROUTE_NAME.ADMINISTRATIVE_SETTINGS },
+					requiredPermissions: PERMISSIONS.ADMINISTRATIVE_SETTING,
 				},
 				{
 					title: "Transactions",
 					prependIcon: "exchange-alt",
-					to: { name: "TransactionsAssistances" },
+					to: { name: ROUTER.ROUTE_NAME.TRANSACTIONS.ASSISTANCES },
+					requiredPermissions: PERMISSIONS.TRANSACTIONS,
 				},
 			],
 			gitInfo,
@@ -288,12 +318,6 @@ export default {
 		asideBackgroundClass() {
 			return `${import.meta.env.VITE_APP_ENV}-aside-style`;
 		},
-
-		isCountrySettingsVisible() {
-			return this.userCan.viewProducts
-				|| this.userCan.countrySettings
-				|| this.userCan.viewScoring;
-		},
 	},
 
 	created() {
@@ -324,34 +348,34 @@ export default {
 		},
 
 		isItemWithoutSubItems(sideBarItem) {
-			return !sideBarItem.subItems?.length
-				&& this.sideMenuItemsVisibility(sideBarItem)
-				&& !sideBarItem?.href;
+			return !sideBarItem.subItems?.length && !sideBarItem?.href;
 		},
 
 		isItemWithSubItems(sideBarItem) {
-			return sideBarItem.subItems?.length
-				&& this.sideMenuItemsVisibility(sideBarItem)
-				&& !sideBarItem?.href;
+			return sideBarItem.subItems?.length && !sideBarItem?.href;
 		},
 
-		sideMenuItemsVisibility({ title }) {
-			switch (title) {
-				case "Vendors":
-					return this.userCan.viewVendors;
-				case "Vouchers":
-					return this.userCan.viewVouchers;
-				case "Country Settings":
-					return this.isCountrySettingsVisible;
-				case "Products":
-					return this.userCan.viewProducts;
-				case "Country specifics":
-					return this.userCan.countrySettings || this.userCan.viewScoring;
-				case "Administrative Settings":
-					return this.userCan.adminSettings;
-				default:
-					return true;
-			}
+		getRouteAddress(sideBarItem) {
+			return this.isUserPermissionGranted(
+				sideBarItem.requiredPermissions,
+				sideBarItem.isAtLeastOnePermissionGranted,
+			)
+				? sideBarItem.to
+				: null;
+		},
+
+		isListGroupItemDisabled(sideBarItem) {
+			return !this.isUserPermissionGranted(
+				sideBarItem.requiredPermissions,
+				sideBarItem.isAtLeastOnePermissionGranted,
+			);
+		},
+
+		isListItemDisabled(subItem) {
+			return !this.isUserPermissionGranted(
+				subItem.requiredPermissions,
+				subItem.isAtLeastOnePermissionGranted,
+			);
 		},
 	},
 };

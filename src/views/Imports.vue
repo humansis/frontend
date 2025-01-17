@@ -20,6 +20,7 @@
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Imports') }}</h2>
 
 			<ExportControl
+				:required-permissions="PERMISSIONS.IMPORT"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.isLoading"
@@ -28,14 +29,14 @@
 				@export="onDownloadTemplate"
 			/>
 
-			<v-btn
+			<ButtonAction
+				:required-permissions="PERMISSIONS.IMPORT_MANAGE"
+				:is-only-icon="false"
 				color="primary"
-				prepend-icon="plus"
-				class="text-none ml-0"
-				@click="onAddNewImport"
-			>
-				{{ $t('New Import') }}
-			</v-btn>
+				icon="plus"
+				label="New Import"
+				@actionConfirmed="onAddNewImport"
+			/>
 
 			<v-btn
 				color="primary"
@@ -60,10 +61,13 @@
 <script>
 import ImportService from "@/services/ImportService";
 import ProjectService from "@/services/ProjectService";
+import ButtonAction from "@/components/ButtonAction";
 import ImportForm from "@/components/Imports/ImportForm";
 import ImportsList from "@/components/Imports/ImportsList";
 import ExportControl from "@/components/Inputs/ExportControl";
 import Modal from "@/components/Inputs/Modal";
+import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
@@ -74,13 +78,18 @@ export default {
 	name: "Imports",
 
 	components: {
+		ButtonAction,
 		ImportsList,
 		Modal,
 		ImportForm,
 		ExportControl,
 	},
 
-	mixins: [vuetifyHelper],
+	mixins: [
+		vuetifyHelper,
+		permissions,
+		routerHelper,
+	],
 
 	data() {
 		return {
@@ -217,7 +226,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await ProjectService.getListOfProjects({});
+				} = await ProjectService.getShortListOfProjects();
 
 				checkResponseStatus(status, message);
 
@@ -244,7 +253,7 @@ export default {
 				Notification(this.$t("Import Successfully Created"), "success");
 				await this.$refs.importList.fetchData();
 
-				this.$router.push({ name: "Import", params: { importId: data.id } });
+				this.$router.push(this.getImportPage(data.id));
 			} catch (e) {
 				Notification(`${this.$t("Import")}: ${e.message || e}`, "error");
 			} finally {

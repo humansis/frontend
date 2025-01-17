@@ -5,7 +5,7 @@ import ProjectService from "@/services/ProjectService";
 import { getArrayOfCodeListByKey } from "@/utils/codeList";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { PHONE } from "@/consts";
+import { PHONE, ROUTER } from "@/consts";
 
 export default {
 	data() {
@@ -172,7 +172,7 @@ export default {
 				checkResponseStatus(status, message);
 
 				Notification(this.$t("Institution Successfully Created"), "success");
-				await this.$router.push({ name: "Institutions" });
+				await this.$router.push({ name: ROUTER.ROUTE_NAME.INSTITUTIONS.ROOT });
 			} catch (e) {
 				Notification(`${this.$t("Create Institution")}: ${e.message || e}`, "error");
 			}
@@ -191,7 +191,7 @@ export default {
 				checkResponseStatus(status, message);
 
 				Notification(this.$t("Institution Successfully Updated"), "success");
-				await this.$router.push({ name: "Institutions" });
+				await this.$router.push({ name: ROUTER.ROUTE_NAME.INSTITUTIONS.ROOT });
 			} catch (e) {
 				Notification(`${this.$t("Update Institution")}: ${e.message || e}`, "error");
 			}
@@ -302,7 +302,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await ProjectService.getListOfProjects({});
+				} = await ProjectService.getShortListOfProjects();
 
 				checkResponseStatus(status, message);
 

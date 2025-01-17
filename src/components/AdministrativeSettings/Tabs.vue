@@ -1,0 +1,104 @@
+<template>
+	<h2 class="text-center mt-4" data-cy="page-title-text">{{ $t('Administrative Settings') }}</h2>
+
+	<v-tabs
+		v-model="selectedTab"
+		color="primary"
+		align-tabs="start"
+		class="mt-5 mb-5"
+		@update:modelValue="onRedirectToTab"
+	>
+		<v-tab
+			v-for="tab in tabs"
+			:key="tab.value"
+			:value="tab.value"
+			:disabled="!isUserPermissionGranted(tab.requiredPermissions)"
+			class="text-none"
+		>
+			<v-icon :icon="tab.icon" class="mr-2" />
+
+			{{ $t(tab.title) }}
+		</v-tab>
+	</v-tabs>
+</template>
+
+<script>
+import permissions from "@/mixins/permissions";
+import { ADMINISTRATIVE_SETTINGS, ROUTER } from "@/consts";
+
+export default {
+	mixins: [permissions],
+
+	props: {
+		preSelectedTabValue: {
+			type: String,
+			required: true,
+		},
+	},
+
+	data() {
+		return {
+			selectedTab: "",
+			tabs: [],
+		};
+	},
+
+	mounted() {
+		this.selectedTab = this.preSelectedTabValue;
+		this.tabs = [
+			{
+				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.USERS,
+				title: "Users",
+				icon: "user",
+				pageName: ROUTER.ROUTE_NAME.USERS.ROOT,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_USER,
+			},
+			{
+				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.DONORS,
+				title: "Donors",
+				icon: "dollar-sign",
+				pageName: ROUTER.ROUTE_NAME.DONORS,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR,
+			},
+			{
+				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.MY_ORGANIZATIONS,
+				title: "My Organizations",
+				icon: "child",
+				pageName: ROUTER.ROUTE_NAME.MY_ORGANIZATIONS,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION,
+			},
+			{
+				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.ORGANIZATION_SERVICES,
+				title: "Organization Services",
+				icon: "th-large",
+				pageName: ROUTER.ROUTE_NAME.ORGANIZATION_SERVICES,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION_SERVICES,
+			},
+			{
+				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.SYNC,
+				title: "Sync",
+				icon: "th-large",
+				pageName: ROUTER.ROUTE_NAME.SYNC,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_SYNC,
+			},
+			{
+				value: ADMINISTRATIVE_SETTINGS.TABS_VALUE.ROLES,
+				title: "Roles",
+				icon: "user-shield",
+				pageName: ROUTER.ROUTE_NAME.ROLES.ROOT,
+				requiredPermissions: this.PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT,
+			},
+		];
+	},
+
+	methods: {
+		onRedirectToTab(selectedTab) {
+			const { pageName } = this.tabs.find((tab) => tab.value === selectedTab);
+
+			if (pageName) {
+				this.$router.push({ name: pageName });
+			}
+		},
+	},
+};
+</script>

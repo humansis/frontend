@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:is-row-click-disabled="!isUserGrantedToGoToProject"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -13,10 +14,11 @@
 		@update:sortBy="onSort"
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.PROJECTS)"
-		@rowClicked="onGoToDetail"
+		@rowClicked="(row) => onGoToProject(row.item.id)"
 	>
 		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
@@ -24,7 +26,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.editProject"
+				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT_MANAGE"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
@@ -32,7 +34,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.deleteProject"
+				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT_MANAGE"
 				:disabled="!row.deletable"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
@@ -49,6 +51,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.PROJECT_MANAGEMENT_EXPORT"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -70,6 +73,7 @@ import baseHelper from "@/mixins/baseHelper";
 import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
@@ -90,6 +94,7 @@ export default {
 		grid,
 		baseHelper,
 		identifierBuilder,
+		routerHelper,
 	],
 
 	data() {
@@ -127,10 +132,10 @@ export default {
 
 	computed: {
 		...mapState(["availableProjects"]),
-	},
 
-	watch: {
-		$route: "fetchData",
+		isUserGrantedToGoToProject() {
+			return this.isUserPermissionGranted(this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT);
+		},
 	},
 
 	created() {
@@ -187,10 +192,8 @@ export default {
 			return item.donors.map((donor) => donor.shortname).join(", ");
 		},
 
-		onGoToDetail({ item: { id } }) {
-			if (this.userCan.viewProject) {
-				this.$router.push({ name: "Project", params: { projectId: id } });
-			}
+		onGoToProject(projectId) {
+			this.$router.push(this.getProjectPage(projectId));
 		},
 
 		async onExportProjects(exportType, format) {

@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory, RouterView } from "vue-router";
 import { getCookie } from "@/utils/cookie";
+import { isUserPermissionGranted } from "@/utils/permissions";
 import { Notification } from "@/utils/UI";
-import { ROLE } from "@/consts";
+import { PERMISSIONS, ROLE, ROUTER } from "@/consts";
 import i18n from "@/plugins/i18n";
 import CONST from "@/store/const";
 import getters from "@/store/getters";
@@ -15,12 +16,12 @@ const { global: { t } } = i18n;
 const routes = [
 	{
 		path: "/login",
-		name: "Login",
+		name: ROUTER.ROUTE_NAME.LOGIN,
 		component: () => import(/* webpackChunkName: "Login" */ "@/views/Login"),
 	},
 	{
 		path: "/account-created",
-		name: "AccountCreated",
+		name: ROUTER.ROUTE_NAME.ACCOUNT_CREATED,
 		component: () => import(/* webpackChunkName: "AccountCreated" */ "@/views/AccountCreated"),
 		meta: {
 			permissions: [],
@@ -29,36 +30,44 @@ const routes = [
 	},
 	{
 		path: "/logout",
-		name: "Logout",
+		name: ROUTER.ROUTE_NAME.LOGOUT,
 		beforeEnter: (to, from, next) => {
 			store.dispatch("logoutUser");
-			if (from.name !== "Login" && to.query?.notification === "login" && singleNotification) {
+
+			if (from.name !== ROUTER.ROUTE_NAME.LOGIN && to.query?.notification === "login" && singleNotification) {
 				Notification(t("You need to login to continue"), "warning");
 				singleNotification = false;
 			}
 
-			return next({ name: "Login", query: to.query });
+			return next({ name: ROUTER.ROUTE_NAME.LOGIN, query: to.query });
 		},
 	},
 	{
 		path: "/no-permission",
-		name: "NoPermission",
+		name: ROUTER.ROUTE_NAME.NO_PERMISSION,
 		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoPermission"),
 	},
 	{
+		path: "/no-country-assigned",
+		name: ROUTER.ROUTE_NAME.NO_COUNTRY_ASSIGNED,
+		component: () => import(/* webpackChunkName: "NoPermission" */ "@/views/NoCountryAssigned"),
+	},
+	{
 		path: "/not-found",
-		name: "NotFound",
+		name: ROUTER.ROUTE_NAME.NOT_FOUND,
 		component: () => import(/* webpackChunkName: "NotFound" */ "@/views/NotFound"),
 	},
 	{
 		path: "/",
-		name: "Dashboard",
+		name: ROUTER.ROUTE_NAME.ROOT,
 		redirect: () => {
 			const storedCountryCode = getters.getCountryFromVuexStorage()?.iso3
 				|| getters.getCountriesFromVuexStorage()?.[0]?.iso3;
 
 			return {
-				name: storedCountryCode ? "Projects" : "Login",
+				name: storedCountryCode
+					? ROUTER.ROUTE_NAME.PROJECTS.ROOT
+					: ROUTER.ROUTE_NAME.LOGIN,
 				...(storedCountryCode && {
 					params: {
 						countryCode: storedCountryCode,
@@ -93,7 +102,7 @@ const routes = [
 					.find((country) => country.iso3 === to.params.countryCode);
 
 				if (!newCountry) {
-					return next({ name: "NotFound" });
+					return next({ name: ROUTER.ROUTE_NAME.NOT_FOUND });
 				}
 
 				store.commit(CONST.STORE_COUNTRY, newCountry);
@@ -104,10 +113,10 @@ const routes = [
 		children: [
 			{
 				path: "",
-				name: "Home",
+				name: ROUTER.ROUTE_NAME.HOME,
 				component: () => import(/* webpackChunkName: "Home" */ "@/views/Home"),
 				meta: {
-					permissions: [],
+					requiredPermissions: [PERMISSIONS.HOME_PAGE],
 					breadcrumb: "Home",
 					description: "This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones.",
 				},
@@ -121,40 +130,40 @@ const routes = [
 				children: [
 					{
 						path: "",
-						name: "Projects",
+						name: ROUTER.ROUTE_NAME.PROJECTS.ROOT,
 						component: () => import("@/views/Projects/Projects"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.PROJECT_MANAGEMENT],
 							description: "This page is where you can see all the country`s projects (only thoses that you have the right to see).",
 						},
 					},
 					{
 						path: "add-project",
-						name: "AddProject",
+						name: ROUTER.ROUTE_NAME.PROJECTS.ADD,
 						component: () => import(/* webpackChunkName: "AddProject" */ "@/views/Projects/ProjectManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.PROJECT_MANAGEMENT_MANAGE],
 							breadcrumb: "Add Project",
 							description: "This page is a form to add a new project to a humansis.",
 						},
 					},
 					{
 						path: "project-detail/:projectId",
-						name: "ProjectDetail",
+						name: ROUTER.ROUTE_NAME.PROJECTS.DETAIL,
 						component: () => import(/* webpackChunkName: "ProjectDetail" */ "@/views/Projects/ProjectManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.PROJECT_MANAGEMENT],
 							breadcrumb: "Project detail",
 							description: "This page is a form to show detail of a project in humansis.",
 						},
 					},
 					{
 						path: "project-edit/:projectId",
-						name: "ProjectEdit",
+						name: ROUTER.ROUTE_NAME.PROJECTS.EDIT,
 						component: () => import(/* webpackChunkName: "ProjectEdit" */ "@/views/Projects/ProjectManager"),
 						meta: {
-							permissions: [],
-							breadcrumb: "Project detail",
+							requiredPermissions: [PERMISSIONS.PROJECT_MANAGEMENT_MANAGE],
+							breadcrumb: "Project edit",
 							description: "This page is a form to edit a project in humansis.",
 						},
 					},
@@ -167,28 +176,29 @@ const routes = [
 						children: [
 							{
 								path: "",
-								name: "Project",
+								name: ROUTER.ROUTE_NAME.ASSISTANCES.ROOT,
 								component: () => import(/* webpackChunkName: "Project" */ "@/views/Projects/Project"),
 								meta: {
-									permissions: [],
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT],
 									description: "This page is where you can see summary of project and there assistance. If you have the right, you can add a new assistance with the project's households, manage assistance and transactions.",
 								},
 							},
 							{
 								path: "assistance/:assistanceId",
-								name: "AssistanceEdit",
+								name: ROUTER.ROUTE_NAME.ASSISTANCES.EDIT,
 								component: () => import(/* webpackChunkName: "AssistanceEdit" */ "@/views/Assistance/AssistanceEdit"),
 								meta: {
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Edit Assistance",
 									description: "",
 								},
 							},
 							{
 								path: "add-assistance",
-								name: "AddAssistance",
+								name: ROUTER.ROUTE_NAME.ASSISTANCES.ADD,
 								component: () => import(/* webpackChunkName: "AddAssistance" */ "@/views/Assistance/AddAssistance"),
 								meta: {
-									permissions: ["addDistribution"],
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Add Assistance",
 									description: "This page is a form to add a new assistance to a project. You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific amount of commodities to be distributed.",
 									parent: "Assistance",
@@ -196,18 +206,20 @@ const routes = [
 							},
 							{
 								path: "assistance/detail/:assistanceId",
-								name: "AssistanceDetail",
+								name: ROUTER.ROUTE_NAME.ASSISTANCES.DETAIL,
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/Assistance/AssistanceDetail"),
 								meta: {
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Assistance Detail",
 									description: "",
 								},
 							},
 							{
 								path: "assistance/assistance-creation-progress/:assistanceId",
-								name: "AssistanceCreationProgress",
+								name: ROUTER.ROUTE_NAME.ASSISTANCES.CREATION_PROGRESS,
 								component: () => import(/* webpackChunkName: "AssistanceDetail" */ "@/views/Assistance/AssistanceCreationProgress"),
 								meta: {
+									requiredPermissions: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
 									breadcrumb: "Assistance Creation Progress",
 									description: "This page shows the progress of creating the specific assistance.",
 								},
@@ -226,10 +238,10 @@ const routes = [
 				children: [
 					{
 						path: "",
-						name: "Imports",
+						name: ROUTER.ROUTE_NAME.IMPORTS.ROOT,
 						component: () => import(/* webpackChunkName: "Imports" */ "@/views/Imports"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.IMPORT],
 						},
 					},
 					{
@@ -238,10 +250,9 @@ const routes = [
 						children: [
 							{
 								path: "",
-								name: "Import",
+								name: ROUTER.ROUTE_NAME.IMPORTS.NEW,
 								component: () => import(/* webpackChunkName: "Import" */ "@/views/Import"),
 								meta: {
-									permissions: [],
 									description: "",
 								},
 							},
@@ -251,10 +262,9 @@ const routes = [
 			},
 			{
 				path: "beneficiaries",
-				redirect: { name: "Households" },
+				redirect: { name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT },
 				component: RouterView,
 				meta: {
-					permissions: [],
 					breadcrumb: "Beneficiaries",
 				},
 				children: [
@@ -262,44 +272,44 @@ const routes = [
 						path: "households",
 						component: RouterView,
 						meta: {
-							// breadcrumb: "Households",
-							// parent: "Beneficiaries",
+							requiredPermissions: [PERMISSIONS.HOUSEHOLD],
+							breadcrumb: "Households",
 						},
 						children: [
 							{
 								path: "",
-								name: "Households",
+								name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ROOT,
 								component: () => import(/* webpackChunkName: "Households" */ "@/views/Beneficiaries/Households"),
 								meta: {
-									permissions: [],
+									requiredPermissions: [PERMISSIONS.HOUSEHOLD],
 									description: "This page is where you can see all the households in the country. If you have the right, you can add new households with the '+' button, manage households and filter/research in the list.",
 								},
 							},
 							{
 								path: "add",
-								name: "AddHousehold",
+								name: ROUTER.ROUTE_NAME.HOUSEHOLDS.ADD,
 								component: () => import(/* webpackChunkName: "AddHousehold" */ "@/views/Beneficiaries/AddHousehold"),
 								meta: {
-									permissions: ["addBeneficiary"],
+									requiredPermissions: [PERMISSIONS.HOUSEHOLD_CREATE],
 									breadcrumb: "Add Household",
 									description: "This page is a form to add a new household to the platform.",
 								},
 							},
 							{
 								path: "edit/:householdId",
-								name: "EditHousehold",
+								name: ROUTER.ROUTE_NAME.HOUSEHOLDS.EDIT,
 								component: () => import(/* webpackChunkName: "EditHousehold" */ "@/views/Beneficiaries/EditHousehold"),
 								meta: {
-									permissions: ["viewBeneficiary", "editBeneficiary"],
+									requiredPermissions: [PERMISSIONS.HOUSEHOLD_EDIT],
 									breadcrumb: "Edit Household",
 								},
 							},
 							{
 								path: "summary/:householdId",
-								name: "HouseholdInformationSummary",
+								name: ROUTER.ROUTE_NAME.HOUSEHOLD_INFORMATION_SUMMARY,
 								component: () => import(/* webpackChunkName: "HouseholdInformationSummary" */ "@/views/Beneficiaries/HouseholdInformationSummary"),
 								meta: {
-									permissions: ["viewBeneficiary"],
+									requiredPermissions: [PERMISSIONS.HOUSEHOLD_VIEW],
 									breadcrumb: "Household Information Summary",
 								},
 							},
@@ -316,39 +326,39 @@ const routes = [
 				children: [
 					{
 						path: "",
-						name: "Institutions",
+						name: ROUTER.ROUTE_NAME.INSTITUTIONS.ROOT,
 						component: () => import(/* webpackChunkName: "Institutions" */ "@/views/Beneficiaries/Institutions"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.INSTITUTION],
 							description: "",
 						},
 					},
 					{
 						path: "add-institution",
-						name: "AddInstitution",
+						name: ROUTER.ROUTE_NAME.INSTITUTIONS.ADD,
 						component: () => import(/* webpackChunkName: "AddInstitution" */ "@/views/Beneficiaries/InstitutionManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.INSTITUTION_CREATE],
 							breadcrumb: "Add Institution",
 							description: "This page is a form to add a new institution to a humansis.",
 						},
 					},
 					{
 						path: "institution-detail/:institutionId",
-						name: "InstitutionDetail",
+						name: ROUTER.ROUTE_NAME.INSTITUTIONS.DETAIL,
 						component: () => import(/* webpackChunkName: "InstitutionDetail" */ "@/views/Beneficiaries/InstitutionManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.INSTITUTION],
 							breadcrumb: "Institution Detail",
 							description: "This page is a form to show detail of a institution in humansis.",
 						},
 					},
 					{
 						path: "institution-edit/:institutionId",
-						name: "InstitutionEdit",
+						name: ROUTER.ROUTE_NAME.INSTITUTIONS.EDIT,
 						component: () => import(/* webpackChunkName: "InstitutionEdit" */ "@/views/Beneficiaries/InstitutionManager"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.INSTITUTION_EDIT],
 							breadcrumb: "Institution edit",
 							description: "This page is a form to edit a institution in humansis.",
 						},
@@ -357,42 +367,41 @@ const routes = [
 			},
 			{
 				path: "vendors",
-				name: "Vendors",
+				name: ROUTER.ROUTE_NAME.VENDORS,
 				component: () => import(/* webpackChunkName: "Vendors" */ "@/views/Beneficiaries/Vendors"),
 				meta: {
-					permissions: ["viewVendors"],
+					requiredPermissions: [PERMISSIONS.VENDOR],
 					breadcrumb: "Vendors",
 					description: "",
 				},
 			},
 			{
 				path: "vouchers",
-				name: "Vouchers",
+				name: ROUTER.ROUTE_NAME.VOUCHERS,
 				component: () => import(/* webpackChunkName: "Vouchers" */ "@/views/Vouchers"),
 				meta: {
-					permissions: ["viewVouchers"],
+					requiredPermissions: [PERMISSIONS.VOUCHERS],
 					breadcrumb: "Vouchers",
 					description: "This page is where you can create, edit, assign and print vouchers booklets",
 				},
 			},
 			{
 				path: "country-settings",
-				name: "Country Settings",
+				name: ROUTER.ROUTE_NAME.COUNTRY_SETTINGS,
 				component: RouterView,
 				children: [
 					{
 						path: "products",
-						name: "Products",
+						name: ROUTER.ROUTE_NAME.PRODUCTS,
 						component: () => import(/* webpackChunkName: "Products" */ "@/views/CountrySettings/Products"),
 						meta: {
-							permissions: ["viewProducts"],
 							breadcrumb: "Products",
 							description: "This page is where you'll be able to add a new project, country specific, third party connection, product, vendor, edit and delete them according to your rights.",
 						},
 					},
 					{
 						path: "country-specifics",
-						name: "CountrySpecific",
+						name: ROUTER.ROUTE_NAME.COUNTRY_SPECIFICS,
 						component: () => import(/* webpackChunkName: "CountrySpecific" */ "@/views/CountrySettings/CountrySpecific"),
 						meta: {
 							breadcrumb: "Country specifics",
@@ -403,39 +412,194 @@ const routes = [
 			},
 			{
 				path: "administrative-settings",
-				name: "Administrative Settings",
-				component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings"),
+				name: ROUTER.ROUTE_NAME.ADMINISTRATIVE_SETTINGS,
+				component: RouterView,
 				meta: {
-					permissions: ["adminSettings"],
 					breadcrumb: "Administrative Settings",
-					description: "This page is where you can manage users, donors and your organization's specifics",
 				},
+				redirect: () => {
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_USER)) {
+						return { name: ROUTER.ROUTE_NAME.USERS.ROOT };
+					}
+
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR)) {
+						return { name: ROUTER.ROUTE_NAME.DONORS };
+					}
+
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION)) {
+						return { name: ROUTER.ROUTE_NAME.MY_ORGANIZATIONS };
+					}
+
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION_SERVICES)) {
+						return { name: ROUTER.ROUTE_NAME.ORGANIZATION_SERVICES };
+					}
+
+					if (isUserPermissionGranted(PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT)) {
+						return { name: ROUTER.ROUTE_NAME.ROLES.ROOT };
+					}
+
+					return { name: ROUTER.ROUTE_NAME.SYNC };
+				},
+				children: [
+					{
+						path: "users",
+						component: RouterView,
+						children: [
+							{
+								path: "",
+								name: ROUTER.ROUTE_NAME.USERS.ROOT,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/Users"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER],
+									breadcrumb: "Users",
+									description: "This page is where you can manage users.",
+								},
+							},
+							{
+								path: "add-user",
+								name: ROUTER.ROUTE_NAME.USERS.ADD,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE],
+									breadcrumb: "Add user",
+									description: "This page is a form to add a new user to a humansis.",
+								},
+							},
+							{
+								path: "user-detail/:userId",
+								name: ROUTER.ROUTE_NAME.USERS.DETAIL,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER],
+									breadcrumb: "User detail",
+									description: "This page is a form to show detail of a user in humansis.",
+								},
+							},
+							{
+								path: "user-edit/:userId",
+								name: ROUTER.ROUTE_NAME.USERS.EDIT,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Users/UserManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE],
+									breadcrumb: "User edit",
+									description: "This page is a form to edit a user in humansis.",
+								},
+							},
+						],
+					},
+					{
+						path: "donors",
+						name: ROUTER.ROUTE_NAME.DONORS,
+						component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings/Donors"),
+						meta: {
+							requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR],
+							breadcrumb: "Donors",
+							description: "This page is where you can manage donors.",
+						},
+					},
+					{
+						path: "my-organizations",
+						name: ROUTER.ROUTE_NAME.MY_ORGANIZATIONS,
+						component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings/MyOrganizations"),
+						meta: {
+							requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION],
+							breadcrumb: "My Organizations",
+							description: "This page is where you can manage my organizations.",
+						},
+					},
+					{
+						path: "organization-services",
+						name: ROUTER.ROUTE_NAME.ORGANIZATION_SERVICES,
+						component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings/OrganizationServices"),
+						meta: {
+							requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ORGANIZATION_SERVICES],
+							breadcrumb: "Organization Services",
+							description: "This page is where you can manage organizations services.",
+						},
+					},
+					{
+						path: "sync",
+						name: ROUTER.ROUTE_NAME.SYNC,
+						component: () => import(/* webpackChunkName: "AdministrativeSetting" */ "@/views/AdministrativeSettings/Sync"),
+						meta: {
+							requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_SYNC],
+							breadcrumb: "Sync",
+							description: "This page is where you can manage sync.",
+						},
+					},
+					{
+						path: "roles",
+						component: RouterView,
+						children: [
+							{
+								path: "",
+								name: ROUTER.ROUTE_NAME.ROLES.ROOT,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/Roles"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Roles",
+									description: "This page is where you can manage roles.",
+								},
+							},
+							{
+								path: "add-role",
+								name: ROUTER.ROUTE_NAME.ROLES.ADD,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/RolesManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Add role",
+									description: "This page is a form to add a new role to a humansis.",
+								},
+							},
+							{
+								path: "role-detail/:roleId",
+								name: ROUTER.ROUTE_NAME.ROLES.DETAIL,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/RolesManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Role detail",
+									description: "This page is a form to show detail of a role in humansis.",
+								},
+							},
+							{
+								path: "role-edit/:roleId",
+								name: ROUTER.ROUTE_NAME.ROLES.EDIT,
+								component: () => import(/* webpackChunkName: "Institutions" */ "@/views/AdministrativeSettings/Roles/RolesManager"),
+								meta: {
+									requiredPermissions: [PERMISSIONS.ADMINISTRATIVE_SETTING_ROLE_MANAGEMENT],
+									breadcrumb: "Role edit",
+									description: "This page is a form to edit a role in humansis.",
+								},
+							},
+						],
+					},
+				],
 			},
 			{
 				path: "transactions",
-				name: "Transactions",
+				name: ROUTER.ROUTE_NAME.TRANSACTIONS.ROOT,
 				component: RouterView,
+				redirect: { name: ROUTER.ROUTE_NAME.TRANSACTIONS.ASSISTANCES },
 				meta: {
-					permissions: [],
 					description: "",
 				},
 				children: [
 					{
 						path: "assistances",
-						name: "TransactionsAssistances",
+						name: ROUTER.ROUTE_NAME.TRANSACTIONS.ASSISTANCES,
 						component: () => import(/* webpackChunkName: "Products" */ "@/views/Transactions/Distributions"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.TRANSACTIONS],
 							breadcrumb: "Assistances",
 							description: "",
 						},
 					},
 					{
 						path: "purchases",
-						name: "TransactionsPurchases",
+						name: ROUTER.ROUTE_NAME.TRANSACTIONS.PURCHASES,
 						component: () => import(/* webpackChunkName: "CountrySpecificOptions" */ "@/views/Transactions/SmartcardPurchasesItems"),
 						meta: {
-							permissions: [],
+							requiredPermissions: [PERMISSIONS.TRANSACTIONS],
 							breadcrumb: "Purchases",
 							description: "",
 						},
@@ -444,10 +608,9 @@ const routes = [
 			},
 			{
 				path: "profile",
-				name: "Profile",
+				name: ROUTER.ROUTE_NAME.PROFILE,
 				component: () => import(/* webpackChunkName: "Profile" */ "@/views/Profile"),
 				meta: {
-					permissions: [],
 					breadcrumb: "Profile",
 					description: "This page is where you can change your password",
 				},
@@ -456,7 +619,7 @@ const routes = [
 	},
 	{
 		path: "/:pathMatch(.*)*",
-		redirect: { name: "NotFound" },
+		redirect: { name: ROUTER.ROUTE_NAME.NOT_FOUND },
 	},
 	/* eslint-enable max-len */
 ];
@@ -474,33 +637,32 @@ router.beforeEach((to, from, next) => {
 
 	const token = getCookie("token");
 
-	if (to.name === "Login" && token) {
-		return next({ name: "Home" });
+	if (to.name === ROUTER.ROUTE_NAME.LOGIN && token) {
+		return next({ name: ROUTER.ROUTE_NAME.HOME });
 	}
 
-	if (to.name !== "Login" && to.name !== "Logout") {
+	if (to.name !== ROUTER.ROUTE_NAME.LOGIN && to.name !== ROUTER.ROUTE_NAME.LOGOUT) {
 		if (!token) {
-			return next({ name: "Login", query: { redirect: to.query.redirect || to.fullPath } });
+			return next({
+				name: ROUTER.ROUTE_NAME.LOGIN,
+				query: { redirect: to.query.redirect || to.fullPath },
+			});
 		}
 
-		const storedPermissions = getters.getPermissionsFromVuexStorage();
-		const { permissions } = to.meta;
-		const canGoNext = permissions?.length
-			? permissions.some((permission) => storedPermissions?.[permission])
-			: true;
+		const { requiredPermissions } = to.meta;
 
-		if (user?.roles[0] === ROLE.GUEST && to.name !== "AccountCreated") {
-			return next({ name: "AccountCreated" });
+		if (user?.roles[0] === ROLE.GUEST && to.name !== ROUTER.ROUTE_NAME.ACCOUNT_CREATED) {
+			return next({ name: ROUTER.ROUTE_NAME.ACCOUNT_CREATED });
 		}
 
-		if (to.name !== "NoPermission" && to.name !== "NotFound") {
+		if (to.name !== ROUTER.ROUTE_NAME.NO_PERMISSION && to.name !== ROUTER.ROUTE_NAME.NOT_FOUND) {
 			store.dispatch("showSideMenu", true);
 		} else {
 			store.dispatch("showSideMenu", false);
 		}
 
-		if (!canGoNext) {
-			return next({ name: "NoPermission" });
+		if (!!requiredPermissions && !isUserPermissionGranted(requiredPermissions)) {
+			return next({ name: ROUTER.ROUTE_NAME.NO_PERMISSION });
 		}
 	}
 

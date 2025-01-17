@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:is-row-click-disabled="!isUserGrantedToOpenUserDetail"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -17,20 +18,22 @@
 	>
 		<template v-slot:actions="{ row }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditUsers"
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditUsers"
+				v-if="row.role !== ROLE.ADMIN"
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER_DELETE"
 				:disabled="isLoggedUser(row.id)"
 				icon="trash"
 				tooltip-text="Delete"
@@ -46,6 +49,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_USER"
 				:disabled="!table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -59,7 +63,6 @@
 
 <script>
 import { mapState } from "vuex";
-import SystemService from "@/services/SystemService";
 import UsersService from "@/services/UsersService";
 import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
@@ -70,7 +73,7 @@ import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
 import { Notification } from "@/utils/UI";
-import { EXPORT, TABLE } from "@/consts";
+import { EXPORT, ROLE, TABLE } from "@/consts";
 
 export default {
 	name: "UsersList",
@@ -85,6 +88,7 @@ export default {
 
 	data() {
 		return {
+			ROLE,
 			TABLE,
 			isLoadingList: false,
 			exportControl: {
@@ -93,13 +97,14 @@ export default {
 				types: [EXPORT.USERS],
 				formats: [EXPORT.FORMAT_XLSX, EXPORT.FORMAT_CSV, EXPORT.FORMAT_ODS],
 			},
-			roles: [],
 			table: {
 				data: [],
 				columns: generateColumns([
 					{ key: "id", title: "ID" },
 					{ key: "email" },
-					{ key: "role", title: "Rights", sortKey: "rights" },
+					{ key: "role", sortable: false },
+					{ key: "dataAccess", sortable: false },
+					{ key: "projects", sortable: false },
 					{ key: "phonePrefix", title: "Prefix", sortKey: "prefix" },
 					{ key: "phoneNumber", sortKey: "phone" },
 					{ key: "actions", value: "actions", sortable: false },
@@ -115,10 +120,13 @@ export default {
 
 	computed: {
 		...mapState(["user"]),
+
+		isUserGrantedToOpenUserDetail() {
+			return this.isUserPermissionGranted(this.PERMISSIONS.ADMINISTRATIVE_SETTING_USER_CREATE);
+		},
 	},
 
 	async created() {
-		await this.fetchRoles();
 		await this.fetchData();
 	},
 
@@ -138,14 +146,17 @@ export default {
 					page: this.table.currentPage,
 					size: this.perPage,
 					search: this.table.searchPhrase,
-					filters: { showVendors: false },
 					sort,
 				});
 
 				checkResponseStatus(status, message);
 
+				this.table.data = [];
 				this.table.total = totalCount;
-				this.table.data = this.prepareDataForTable(data);
+
+				if (data.length > 0) {
+					this.prepareDataForTable(data);
+				}
 			} catch (e) {
 				Notification(`${this.$t("Users")}: ${e.message || e}`, "error");
 			} finally {
@@ -154,37 +165,18 @@ export default {
 		},
 
 		prepareDataForTable(data) {
-			const filledData = [];
 			data.forEach((item, key) => {
-				filledData[key] = item;
-				filledData[key].role = this.prepareRights(item.roles);
+				this.table.data[key] = {
+					...item,
+					role: item.role.name,
+					dataAccess: item.countries.map((country) => country.iso3).join(", "),
+					projects: item.projectIds.length,
+				};
 			});
-			return filledData;
-		},
-
-		prepareRights(rights) {
-			const role = this.roles.find((item) => item.code === rights[0]);
-			return role?.name;
 		},
 
 		isLoggedUser(id) {
 			return id === this.user?.userId;
-		},
-
-		async fetchRoles() {
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await SystemService.getRoles();
-
-				checkResponseStatus(status, message);
-
-				this.roles = data;
-			} catch (e) {
-				Notification(`${this.$t("Roles")}: ${e.message || e}`, "error");
-			}
 		},
 
 		async onExportUsers(exportType, format) {

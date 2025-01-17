@@ -17,7 +17,7 @@
 
 	<div class="d-flex justify-end">
 		<v-btn
-			v-if="userCan.addCustomField"
+			:disabled="!isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD_CREATE)"
 			:data-cy="identifierBuilder('custom-fields-new-button')"
 			class="text-none ml-0 mb-3"
 			color="primary"
@@ -165,7 +165,7 @@ export default {
 
 			this.customFieldModel = {
 				...COUNTRY_SETTINGS.CUSTOM_FIELDS.CUSTOM_FIELD_MODEL,
-				listOfValues: [{ value: "" }],
+				listOfValues: [{ value: "", isValueFromBackend: false }],
 			};
 		},
 

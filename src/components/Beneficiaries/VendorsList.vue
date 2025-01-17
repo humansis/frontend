@@ -18,10 +18,11 @@
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.VENDORS)"
 		@resetFilters="onResetVendorsFilters"
-		@rowClicked="(row) => onShowDetail(row.item)"
+		@rowClicked="(row) => onShowVendorDetail(row.item)"
 	>
 		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.VENDOR_SUMMARY"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-summary-button`)"
 				icon="hand-holding-usd"
 				tooltip-text="Show Vendor Summary"
@@ -29,6 +30,7 @@
 			/>
 
 			<ButtonAction
+				:required-permissions="PERMISSIONS.VENDOR_DETAIL"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
@@ -36,7 +38,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditVendors"
+				:required-permissions="PERMISSIONS.VENDOR_EDIT"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
@@ -44,7 +46,7 @@
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditVendors"
+				:required-permissions="PERMISSIONS.VENDOR_DELETE"
 				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
@@ -60,6 +62,7 @@
 
 		<template v-slot:tableControls>
 			<ExportControl
+				:required-permissions="PERMISSIONS.VENDOR_EXPORT"
 				:disabled="!table.dataUpdated || !table.data.length"
 				:available-export-formats="exportControl.formats"
 				:available-export-types="exportControl.types"
@@ -98,7 +101,6 @@
 
 <script>
 import LocationsService from "@/services/LocationsService";
-import UsersService from "@/services/UsersService";
 import VendorService from "@/services/VendorService";
 import VendorsFilter from "@/components/Beneficiaries/VendorsFilter";
 import ButtonAction from "@/components/ButtonAction";
@@ -109,7 +111,6 @@ import grid from "@/mixins/grid";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import urlFiltersHelper from "@/mixins/urlFiltersHelper";
-import { getUniqueIds } from "@/utils/customValidators";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { downloadFile } from "@/utils/helpers";
@@ -233,13 +234,8 @@ export default {
 			this.$refs.vendorsList.onResetSort();
 		},
 
-		async prepareDataForTable(data) {
-			const locationIds = getUniqueIds(data, "locationId");
-			const userIds = getUniqueIds(data, "userId");
-
+		prepareDataForTable(data) {
 			data.forEach((item, key) => {
-				this.table.data[key] = item;
-
 				const categoryTypes = [];
 
 				if (item.canSellFood) {
@@ -254,33 +250,23 @@ export default {
 					categoryTypes.push({ code: "Cashback", value: "Cashback" });
 				}
 
-				// TODO Temporary hidden (not implemented yet)
-				// this.table.data[key].invoicing = "syncRequired";
-				this.table.data[key].categoryType = categoryTypes;
+				this.table.data[key] = {
+					...item,
+					categoryType: categoryTypes,
+					location: item.location.name,
+					username: item.user.name,
+				};
 			});
-
-			this.getUsers(userIds)
-				.then((users) => {
-					this.table.data.map(async (item, key) => {
-						this.table.data[key] = item;
-						this.table.data[key].username = this.prepareEntityForTable(item.userId, users, "username");
-					});
-					this.reload();
-				});
-
-			this.getLocations(locationIds)
-				.then((locations) => {
-					this.table.data.map(async (item, key) => {
-						this.table.data[key] = item;
-						this.table.data[key].location = this
-							.prepareLocationEntityForTable(item.locationId, locations, "name");
-					});
-					this.reload();
-				});
 		},
 
 		onShowSummary(vendor) {
 			this.$emit("showSummary", vendor);
+		},
+
+		onShowVendorDetail(item) {
+			if (this.isUserPermissionGranted(this.PERMISSIONS.VENDOR_DETAIL)) {
+				this.onShowDetail(item);
+			}
 		},
 
 		async getLocations(locationIds) {
@@ -298,29 +284,6 @@ export default {
 				return data;
 			} catch (e) {
 				Notification(`${this.$t("Locations")}: ${e.message || e}`, "error");
-			}
-
-			return [];
-		},
-
-		async getUsers(userIds) {
-			if (!userIds?.length) return [];
-
-			try {
-				const {
-					data: { data },
-					status,
-					message,
-				} = await UsersService.getListOfUsers({
-					ids: userIds,
-					filters: { showVendors: true },
-				});
-
-				checkResponseStatus(status, message);
-
-				return data;
-			} catch (e) {
-				Notification(`${this.$t("Users")}: ${e.message || e}`, "error");
 			}
 
 			return [];

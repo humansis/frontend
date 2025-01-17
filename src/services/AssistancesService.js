@@ -72,11 +72,17 @@ export default {
 		});
 	},
 
+	getShortListOfScoringTypes() {
+		return fetcher({
+			uri: "catalogs/scorings",
+		});
+	},
+
 	async createScoring(body) {
 		return new Promise((resolve, reject) => {
-			const { name, note, dropFiles } = body;
+			const { name, note, dropFile } = body;
 
-			const fileBlob = new Blob([dropFiles[0]], { type: dropFiles[0].type });
+			const fileBlob = new Blob([dropFile], { type: dropFile.type });
 			const reader = new FileReader();
 
 			reader.readAsDataURL(fileBlob);

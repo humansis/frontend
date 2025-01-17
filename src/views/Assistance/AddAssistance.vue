@@ -126,7 +126,7 @@
 
 		<div class="d-flex justify-end mt-5">
 			<v-btn
-				:to="{ name: 'Project', params: { projectId: this.$route.params.projectId } }"
+				:to="getProjectPage(this.$route.params.projectId)"
 				color="blue-grey-lighten-4"
 				variant="elevated"
 				class="text-none mr-3"
@@ -158,9 +158,10 @@ import SelectionCriteria from "@/components/Assistance/AddAssistance/SelectionTy
 import TargetTypeSelect from "@/components/Assistance/AddAssistance/SelectionTypes/TargetTypeSelect";
 import ConfirmAction from "@/components/ConfirmAction";
 import assistanceHelper from "@/mixins/assistanceHelper";
+import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE } from "@/consts";
+import { ASSISTANCE, ROUTER } from "@/consts";
 
 export default {
 	name: "AddAssistance",
@@ -174,7 +175,7 @@ export default {
 		ConfirmAction,
 	},
 
-	mixins: [assistanceHelper],
+	mixins: [assistanceHelper, routerHelper],
 
 	data() {
 		return {
@@ -367,10 +368,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await AssistancesService.getScoringTypes(
-					null,
-					null,
-				);
+				} = await AssistancesService.getShortListOfScoringTypes();
 
 				checkResponseStatus(status, message);
 
@@ -432,7 +430,9 @@ export default {
 				checkResponseStatus(status, message);
 
 				this.$router.push({
-					name: id ? "AssistanceCreationProgress" : "Project",
+					name: id
+						? ROUTER.ROUTE_NAME.ASSISTANCES.CREATION_PROGRESS
+						: ROUTER.ROUTE_NAME.ASSISTANCES.ROOT,
 					params: {
 						projectId: this.$route.params.projectId,
 						...(id && { assistanceId: id }),
@@ -626,16 +626,13 @@ export default {
 		onTargetSelected(targetType) {
 			this.targetType = targetType?.code;
 
-			if (this.$refs.selectionCriteria) {
-				this.$refs.selectionCriteria.clearComponent();
-			}
+			this.componentsData.selectionCriteria = null;
+			this.componentsData.scoring = null;
+			this.componentsData.distributedCommodity = null;
 
-			if (this.$refs.distributedCommodity) {
-				this.$refs.distributedCommodity.clearComponent();
-			}
-
-			this.calculatedBeneficiaries = {};
-			this.calculatedCommodityValue = {};
+			this.calculatedCommodityValue = [];
+			this.assistanceBody.commodities = [];
+			this.assistanceBody.institutions = [];
 		},
 
 		onShowComponent(components) {
@@ -657,7 +654,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await CustomFieldsService.getListOfCustomFields({});
+				} = await CustomFieldsService.getShortListOfCustomFields({});
 
 				checkResponseStatus(status, message);
 
@@ -726,7 +723,7 @@ export default {
 			};
 		},
 
-		async onFetchDistributedCommodity(commodities) {
+		async onFetchDistributedCommodity({ commodities, isFetchEnabled }) {
 			const dateExpiration = new Date(commodities?.[0]?.dateExpiration);
 			const date = this.isDateValid(dateExpiration)
 				? dateExpiration
@@ -745,12 +742,14 @@ export default {
 					: 0,
 			};
 
+			this.isCommoditySmartCard = commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
+
+			if (!isFetchEnabled) return;
+
 			if ((this.isCalculatedDataFetched && this.isAssistanceDuplicated)
 				|| !this.isAssistanceDuplicated) {
 				await this.fetchCommoditiesValue();
 			}
-
-			this.isCommoditySmartCard = commodities[0]?.modalityType === ASSISTANCE.COMMODITY.SMARTCARD;
 		},
 
 		remoteAllowed(commodity) {
@@ -876,8 +875,7 @@ export default {
 			const { scoringBlueprint, threshold } = assistance;
 			const scoringType = scoringBlueprint === null
 				? AssistancesService.getDefaultScoringType()
-				: this.scoringTypes.filter(({ enabled }) => enabled)
-					.find(({ id }) => id === scoringBlueprint?.id);
+				: this.scoringTypes.find(({ id }) => id === scoringBlueprint?.id);
 
 			if (scoringBlueprint && !scoringType) {
 				Notification(

@@ -81,6 +81,7 @@
 		<div class="d-flex justify-end mt-5">
 			<ButtonAction
 				v-if="isAssistanceValidated && !isAssistanceCompleted"
+				:required-permissions="PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_CLOSE_AND_APPROVE"
 				:is-only-icon="false"
 				label="Close and Approve"
 				icon="check"
@@ -97,6 +98,7 @@
 
 			<v-btn
 				v-if="isDistributedButtonVisible"
+				:disabled="!isUserPermissionGranted(PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_DISTRIBUTION)"
 				:loading="setAtDistributedButtonLoading"
 				color="primary"
 				variant="elevated"
@@ -109,6 +111,7 @@
 
 			<v-btn
 				v-if="isInputDistributedButtonVisible"
+				:disabled="!isUserPermissionGranted(PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_DISTRIBUTION)"
 				color="primary"
 				variant="elevated"
 				prepend-icon="parachute-box"
@@ -144,7 +147,9 @@ import ButtonAction from "@/components/ButtonAction";
 import EditNote from "@/components/Inputs/EditNote";
 import Modal from "@/components/Inputs/Modal";
 import permissions from "@/mixins/permissions";
+import routerHelper from "@/mixins/routerHelper";
 import { checkResponseStatus } from "@/utils/fetcher";
+import { isUserPermissionGranted } from "@/utils/permissions";
 import { Notification } from "@/utils/UI";
 import { ASSISTANCE } from "@/consts";
 
@@ -161,7 +166,7 @@ export default {
 		Modal,
 	},
 
-	mixins: [permissions],
+	mixins: [permissions, routerHelper],
 
 	data() {
 		return {
@@ -301,7 +306,6 @@ export default {
 
 		isDistributedButtonVisible() {
 			return this.isAssistanceStateValidated
-				&& this.userCan.assignDistributionItems
 				&& !this.isCommoditySmartcard
 				&& this.setAtDistributedButtonVisible;
 		},
@@ -309,28 +313,29 @@ export default {
 		isNotDistributedAvailable() {
 			return (this.isAssistanceValidated || this.isAssistanceCompleted)
 				&& (this.isAssistanceTargetHousehold || this.isAssistanceTargetIndividual)
-				&& this.userCan.assignDistributionItems
 				&& !this.isCommoditySmartcard;
 		},
 
 		isInputDistributedButtonVisible() {
 			return this.isAssistanceStateValidated
-				&& this.userCan.assignDistributionItems
 				&& this.inputDistributedButtonVisible
 				&& !this.isAssistanceTargetInstitution;
 		},
 
 		isStartTransactionButtonVisible() {
-			return this.isAssistanceStateValidated
-				&& this.userCan.authoriseElectronicCashTransfer
-				&& this.startTransactionButtonVisible;
+			return this.isAssistanceStateValidated && this.startTransactionButtonVisible;
 		},
 	},
 
-	mounted() {
-		this.fetchAssistance();
-		this.onFetchAssistanceStatistics();
-		this.fetchProject();
+	async mounted() {
+		await this.fetchAssistance();
+		await this.onFetchAssistanceStatistics();
+		await this.fetchProject();
+
+		if (!isUserPermissionGranted(this.PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE)
+			&& this.isAssistanceValidated && !this.isAssistanceCompleted) {
+			this.$router.push({ name: "NoPermission" });
+		}
 	},
 
 	methods: {
@@ -581,9 +586,7 @@ export default {
 				checkResponseStatus(status, message);
 
 				Notification(this.$t("Assistance Successfully Closed"), "success");
-				this.$router.push({ name: "Project",
-					params: { projectId: this.$route.params.projectId },
-				});
+				this.$router.push(this.getProjectPage(this.$route.params.projectId));
 			} catch (e) {
 				Notification(`${this.$t("Assistance")}: ${e.message || e}`, "error");
 			}

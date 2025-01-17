@@ -8,6 +8,12 @@ export default {
 		});
 	},
 
+	getShortListOfDonors() {
+		return fetcher({
+			uri: "catalogs/donors",
+		});
+	},
+
 	createDonor(body) {
 		return fetcher({
 			uri: "donors",
@@ -38,7 +44,7 @@ export default {
 
 	uploadImage({ id, image }) {
 		const formData = new FormData();
-		formData.append("file", image[0]);
+		formData.append("file", image);
 
 		return upload({
 			uri: `donors/${id}/images`,

@@ -14,6 +14,12 @@ export default {
 		});
 	},
 
+	getShortListOfAllProjects() {
+		return fetcher({
+			uri: "catalogs/projects/all",
+		});
+	},
+
 	createProject(body) {
 		return fetcher({
 			uri: "projects",

@@ -3,15 +3,14 @@
 		<div class="d-flex mb-4">
 			<h2 class="me-auto" data-cy="page-title-text">{{ $t('Vouchers') }}</h2>
 
-			<v-btn
-				v-if="userCan.addVouchers"
+			<ButtonAction
+				:required-permissions="PERMISSIONS.VOUCHERS"
+				:is-only-icon="false"
 				color="primary"
-				prepend-icon="plus"
-				class="text-none ml-0"
-				@click="onAddNewVoucher"
-			>
-				{{ $t('Add') }}
-			</v-btn>
+				icon="plus"
+				label="Add"
+				@actionConfirmed="onAddNewVoucher"
+			/>
 		</div>
 
 		<Modal
@@ -41,6 +40,7 @@
 <script>
 import { mapState } from "vuex";
 import BookletsService from "@/services/BookletsService";
+import ButtonAction from "@/components/ButtonAction";
 import Modal from "@/components/Inputs/Modal";
 import VoucherForm from "@/components/Vouchers/VoucherForm";
 import VouchersList from "@/components/Vouchers/VouchersList";
@@ -52,6 +52,7 @@ export default {
 	name: "VouchersPage",
 
 	components: {
+		ButtonAction,
 		VouchersList,
 		Modal,
 		VoucherForm,
@@ -125,7 +126,6 @@ export default {
 				project,
 				quantityOfBooklets,
 				quantityOfVouchers,
-				projectId,
 				password,
 				status,
 				code,
@@ -139,7 +139,6 @@ export default {
 				project,
 				quantityOfBooklets,
 				quantityOfVouchers,
-				projectId,
 				password,
 				status,
 				code,
@@ -165,7 +164,6 @@ export default {
 				quantityOfBooklets: 1,
 				quantityOfVouchers: 1,
 				values: [],
-				projectId: null,
 				project: "",
 				password: "",
 				status: null,
@@ -180,7 +178,7 @@ export default {
 				quantityOfBooklets,
 				quantityOfVouchers,
 				values,
-				projectId,
+				project,
 				password,
 				currency,
 			} = voucherForm;
@@ -192,7 +190,7 @@ export default {
 				quantityOfBooklets,
 				quantityOfVouchers,
 				values: preparedValues,
-				projectId: projectId.id,
+				projectId: project.id,
 				password,
 				iso3: this.country.iso3,
 				currency: currency.value,

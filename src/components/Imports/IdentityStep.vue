@@ -74,6 +74,7 @@
 				<div class="d-flex flex-wrap ga-2 justify-space-between mt-4">
 					<v-btn
 						v-if="canCancelImport"
+						:disabled="!isAllProjectsAccessibleForThisImport"
 						color="error"
 						prepend-icon="ban"
 						class="text-none"
@@ -85,7 +86,7 @@
 					<div class="d-flex flex-wrap ga-2">
 						<v-btn
 							v-if="amountIdentityDuplicities && canResolveDuplicities"
-							:disabled="allRecordsFormLoading"
+							:disabled="isAllFromFileButtonDisabled"
 							:variant="isAllFromFileUnselected ? 'outlined' : 'elevated'"
 							color="info"
 							@click="onChangeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_UPDATE)"
@@ -95,6 +96,7 @@
 
 						<v-btn
 							v-if="amountIdentityDuplicities && canResolveDuplicities"
+							:disabled="!isUserPermissionGranted(PERMISSIONS.IMPORT_RESOLVE_DUPLICITIES)"
 							:variant="isAllFromHumansisUnselected ? 'outlined' : 'elevated'"
 							color="info"
 							@click="onChangeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_LINK)"
@@ -117,9 +119,9 @@
 
 					<div>
 						<v-btn
-							v-if="canGoToFinalisation"
+							v-if="isGoToFinalisationButtonVisible"
 							:loading="changeStateButtonLoading"
-							:disabled="!canGoToFinalisation"
+							:disabled="isGoToFinalisationButtonDisabled"
 							color="primary"
 							append-icon="play-circle"
 							class="text-none"
@@ -137,7 +139,7 @@
 				ref="duplicityResolver"
 				:header="$t('Duplicity Cases')"
 				:is-duplicities-loading="resolveDuplicitiesLoading"
-				:is-form-changes-loading="allRecordsFormLoading"
+				:is-form-changes-loading="isAllRecordsFormLoading"
 				@loaded="onDuplicityLoaded"
 				@updated="onUpdate"
 				@duplicitiesChange="onLoadDuplicities"
@@ -150,6 +152,7 @@
 import ImportService from "@/services/ImportService";
 import DuplicityResolver from "@/components/Imports/DuplicityResolver";
 import Loading from "@/components/Loading";
+import permissions from "@/mixins/permissions";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
 import { IMPORT } from "@/consts";
@@ -169,6 +172,8 @@ export default {
 		Loading,
 	},
 
+	mixins: [permissions],
+
 	props: {
 		statistics: {
 			type: Object,
@@ -183,6 +188,11 @@ export default {
 		importStatus: {
 			type: String,
 			default: "",
+		},
+
+		isAllProjectsAccessibleForThisImport: {
+			type: Boolean,
+			default: true,
 		},
 	},
 
@@ -204,7 +214,7 @@ export default {
 	},
 
 	computed: {
-		allRecordsFormLoading() {
+		isAllRecordsFormLoading() {
 			if (this.resolversAllActive === IMPORT.ITEM_STATUS.TO_UPDATE) {
 				return this.resolversAllLoading
 					|| (!this.duplicities.every(
@@ -232,6 +242,11 @@ export default {
 
 		isCheckingIdentity() {
 			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK;
+		},
+
+		isGoToFinalisationButtonDisabled() {
+			return !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_MANAGE)
+				|| !this.isAllProjectsAccessibleForThisImport;
 		},
 
 		canResolveDuplicities() {
@@ -269,7 +284,7 @@ export default {
 				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
 		},
 
-		canGoToFinalisation() {
+		isGoToFinalisationButtonVisible() {
 			return this.importStatus === IMPORT.STATUS.IDENTITY_CHECK_CORRECT;
 		},
 
@@ -290,6 +305,11 @@ export default {
 			return `${((this.amountIdentityDuplicitiesIncrement
 				- this.amountIdentityDuplicitiesResolvedIncrement)
 				/ (this.amountIdentityDuplicitiesIncrement || this.amountIdentityDuplicitiesResolved)) * 100}%`;
+		},
+
+		isAllFromFileButtonDisabled() {
+			return this.isAllRecordsFormLoading
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_RESOLVE_DUPLICITIES);
 		},
 	},
 

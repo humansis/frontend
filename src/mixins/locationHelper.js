@@ -9,6 +9,12 @@ export default {
 		...mapState(["admNames"]),
 	},
 
+	watch: {
+		"admNames.adm1": function admNamesChanged() {
+			this.setLocationNames();
+		},
+	},
+
 	methods: {
 		setLocationNames() {
 			this.filtersOptions.adm1.name = this.admNames.adm1;

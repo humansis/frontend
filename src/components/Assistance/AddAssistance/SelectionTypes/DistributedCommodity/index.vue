@@ -181,7 +181,7 @@ export default {
 				isOpened: false,
 			},
 			dateExpiration: "",
-			formModel: { ...ASSISTANCE.DEFAULT_FORM_MODEL },
+			formModel: structuredClone(ASSISTANCE.DEFAULT_FORM_MODEL),
 			table: {
 				data: [],
 				columns: [
@@ -361,14 +361,12 @@ export default {
 
 	watch: {
 		commodity(data) {
-			if (data.length) {
-				this.prepareDataForTable(data);
-			}
+			this.prepareDataForTable(data);
 		},
 	},
 
 	mounted() {
-		if (this.isAssistanceDuplicated && this.commodity?.length) {
+		if (this.isAssistanceDuplicated) {
 			this.prepareDataForTable(this.commodity);
 		}
 	},
@@ -379,12 +377,17 @@ export default {
 		},
 
 		prepareDataForTable(data) {
+			if (!data) {
+				this.clearComponent();
+				return;
+			}
+
 			this.table.data = data;
 			this.dateExpiration = data[0]?.dateExpiration;
 
 			if (this.isAssistanceDuplicated) {
 				this.toggleColumnsVisibility();
-				this.$emit("updatedData", this.preparedCommodities);
+				this.$emit("updatedData", { commodities: this.preparedCommodities, isFetchEnabled: true });
 			}
 		},
 
@@ -445,7 +448,7 @@ export default {
 
 		onAddNewCommodity() {
 			this.commodityModal.isOpened = true;
-			this.formModel = { ...ASSISTANCE.DEFAULT_FORM_MODEL };
+			this.formModel = structuredClone(ASSISTANCE.DEFAULT_FORM_MODEL);
 		},
 
 		onCloseCommodityModal() {
@@ -454,16 +457,17 @@ export default {
 
 		onSubmitCommodityForm(commodityForm) {
 			this.table.data.push(commodityForm);
+			this.formModel = structuredClone(ASSISTANCE.DEFAULT_FORM_MODEL);
 			this.commodityModal.isOpened = false;
 
 			this.toggleColumnsVisibility();
 
-			this.$emit("updatedData", this.preparedCommodities);
+			this.$emit("updatedData", { commodities: this.preparedCommodities, isFetchEnabled: true });
 		},
 
 		onRemoveCommodity(index) {
 			this.table.data.splice(index, 1);
-			this.$emit("updatedData", this.preparedCommodities);
+			this.$emit("updatedData", { commodities: this.preparedCommodities, isFetchEnabled: true });
 		},
 
 		mapDivisionFields(divisionFields) {
@@ -507,8 +511,8 @@ export default {
 
 		clearComponent() {
 			this.table.data = [];
-			this.formModel = { ...ASSISTANCE.DEFAULT_FORM_MODEL };
-			this.$emit("updatedData", this.preparedCommodities);
+			this.formModel = structuredClone(ASSISTANCE.DEFAULT_FORM_MODEL);
+			this.$emit("updatedData", { commodities: this.preparedCommodities, isFetchEnabled: false });
 		},
 	},
 };

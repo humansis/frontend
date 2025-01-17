@@ -28,7 +28,7 @@ import identifierBuilder from "@/mixins/identifierBuilder";
 import { generateColumns, normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { ASSISTANCE, TABLE } from "@/consts";
+import { ASSISTANCE, PERMISSIONS, ROUTER, TABLE } from "@/consts";
 
 const statusTags = [
 	{ code: "To distribute", class: "status to-distribute" },
@@ -63,8 +63,20 @@ export default {
 					{ key: "beneficiaryLocalGivenName", title: "Local Given Name", sortable: false },
 					{ key: "beneficiaryLocalFamilyName", title: "Local Family Name", sortable: false },
 					{ key: "state", title: "Status", type: "tag", customTags: statusTags, sortable: false },
-					{ key: "projectName", title: "Project", type: "link", sortable: false },
-					{ key: "assistanceName", title: "Assistance", type: "link", sortable: false },
+					{
+						key: "projectName",
+						title: "Project",
+						type: "link",
+						permissionsForLinkVisibility: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT],
+						sortable: false,
+					},
+					{
+						key: "assistanceName",
+						title: "Assistance",
+						type: "link",
+						permissionsForLinkVisibility: [PERMISSIONS.PROJECT_ASSISTANCE_MANAGEMENT_UPDATE],
+						sortable: false,
+					},
 					{ key: "fullLocationNames", title: "Location", sortable: false },
 					{ key: "dateDistribution", title: "Assistance Date", type: "datetime" },
 					{ key: "commodity", sortable: false },
@@ -110,7 +122,7 @@ export default {
 				this.table.data = [];
 
 				if (totalCount > 0) {
-					await this.prepareDataForTable(data);
+					this.prepareDataForTable(data);
 				}
 			} catch (e) {
 				Notification(`${this.$t("Assistances")}: ${e.message || e}`, "error");
@@ -123,12 +135,12 @@ export default {
 			data.forEach((item, key) => {
 				this.table.data[key] = item;
 				this.table.data[key].projectName = {
-					routeName: "Project",
+					routeName: ROUTER.ROUTE_NAME.ASSISTANCES.ROOT,
 					name: item.projectName,
 					routeParams: { projectId: item.projectId },
 				};
 				this.table.data[key].assistanceName = {
-					routeName: "AssistanceDetail",
+					routeName: ROUTER.ROUTE_NAME.ASSISTANCES.DETAIL,
 					name: item.assistanceName,
 					routeParams: { projectId: item.projectId, assistanceId: item.assistanceId },
 				};

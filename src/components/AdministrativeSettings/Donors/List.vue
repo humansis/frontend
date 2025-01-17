@@ -6,6 +6,7 @@
 		:items="table.data"
 		:total-count="table.total"
 		:loading="isLoadingList"
+		:data-cy="dataCy"
 		reset-sort-button
 		is-search-visible
 		@perPageChanged="onPerPageChange"
@@ -13,24 +14,28 @@
 		@update:sortBy="onSort"
 		@search="onSearch"
 		@resetSort="onResetSort(TABLE.DEFAULT_SORT_OPTIONS.DONORS)"
-		@rowClicked="(row) => onShowDetail(row.item)"
+		@rowClicked="(row) => onShowDonorDetail(row.item)"
 	>
-		<template v-slot:actions="{ row }">
+		<template v-slot:actions="{ row, index }">
 			<ButtonAction
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-show-detail-button`)"
 				icon="search"
 				tooltip-text="Show Detail"
 				@actionConfirmed="onShowDetail(row)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditDonors"
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-edit-button`)"
 				icon="edit"
 				tooltip-text="Edit"
 				@actionConfirmed="onShowEdit(row)"
 			/>
 
 			<ButtonAction
-				v-if="userCan.addEditDonors"
+				:required-permissions="PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR"
+				:data-cy="prepareComponentIdentifier(`row-${index + 1}-delete-button`)"
 				icon="trash"
 				tooltip-text="Delete"
 				icon-color="red"
@@ -50,6 +55,7 @@
 				:available-export-types="exportControl.types"
 				:is-export-loading="exportControl.loading"
 				:location="exportControl.location"
+				data-cy="donors-export"
 				@export="onExportDonors"
 			/>
 		</template>
@@ -62,6 +68,7 @@ import ButtonAction from "@/components/ButtonAction";
 import DataGrid from "@/components/DataGrid";
 import ExportControl from "@/components/Inputs/ExportControl";
 import grid from "@/mixins/grid";
+import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
 import { generateColumns, normalizeExportDate } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
@@ -78,7 +85,7 @@ export default {
 		DataGrid,
 	},
 
-	mixins: [grid, permissions],
+	mixins: [grid, permissions, identifierBuilder],
 
 	data() {
 		return {
@@ -105,6 +112,7 @@ export default {
 				sortColumn: TABLE.DEFAULT_SORT_OPTIONS.DONORS.key,
 				searchPhrase: "",
 			},
+			dataCy: "donors-table",
 		};
 	},
 
@@ -139,6 +147,12 @@ export default {
 				Notification(`${this.$t("Donors")}: ${e.message || e}`, "error");
 			} finally {
 				this.isLoadingList = false;
+			}
+		},
+
+		onShowDonorDetail(item) {
+			if (this.isUserPermissionGranted(this.PERMISSIONS.ADMINISTRATIVE_SETTING_DONOR)) {
+				this.onShowDetail(item);
 			}
 		},
 

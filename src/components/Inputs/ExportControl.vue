@@ -15,22 +15,31 @@
 			v-model="selectedExportFormat"
 			:items="availableExportFormats"
 			:disabled="disabled"
-			:icon-loading="isExportLoading"
-			:is-append-icon-enabled="isExportButtonEnabled"
 			:data-cy="prepareComponentIdentifier()"
 			name="select-export-format"
 			label="Select format"
 			class="export-format"
-			append-icon="download"
-			append-icon-color="primary"
 			@update:modelValue="onInputChanged"
-			@appendIconClicked="onStartExport"
+		/>
+
+		<ButtonAction
+			v-if="isExportButtonEnabled"
+			:required-permissions="requiredPermissions"
+			:disabled="disabled"
+			:is-loading="isExportLoading"
+			icon="download"
+			icon-color="primary"
+			tooltip-text="Download export"
+			class="export-button"
+			:data-cy="prepareComponentIdentifier('button')"
+			@actionConfirmed="onStartExport"
 		/>
 	</div>
 </template>
 
 <script>
 import { mapActions, mapState } from "vuex";
+import ButtonAction from "@/components/ButtonAction";
 import DataSelect from "@/components/Inputs/DataSelect";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import vuetifyHelper from "@/mixins/vuetifyHelper";
@@ -41,6 +50,7 @@ export default {
 
 	components: {
 		DataSelect,
+		ButtonAction,
 	},
 
 	mixins: [vuetifyHelper, identifierBuilder],
@@ -79,6 +89,11 @@ export default {
 		dataCy: {
 			type: String,
 			default: "export",
+		},
+
+		requiredPermissions: {
+			type: [String, Array],
+			default: null,
 		},
 	},
 
@@ -207,5 +222,15 @@ export default {
 .export-format {
 	min-width: 11.25rem;
 	max-width: fit-content;
+}
+
+.export-button {
+	max-height: 2.5rem !important;
+	margin-left: .25rem;
+
+	.v-icon svg {
+		height: 1.2rem;
+		width: 1.2rem;
+	}
 }
 </style>

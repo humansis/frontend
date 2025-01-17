@@ -9,6 +9,7 @@
 			class="mt-5 mb-5"
 		>
 			<v-tab
+				:disabled="!isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD)"
 				:data-cy="identifierBuilder('custom-fields-tab-button')"
 				value="customFields"
 				class="text-none"
@@ -19,6 +20,7 @@
 			</v-tab>
 
 			<v-tab
+				:disabled="!isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_SCORING)"
 				:data-cy="identifierBuilder('scoring-tab-button')"
 				value="scoring"
 				class="text-none"
@@ -31,11 +33,11 @@
 
 		<v-window v-model="selectedTab">
 			<v-window-item value="customFields">
-				<CustomField />
+				<CustomField v-if="isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD)" />
 			</v-window-item>
 
 			<v-window-item value="scoring">
-				<Scoring />
+				<Scoring v-if="isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_SCORING)" />
 			</v-window-item>
 		</v-window>
 	</v-container>
@@ -46,6 +48,7 @@ import CustomField from "@/components/CountrySettings/CountrySpecific/CustomFiel
 import Scoring from "@/components/CountrySettings/CountrySpecific/Scoring";
 import identifierBuilder from "@/mixins/identifierBuilder";
 import permissions from "@/mixins/permissions";
+import { PERMISSIONS } from "@/consts";
 
 export default {
 	name: "CountrySpecificPage",
@@ -61,6 +64,13 @@ export default {
 		return {
 			selectedTab: "customFields",
 		};
+	},
+
+	created() {
+		if (!this.isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_CUSTOM_FIELD)
+			&& this.isUserPermissionGranted(PERMISSIONS.COUNTRY_SETTINGS_SCORING)) {
+			this.selectedTab = "scoring";
+		}
 	},
 };
 </script>

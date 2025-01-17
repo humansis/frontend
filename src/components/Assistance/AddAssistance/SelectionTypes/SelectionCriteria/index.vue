@@ -248,7 +248,6 @@ export default {
 			options: {
 				scoringTypes: [AssistancesService.getDefaultScoringType()],
 			},
-			filters: { enabled: true },
 			minimumSelectionScore: null,
 			scoringType: AssistancesService.getDefaultScoringType(),
 			loading: {
@@ -417,11 +416,7 @@ export default {
 					data: { data },
 					status,
 					message,
-				} = await AssistancesService.getScoringTypes(
-					null,
-					null,
-					this.filters,
-				);
+				} = await AssistancesService.getShortListOfScoringTypes();
 
 				checkResponseStatus(status, message);
 
@@ -434,7 +429,7 @@ export default {
 			} catch (e) {
 				Notification(`${this.$t("Scoring Types")}: ${e.message || e}`, "error");
 			} finally {
-				if (this.isAssistanceDuplicated) {
+				if (this.isAssistanceDuplicated && this.scoring) {
 					this.scoringType = this.scoring.type;
 					this.minimumSelectionScore = this.scoring.minimumSelectionScore;
 				} else {
@@ -611,7 +606,12 @@ export default {
 		},
 
 		prepareDuplicatedData(data) {
-			if (data && this.isAssistanceDuplicated) {
+			if (!data) {
+				this.clearComponent();
+				return;
+			}
+
+			if (this.isAssistanceDuplicated) {
 				this.groups = data;
 				this.updateComponentsData();
 			}
@@ -661,6 +661,7 @@ export default {
 			this.countOf = 0;
 			this.totalCount = 0;
 			this.minimumSelectionScore = 0;
+			this.updateComponentsData();
 		},
 	},
 };

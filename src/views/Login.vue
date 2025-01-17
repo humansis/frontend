@@ -44,24 +44,26 @@ import { mapActions, mapState } from "vuex";
 import CountriesService from "@/services/CountriesService";
 import LoginService from "@/services/LoginService";
 import TranslationService from "@/services/TranslationService";
+import permissions from "@/mixins/permissions";
 import usersHelper from "@/mixins/usersHelper";
 import { setCookie } from "@/utils/cookie";
 import { checkResponseStatus } from "@/utils/fetcher";
 import { Notification } from "@/utils/UI";
-import { GENERAL, ROLE } from "@/consts";
+import { GENERAL, ROLE, ROUTER } from "@/consts";
 import gitInfo from "@/gitInfo";
 import { jwtDecode } from "jwt-decode";
 
 export default {
 	name: "LoginPage",
 
-	mixins: [usersHelper],
+	mixins: [usersHelper, permissions],
 
 	data() {
 		return {
 			gitInfo,
 			keyCloakAuthenticationUrl: "",
 			loginButtonLoading: false,
+			redirect: {},
 		};
 	},
 
@@ -95,12 +97,12 @@ export default {
 	methods: {
 		...mapActions([
 			"storeUser",
-			"storePermissions",
+			"storeUserPermissions",
 			"storeLanguage",
 			"storeTranslations",
 			"storeCountries",
 			"storeCountry",
-			"storeAvailableProjects",
+			"storeAccessibleProjectIds",
 		]),
 
 		async login(accessToken) {
@@ -115,21 +117,36 @@ export default {
 
 				const { token, userId } = data;
 
-				const user = await jwtDecode(token);
+				const user = jwtDecode(token);
 				user.userId = userId;
 
 				await setCookie("token", token, user.exp - user.iat);
 
-				await this.storeUser(user);
-
 				if (user.roles[0] === ROLE.GUEST) {
-					await this.$router.push({ name: "AccountCreated" });
+					await this.$router.push({ name: ROUTER.ROUTE_NAME.ACCOUNT_CREATED });
 					return;
+				}
+
+				if (lastLoggedUsername !== user.username) {
+					await this.storeCountry({});
+				}
+
+				const countries = await this.fetchUserCountries(userId);
+
+				if (countries.length) {
+					await this.storeCountries(countries);
+
+					if (lastLoggedUsername === user.username) {
+						await this.storeCountry(this.country);
+					} else {
+						await this.storeCountry(countries[0]);
+					}
 				}
 
 				const userDetail = await this.getDetailOfUser(userId);
 
-				await this.storeAvailableProjects(userDetail.projectIds);
+				await this.storeUser({ ...user, countries: userDetail?.countries });
+				await this.storeAccessibleProjectIds(userDetail.projectIds);
 
 				const language = this.languages.find(({ key }) => key === userDetail?.language)
 					|| GENERAL.DEFAULT_LANGUAGE;
@@ -146,51 +163,22 @@ export default {
 					await this.storeLanguage(language);
 				}
 
-				const countries = await this.fetchUserCountries(userId);
-
-				if (countries.length) {
-					await this.storeCountries(countries);
-
-					if (lastLoggedUsername === user.username) {
-						await this.storeCountry(this.country);
-					} else {
-						await this.storeCountry(countries[0]);
-					}
-				}
-
-				let rolePrivileges = [];
-
-				if (user.roles[0]) {
-					try {
-						const {
-							data: { privileges },
-							status: responseStatus,
-							message: responseMessage,
-						} = await LoginService.getRolePermissions(user.roles[0]);
-
-						checkResponseStatus(responseStatus, responseMessage);
-
-						rolePrivileges = privileges;
-					} catch (e) {
-						Notification(`${this.$t("Permissions")}: ${e.message || e}`, "error");
-					}
-				}
-
-				await this.storePermissions(rolePrivileges);
+				this.storeUserPermissions(userDetail.role.permissions);
+				this.redirect = this.getAllowedPageForRedirect();
 
 				if (countries.length) {
 					if (this.$route.query.redirect) {
 						this.$router.push(this.$route.query.redirect.toString());
 					} else {
 						this.$router.push({
-							name: "Projects",
+							name: this.redirect.pageName,
 							params: {
 								countryCode: this.country?.iso3 || countries[0].iso3,
 							},
 						});
 					}
 				} else {
-					Notification(this.$t("No Countries"), "warning");
+					this.$router.push({ name: ROUTER.ROUTE_NAME.NO_COUNTRY_ASSIGNED });
 				}
 			} catch (e) {
 				Notification(`${this.$t("Login")} ${e.message || e}`, "error");

@@ -102,6 +102,12 @@ export default {
 					lng: 16.6761388,
 					zoom: 6,
 				},
+				{
+					country: "TUR",
+					lat: 39.925533,
+					lng: 32.866287,
+					zoom: 6,
+				},
 			],
 		};
 	},
