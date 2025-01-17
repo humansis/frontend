@@ -68,7 +68,7 @@ export default {
 				{
 					permission: this.PERMISSIONS.TRANSACTIONS,
 					pageName: ROUTER.ROUTE_NAME.TRANSACTIONS.ROOT,
-					buttonName: "Go to Product page",
+					buttonName: "Go to Transactions page",
 				},
 			];
 

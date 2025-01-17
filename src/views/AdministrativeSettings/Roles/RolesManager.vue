@@ -482,7 +482,6 @@ export default {
 
 		onUnselectOrSelectPermissions() {
 			const {
-				selectedPermissionsKeys,
 				isUnselect,
 				dependenciesPermissions,
 			} = this.autoPermissionManagerModal;
@@ -490,8 +489,10 @@ export default {
 			if (isUnselect) {
 				Object.entries(this.formModel.dataForPermissions).forEach(([key]) => {
 					this.formModel.dataForPermissions[key].permissions.forEach((permission, index) => {
-						if (selectedPermissionsKeys.some(
-							(selectedPermissionKey) => permission.dependencies.includes(selectedPermissionKey),
+						if (!permission.isSelected) return;
+
+						if (dependenciesPermissions.some(
+							(dependencyPermission) => dependencyPermission.key === permission.key,
 						)) {
 							this.formModel.dataForPermissions[key].permissions[index].isSelected = false;
 						}

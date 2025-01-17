@@ -78,7 +78,7 @@
 			>
 				<DataInput
 					v-model="formModel.listOfValues[index].value"
-					:disabled="isDetail || formModel.isUsed"
+					:disabled="isValueInputNotChangeable(index)"
 					:error-messages="validationMsg('listOfValues', 'formModel', index)"
 					:label="`Value ${index + 1}`"
 					:name="`value-${index + 1}`"
@@ -89,6 +89,7 @@
 
 				<ButtonAction
 					v-if="index !== 0 && !isDetail"
+					:disabled="isValueInputNotChangeable(index)"
 					:data-cy="identifierBuilder('remove-input-button')"
 					icon="trash"
 					icon-color="red"
@@ -305,16 +306,22 @@ export default {
 			if (this.formModel.allowedValues) {
 				this.formModel.listOfValues = this.formModel.allowedValues?.map((value) => ({
 					value,
+					isValueFromBackend: true,
 				}));
 			}
 		},
 
 		addNewValueInput() {
-			this.formModel.listOfValues.push({ value: "" });
+			this.formModel.listOfValues.push({ value: "", isValueFromBackend: false });
 		},
 
 		removeInput(index) {
 			this.formModel.listOfValues.splice(index, 1);
+		},
+
+		isValueInputNotChangeable(index) {
+			return this.isDetail
+				|| (this.formModel.isUsed && this.formModel.listOfValues[index].isValueFromBackend);
 		},
 
 		onSubmitForm() {

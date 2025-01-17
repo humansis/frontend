@@ -96,7 +96,7 @@
 
 						<v-btn
 							v-if="amountIdentityDuplicities && canResolveDuplicities"
-							:disabled="!isUserPermissionGranted(PERMISSIONS.IMPORT_APPROVE_AND_SAVE)"
+							:disabled="!isUserPermissionGranted(PERMISSIONS.IMPORT_RESOLVE_DUPLICITIES)"
 							:variant="isAllFromHumansisUnselected ? 'outlined' : 'elevated'"
 							color="info"
 							@click="onChangeBulkDuplicitiesStatus(IMPORT.ITEM_STATUS.TO_LINK)"
@@ -309,7 +309,7 @@ export default {
 
 		isAllFromFileButtonDisabled() {
 			return this.isAllRecordsFormLoading
-				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_APPROVE_AND_SAVE);
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_RESOLVE_DUPLICITIES);
 		},
 	},
 

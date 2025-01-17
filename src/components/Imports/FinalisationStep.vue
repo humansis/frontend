@@ -145,7 +145,7 @@
 			<v-btn
 				v-if="isFinalisationStepActive"
 				:loading="changeStateButtonLoading"
-				:disabled="!isAllProjectsAccessibleForThisImport"
+				:disabled="isApproveAndSaveButtonDisabled"
 				color="primary"
 				prepend-icon="save"
 				class="text-none"
@@ -286,6 +286,7 @@
 
 <script>
 import ImportService from "@/services/ImportService";
+import permissions from "@/mixins/permissions";
 import routerHelper from "@/mixins/routerHelper";
 import { normalizeText } from "@/utils/datagrid";
 import { checkResponseStatus } from "@/utils/fetcher";
@@ -300,7 +301,7 @@ export default {
 		"canceledImport",
 	],
 
-	mixins: [routerHelper],
+	mixins: [routerHelper, permissions],
 
 	props: {
 		statistics: {
@@ -386,6 +387,11 @@ export default {
 				&& this.importStatus !== IMPORT.STATUS.CANCEL
 				&& this.importStatus !== IMPORT.STATUS.AUTOMATICALLY_CANCELED
 				&& this.importStatus !== IMPORT.STATUS.IMPORTING;
+		},
+
+		isApproveAndSaveButtonDisabled() {
+			return !this.isAllProjectsAccessibleForThisImport
+				|| !this.isUserPermissionGranted(this.PERMISSIONS.IMPORT_APPROVE_AND_SAVE);
 		},
 	},
 
